@@ -20,7 +20,7 @@ export function TablaPosiciones({ carta }: { carta: Carta }) {
           Posiciones planetarias de la carta natal
         </caption>
         <thead>
-          <tr className="border-b border-black/15 text-left dark:border-white/20">
+          <tr className="border-b border-borde-fuerte text-left">
             <th scope="col" className="py-2 pr-4 font-medium">Planeta</th>
             <th scope="col" className="py-2 pr-4 font-medium">Signo</th>
             <th scope="col" className="py-2 pr-4 font-medium">Grado</th>
@@ -40,7 +40,7 @@ export function TablaPosiciones({ carta }: { carta: Carta }) {
             return (
               <tr
                 key={planeta.cuerpo}
-                className="border-b border-black/8 dark:border-white/10"
+                className="border-b border-borde"
               >
                 <th scope="row" className="py-2 pr-4 text-left font-normal">
                   <span aria-hidden="true">{GLIFO_CUERPO[planeta.cuerpo]}</span>{' '}

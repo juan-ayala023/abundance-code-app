@@ -95,23 +95,23 @@ export const ELEMENTO_SIGNO: Record<Signo, 'fuego' | 'tierra' | 'aire' | 'agua'>
 }
 
 export const COLOR_ELEMENTO: Record<'fuego' | 'tierra' | 'aire' | 'agua', string> = {
-  fuego: '#e05252',
-  tierra: '#4f9d69',
-  aire: '#d9a441',
-  agua: '#4a7fc1',
+  fuego: 'var(--color-fuego)',
+  tierra: 'var(--color-tierra)',
+  aire: 'var(--color-aire)',
+  agua: 'var(--color-agua)',
 }
 
 /**
  * Color de cada aspecto.
  *
- * Convención de la astrología occidental: los aspectos armónicos en azul y los
- * tensos en rojo. Los tonos elegidos se leen tanto sobre fondo claro como
- * oscuro, porque la carta se muestra en ambos temas.
+ * Convención de la astrología occidental: armónicos en azul, tensos en rojo.
+ * Los tonos están suavizados hacia la gama cálida de la marca para que la
+ * rueda no desentone sobre el fondo crema.
  */
 export const COLOR_ASPECTO: Record<TipoAspecto, string> = {
-  conjuncion: '#8b8b8b',
-  sextil: '#3b82f6',
-  trigono: '#3b82f6',
-  cuadratura: '#ef4444',
-  oposicion: '#ef4444',
+  conjuncion: '#a1968a',
+  sextil: '#6f93bd',
+  trigono: '#6f93bd',
+  cuadratura: '#c97b6b',
+  oposicion: '#c97b6b',
 }

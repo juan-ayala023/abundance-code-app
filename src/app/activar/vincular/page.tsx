@@ -41,7 +41,7 @@ export default async function VincularPage({
             ? 'Encontramos tu compra, pero la suscripción no está activa ahora mismo.'
             : 'No hay ninguna compra registrada con este correo:'}
         </p>
-        <p className="rounded-lg border border-black/10 px-4 py-3 font-mono text-sm dark:border-white/15">
+        <p className="rounded-xl border border-borde bg-superficie px-4 py-3 font-mono text-sm">
           {access.email}
         </p>
       </header>
@@ -59,7 +59,7 @@ export default async function VincularPage({
         <form action={cerrarSesion}>
           <button
             type="submit"
-            className="w-full rounded-lg border border-black/15 px-5 py-3 font-medium transition-colors hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10"
+            className="w-full rounded-xl border border-borde bg-superficie px-5 py-3 font-medium transition-colors hover:bg-fondo-hondo"
           >
             Probar con otra cuenta
           </button>
@@ -67,7 +67,7 @@ export default async function VincularPage({
 
         <a
           href={landingUrl}
-          className="w-full rounded-lg bg-black px-5 py-3 text-center font-medium text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+          className="w-full rounded-xl bg-oro px-5 py-3 text-center font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           {esInactivo ? 'Renovar mi acceso' : 'Comprar mi acceso'}
         </a>

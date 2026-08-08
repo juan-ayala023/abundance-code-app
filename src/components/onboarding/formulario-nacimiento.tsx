@@ -24,7 +24,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
           required
           defaultValue={nombreInicial}
           autoComplete="name"
-          className="rounded-lg border border-black/15 px-4 py-3 dark:border-white/20"
+          className="rounded-xl border border-borde bg-superficie px-4 py-3"
         />
       </Campo>
 
@@ -35,7 +35,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
           type="date"
           required
           max={new Date().toISOString().slice(0, 10)}
-          className="rounded-lg border border-black/15 px-4 py-3 dark:border-white/20"
+          className="rounded-xl border border-borde bg-superficie px-4 py-3"
         />
       </Campo>
 
@@ -45,7 +45,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
           name="birthTime"
           type="time"
           disabled={horaDesconocida}
-          className="rounded-lg border border-black/15 px-4 py-3 disabled:opacity-50 dark:border-white/20"
+          className="rounded-xl border border-borde bg-superficie px-4 py-3 disabled:opacity-50"
         />
 
         <label className="flex items-center gap-2 text-sm">
@@ -59,7 +59,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         </label>
 
         {horaDesconocida ? (
-          <p className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
+          <p className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm">
             Calcularemos tu carta con el mediodía local. Las posiciones de los
             planetas serán correctas, pero <strong>no podremos incluir las casas,
             el ascendente ni el medio cielo</strong>: esos dependen de la hora
@@ -73,7 +73,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
       {estado.error ? (
         <p
           role="alert"
-          className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm"
+          className="rounded-2xl border border-[#e0b3a8] bg-[#f6e6e1] px-4 py-3 text-sm"
         >
           {estado.error}
         </p>
@@ -91,7 +91,7 @@ function BotonGuardar() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-black px-5 py-3 font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60 dark:bg-white dark:text-black"
+      className="rounded-xl bg-oro px-5 py-3 font-medium text-white transition-colors hover:bg-oro-hondo disabled:opacity-60"
     >
       {pending ? 'Guardando…' : 'Continuar'}
     </button>
@@ -124,7 +124,7 @@ function Campo({
       </label>
       {children}
       {error ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+        <p role="alert" className="text-sm text-[#a8503c]">
           {error}
         </p>
       ) : null}

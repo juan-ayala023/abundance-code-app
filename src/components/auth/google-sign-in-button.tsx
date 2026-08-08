@@ -35,14 +35,14 @@ export function GoogleSignInButton({ next }: { next: string }) {
         type="button"
         onClick={iniciarSesion}
         disabled={cargando}
-        className="inline-flex items-center justify-center gap-3 rounded-lg border border-black/15 px-5 py-3 font-medium transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/20 dark:hover:bg-white/10"
+        className="inline-flex items-center justify-center gap-3 rounded-xl border border-borde bg-superficie px-5 py-3 font-medium transition-colors hover:bg-fondo-hondo disabled:cursor-not-allowed disabled:opacity-60"
       >
         <GoogleLogo />
         {cargando ? 'Conectando…' : 'Entrar con Google'}
       </button>
 
       {error ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+        <p role="alert" className="text-sm text-[#a8503c]">
           {error}
         </p>
       ) : null}

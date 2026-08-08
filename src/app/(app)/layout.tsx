@@ -1,16 +1,18 @@
 import { redirect } from 'next/navigation'
 
+import { Logo } from '@/components/layout/logo'
+import { NavLateral } from '@/components/layout/nav-lateral'
 import { resolveAccess } from '@/lib/access/entitlement'
 
 /**
- * Puerta de entrada al portal.
+ * Puerta de entrada al portal, y armazón de todas sus pantallas.
  *
  * El middleware ya descartó a quien no tiene sesión; aquí se comprueba lo que
  * el middleware no puede: que exista una compra activa. Se ejecuta una vez por
  * navegación, no por cada recurso.
  *
- * Toda página bajo (app) hereda esta comprobación: ninguna puede olvidarse
- * de hacerla.
+ * Toda página bajo (app) hereda la comprobación y la navegación: ninguna puede
+ * olvidarse de hacer una ni de pintar la otra.
  */
 export default async function AppLayout({
   children,
@@ -25,6 +27,18 @@ export default async function AppLayout({
     case 'inactivo':
       redirect('/activar/vincular?estado=inactivo')
     case 'concedido':
-      return <>{children}</>
+      break
   }
+
+  return (
+    <div className="flex min-h-dvh">
+      <aside className="hidden w-64 shrink-0 flex-col gap-10 border-r border-borde bg-fondo px-6 py-8 lg:flex">
+        <Logo />
+        {/* El día del ciclo de 30 llegará con el modelo de portal. */}
+        <NavLateral diaActual={null} />
+      </aside>
+
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  )
 }

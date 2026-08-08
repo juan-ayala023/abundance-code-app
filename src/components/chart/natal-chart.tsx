@@ -78,7 +78,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
             key={`sector-${signo}`}
             d={sectorAnular(indice * 30, indice * 30 + 30, R_SIGNOS_INT, R_BORDE, anguloDe)}
             fill={COLOR_ELEMENTO[ELEMENTO_SIGNO[signo]]}
-            fillOpacity={0.14}
+            fillOpacity={0.28}
           />
         ))}
 
@@ -90,8 +90,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
             cy={C}
             r={radio}
             fill="none"
-            stroke="currentColor"
-            strokeOpacity={0.5}
+            stroke="var(--color-borde-fuerte)"
             strokeWidth={1.5}
           />
         ))}
@@ -107,8 +106,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
               y1={interior.y}
               x2={exterior.x}
               y2={exterior.y}
-              stroke="currentColor"
-              strokeOpacity={0.45}
+              stroke="var(--color-borde-fuerte)"
               strokeWidth={1}
             />
           )
@@ -125,7 +123,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
               textAnchor="middle"
               dominantBaseline="central"
               fontSize={30}
-              fill="currentColor"
+              fill="var(--color-oro-hondo)"
             >
               <title>{NOMBRE_SIGNO[signo]}</title>
               {GLIFO_SIGNO[signo]}
@@ -145,8 +143,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
               y1={desde.y}
               x2={hasta.x}
               y2={hasta.y}
-              stroke="currentColor"
-              strokeOpacity={0.35}
+              stroke="var(--color-borde-fuerte)"
               strokeWidth={1}
             />
           )
@@ -201,8 +198,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                 y1={marcaFuera.y}
                 x2={marcaDentro.x}
                 y2={marcaDentro.y}
-                stroke="currentColor"
-                strokeOpacity={0.7}
+                stroke="var(--color-tinta-suave)"
                 strokeWidth={1.5}
               />
               <line
@@ -210,8 +206,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                 y1={marcaDentro.y}
                 x2={conector.x}
                 y2={conector.y}
-                stroke="currentColor"
-                strokeOpacity={0.3}
+                stroke="var(--color-borde-fuerte)"
                 strokeWidth={1}
               />
               <text
@@ -220,7 +215,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                 textAnchor="middle"
                 dominantBaseline="central"
                 fontSize={26}
-                fill="currentColor"
+                fill="var(--color-tinta)"
               >
                 <title>
                   {NOMBRE_CUERPO[planeta.cuerpo]} en{' '}
@@ -235,8 +230,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                   y={glifo.y + 11}
                   textAnchor="middle"
                   fontSize={13}
-                  fill="currentColor"
-                  fillOpacity={0.75}
+                  fill="var(--color-tinta-suave)"
                 >
                   ℞
                 </text>
@@ -247,7 +241,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
       </svg>
 
       {parcial ? (
-        <figcaption className="mt-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
+        <figcaption className="mt-4 rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm">
           Esta carta se calculó sin hora de nacimiento. Las posiciones de los
           planetas son correctas, pero <strong>no incluye casas, Ascendente ni
           Medio Cielo</strong>: esos dependen de la hora exacta.
@@ -286,8 +280,7 @@ function CasasYEjes({
               y1={desde.y}
               x2={hasta.x}
               y2={hasta.y}
-              stroke="currentColor"
-              strokeOpacity={esEje ? 0.8 : 0.3}
+              stroke={esEje ? 'var(--color-oro)' : 'var(--color-borde-fuerte)'}
               strokeWidth={esEje ? 2 : 1}
               strokeDasharray={esEje ? undefined : '4 4'}
             />
@@ -297,8 +290,7 @@ function CasasYEjes({
               textAnchor="middle"
               dominantBaseline="central"
               fontSize={14}
-              fill="currentColor"
-              fillOpacity={0.6}
+              fill="var(--color-tinta-tenue)"
             >
               {indice + 1}
             </text>
@@ -336,7 +328,7 @@ function EtiquetaEje({
       dominantBaseline="central"
       fontSize={16}
       fontWeight={600}
-      fill="currentColor"
+      fill="var(--color-oro-hondo)"
     >
       {texto}
     </text>

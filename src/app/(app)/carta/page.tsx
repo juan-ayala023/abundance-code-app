@@ -58,7 +58,7 @@ function PendienteDeCalculo() {
     <>
       <div
         role="status"
-        className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm"
+        className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm"
       >
         <strong>Esto no es tu carta.</strong> Es un ejemplo con posiciones
         inventadas, para ver el diseño mientras conectamos el cálculo real. Tus

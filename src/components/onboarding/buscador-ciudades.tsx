@@ -98,7 +98,7 @@ export function BuscadorCiudades({
         value={texto}
         onChange={(event) => reiniciar(event.target.value)}
         placeholder="Empieza a escribir y elige de la lista"
-        className="rounded-lg border border-black/15 px-4 py-3 dark:border-white/20"
+        className="rounded-xl border border-borde bg-superficie px-4 py-3"
       />
 
       <input type="hidden" name="place" value={elegido ? JSON.stringify(elegido) : ''} />
@@ -112,7 +112,7 @@ export function BuscadorCiudades({
         <ul
           id={listaId}
           role="listbox"
-          className="divide-y divide-black/10 overflow-hidden rounded-lg border border-black/15 dark:divide-white/10 dark:border-white/20"
+          className="divide-y divide-borde overflow-hidden rounded-xl border border-borde bg-superficie"
         >
           {visibles.map((place) => (
             <li key={place.providerId}>
@@ -121,7 +121,7 @@ export function BuscadorCiudades({
                 role="option"
                 aria-selected={false}
                 onClick={() => elegir(place)}
-                className="w-full px-4 py-3 text-left text-sm transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+                className="w-full px-4 py-3 text-left text-sm transition-colors hover:bg-fondo-hondo"
               >
                 {etiqueta(place)}
               </button>
@@ -131,13 +131,13 @@ export function BuscadorCiudades({
       ) : null}
 
       {fallo ? (
-        <p role="alert" className="text-sm text-red-700 dark:text-red-400">
+        <p role="alert" className="text-sm text-[#a8503c]">
           {fallo}
         </p>
       ) : null}
 
       {error ? (
-        <p id="ciudad-error" role="alert" className="text-sm text-red-700 dark:text-red-400">
+        <p id="ciudad-error" role="alert" className="text-sm text-[#a8503c]">
           {error}
         </p>
       ) : null}

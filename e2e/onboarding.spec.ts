@@ -55,7 +55,7 @@ test('completar el formulario lleva al portal', async ({ page }) => {
   await page.getByRole('button', { name: 'Continuar' }).click()
 
   await expect(page).toHaveURL(/\/portal/)
-  await expect(page.getByRole('heading', { name: 'Tu portal' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/ })).toBeVisible()
 })
 
 test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => {
@@ -74,11 +74,18 @@ test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => 
   await expect(page.getByText(/elige una ciudad de la lista/i)).toBeVisible()
 })
 
-test('el portal muestra el plan de la compra', async ({ page }) => {
+test('el portal saluda y ofrece completar los datos', async ({ page }) => {
   await page.goto('/portal')
 
-  await expect(page.getByRole('heading', { name: 'Tu portal' })).toBeVisible()
-  await expect(page.getByText(/plan e2e/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/ })).toBeVisible()
+
+  // Sin datos de nacimiento, lo primero que se ofrece es completarlos.
+  await expect(
+    page.getByRole('heading', { name: 'Completa tus datos de nacimiento' }),
+  ).toBeVisible()
+
+  // Y la navegación lateral acompaña a todas las pantallas del portal.
+  await expect(page.getByRole('navigation', { name: 'Navegación principal' })).toBeAttached()
 })
 
 test('quien tiene sesión pero NO compra acaba en vincular', async ({ browser }) => {

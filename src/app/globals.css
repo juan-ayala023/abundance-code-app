@@ -1,12 +1,52 @@
 @import 'tailwindcss';
 
 /*
+ * Sistema visual de Abundance Code, tomado de la app anterior.
+ *
+ * Crema cálido de fondo, tarjetas casi blancas, acentos dorados y tipografía
+ * ligera. Los tokens viven aquí para que cambiar la identidad sea tocar este
+ * archivo, no cincuenta componentes.
+ */
+@theme {
+  --color-fondo: #faf5ee;
+  --color-fondo-hondo: #f3ebdf;
+  --color-superficie: #fffdf9;
+  --color-borde: #ece1cf;
+  --color-borde-fuerte: #ddcdb2;
+
+  --color-tinta: #3c352d;
+  --color-tinta-suave: #7b7065;
+  --color-tinta-tenue: #a1968a;
+
+  --color-oro: #b8894a;
+  --color-oro-claro: #d9bd8c;
+  --color-oro-palido: #f0e3cd;
+  --color-oro-hondo: #966c33;
+
+  /* Elementos del zodiaco, en la gama cálida de la marca. */
+  --color-fuego: #d9896a;
+  --color-tierra: #9bb08a;
+  --color-aire: #e2c489;
+  --color-agua: #93b2cc;
+
+  --font-sans: var(--fuente-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-tinta);
+}
+
+/*
  * Accesibilidad como piso, no como extra (CLAUDE.md §10.6).
  */
 
-/* Foco siempre visible para navegación con teclado. */
 :focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-oro-hondo);
   outline-offset: 2px;
 }
 
