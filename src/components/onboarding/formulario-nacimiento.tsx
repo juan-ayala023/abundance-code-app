@@ -16,8 +16,9 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
 
   return (
     <form action={accion} className="flex flex-col gap-6">
-      <Campo etiqueta="Nombre completo" error={estado.campos.fullName}>
+      <Campo id="fullName" etiqueta="Nombre completo" error={estado.campos.fullName}>
         <input
+          id="fullName"
           name="fullName"
           type="text"
           required
@@ -27,8 +28,9 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         />
       </Campo>
 
-      <Campo etiqueta="Fecha de nacimiento" error={estado.campos.birthDate}>
+      <Campo id="birthDate" etiqueta="Fecha de nacimiento" error={estado.campos.birthDate}>
         <input
+          id="birthDate"
           name="birthDate"
           type="date"
           required
@@ -37,8 +39,9 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         />
       </Campo>
 
-      <Campo etiqueta="Hora de nacimiento" error={estado.campos.birthTime}>
+      <Campo id="birthTime" etiqueta="Hora de nacimiento" error={estado.campos.birthTime}>
         <input
+          id="birthTime"
           name="birthTime"
           type="time"
           disabled={horaDesconocida}
@@ -95,18 +98,30 @@ function BotonGuardar() {
   )
 }
 
+/**
+ * Etiqueta y campo, asociados de verdad.
+ *
+ * El `htmlFor` no es decorativo: sin él, un lector de pantalla anuncia un
+ * campo sin nombre y pulsar sobre el texto no enfoca el input. Antes esto era
+ * un `<span>` y la carencia pasó desapercibida hasta que una prueba e2e no
+ * encontró los campos por su nombre accesible.
+ */
 function Campo({
+  id,
   etiqueta,
   error,
   children,
 }: {
+  id: string
   etiqueta: string
   error?: string
   children: React.ReactNode
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium">{etiqueta}</span>
+      <label htmlFor={id} className="text-sm font-medium">
+        {etiqueta}
+      </label>
       {children}
       {error ? (
         <p role="alert" className="text-sm text-red-700 dark:text-red-400">

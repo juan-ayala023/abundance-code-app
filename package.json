@@ -17,9 +17,9 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:routes": "cross-env NEXT_DIST_DIR=.next-verify vitest run --config vitest.routes.config.ts",
     "db:push": "supabase db push",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build:verify && playwright test",
     "check:secrets": "cross-env NEXT_DIST_DIR=.next-verify node scripts/check-bundle-secrets.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run check:actions && npm run test && npm run build:verify && npm run check:secrets && npm run test:routes",
+    "verify": "npm run typecheck && npm run lint && npm run check:actions && npm run test && npm run build:verify && npm run check:secrets && npm run test:routes && playwright test",
     "check:actions": "node scripts/check-server-actions.mjs",
     "build:verify": "cross-env NEXT_DIST_DIR=.next-verify next build"
   },

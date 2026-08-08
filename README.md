@@ -22,6 +22,7 @@ npm run dev
 | `npm run test` | Tests unitarios (vitest) |
 | `npm run test:routes` | Protección de rutas contra el build real |
 | `npm run test:integration` | RLS contra el proyecto Supabase real |
+| `npm run test:e2e` | Páginas tras login, en navegador real |
 | `npm run test:e2e` | Tests e2e (playwright) |
 | `npm run check:secrets` | Verifica que ningún secreto de servidor llegó al bundle del cliente |
 | `npm run check:actions` | Verifica que los módulos `'use server'` solo exportan funciones asíncronas |
@@ -105,20 +106,21 @@ Lo que **no** existe todavía:
 - Cálculo de la carta natal, capa de IA y el resto de pantallas.
 - i18n: `next-intl` está instalado pero sin cablear.
 
-## Hueco conocido de cobertura: páginas tras login
+## Páginas tras login: `npm run test:e2e`
 
-`npm run test:routes` comprueba el servidor real, pero solo puede ver lo que ve
-un visitante sin sesión: las rutas de `(app)` responden con una redirección, así
-que **sus páginas nunca llegan a renderizarse en las pruebas**. Un error de
-render en `/onboarding` o `/portal` pasa desapercibido.
+`npm run test:routes` solo ve lo que ve un visitante sin sesión —una
+redirección— así que las páginas de `(app)` nunca llegaban a renderizarse en
+las pruebas. Dos errores de render se escaparon por ahí.
 
-Ya ocurrió una vez: `actions.ts` exportaba una constante desde un módulo
-`'use server'`, cosa que Next no permite. Compilaba, pasaba el build y llegaba
-al cliente como `undefined`. De ahí `npm run check:actions`, que detecta esa
-clase concreta de fallo.
+Las pruebas e2e cierran ese hueco. No automatizan el login de Google, que no es
+fiable de automatizar: crean un usuario con contraseña por la API de
+administración, inician sesión y **le preguntan a `@supabase/ssr` qué cookies
+espera**, usando un almacén falso y quedándose con lo que escribe. Si la
+librería cambia su formato, el arnés sigue funcionando.
 
-Cerrar el hueco de verdad exige una prueba de Playwright con sesión iniciada.
-Pendiente.
+La fixture de sesión es `auto: true` a propósito. Sin eso, un test que solo pida
+`page` no la dispara, se ejecuta sin sesión y acaba comprobando la pantalla de
+login creyendo que comprueba el portal — pasando en verde.
 
 ## `dev` y `verify` usan carpetas de build distintas
 

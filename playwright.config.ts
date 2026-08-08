@@ -1,26 +1,38 @@
+import { existsSync } from 'node:fs'
+import process from 'node:process'
+
 import { defineConfig, devices } from '@playwright/test'
 
-const PORT = Number(process.env.PORT ?? 3000)
+// Estas pruebas hablan con el proyecto Supabase real: necesitan credenciales.
+if (existsSync('.env.local')) process.loadEnvFile('.env.local')
+
+const PORT = 3200
 const baseURL = `http://127.0.0.1:${PORT}`
 
+/**
+ * Pruebas de las páginas que están detrás del login.
+ *
+ * Usan el build de verificación (`.next-verify`) y un puerto propio para no
+ * pisar ni el servidor de desarrollo ni las pruebas de rutas.
+ */
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: 'html',
+  workers: 1,
+  reporter: process.env.CI ? 'html' : 'list',
+  timeout: 60_000,
   use: {
     baseURL,
     trace: 'on-first-retry',
   },
-  projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['Pixel 7'] } },
-  ],
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'npm run start',
+    command: `cross-env NEXT_DIST_DIR=.next-verify npx next start --port ${PORT}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
+    env: { ...process.env } as Record<string, string>,
   },
 })
