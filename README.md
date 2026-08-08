@@ -24,7 +24,7 @@ npm run dev
 | `npm run test:integration` | RLS contra el proyecto Supabase real |
 | `npm run test:e2e` | Tests e2e (playwright) |
 | `npm run check:secrets` | Verifica que ningún secreto de servidor llegó al bundle del cliente |
-| `npm run verify` | typecheck + test + build + check:secrets |
+| `npm run verify` | typecheck + lint + test + build + check:secrets + test:routes |
 
 `npm run verify` es la comprobación que debe pasar antes de dar por cerrada
 cualquier fase.
@@ -47,7 +47,7 @@ npm run test:integration
 Crea dos usuarios de verdad e intenta que uno acceda a los datos del otro.
 Se limpian solos al terminar.
 
-## Estado: fase 0 completada
+## Estado
 
 Lo que existe hoy:
 
@@ -76,6 +76,22 @@ Del flujo de acceso, ya está hecho:
 - Protección de rutas de `(app)` en el middleware (sesión) y en su layout
   (entitlement activo), con 15 pruebas contra el servidor real.
 
+Del webhook de Stripe:
+
+- `/api/stripe/webhook` con firma verificada sobre el cuerpo crudo,
+  idempotencia por `stripe_events.id` y descarte de eventos que llegan fuera
+  de orden (`apply_stripe_entitlement`). Stripe no garantiza el orden de
+  entrega, así que las dos defensas son necesarias y distintas.
+
+Del onboarding:
+
+- `resolveBirthInstant()`: fecha + hora + zona → instante UTC usando el desfase
+  vigente en ESA fecha. Detecta horas locales que no existieron y las que
+  ocurrieron dos veces.
+- Geocoding con GeoNames tras `GeocodingProvider`, vía `/api/geo/search`.
+- Formulario `/onboarding`, que obliga a elegir la ciudad de la lista porque la
+  carta necesita coordenadas y zona horaria, no un nombre escrito a mano.
+
 Lo que **no** existe todavía:
 
 - Vinculación por correo de verificación cuando el email de Google no coincide
@@ -83,10 +99,9 @@ Lo que **no** existe todavía:
   Hoy la salida es entrar con otra cuenta o escribir a soporte.
 - Redención del token legacy `/activar?token=…`: el parámetro se acepta sin
   romper nada, pero todavía no hace nada.
-- Webhook de Stripe (pendiente de que el equipo de la landing lo ceda).
+- Portal de facturación de Stripe (`/api/billing/portal`).
 - Tabla legacy `access_tokens`: hace falta el esquema real del sistema anterior.
-- Motor astrológico, capa de IA y pantallas de la app.
-- Protección de rutas por entitlement: el middleware hoy solo refresca sesión.
+- Cálculo de la carta natal, capa de IA y el resto de pantallas.
 - i18n: `next-intl` está instalado pero sin cablear.
 
 ## `middleware.ts` va dentro de `src/`
