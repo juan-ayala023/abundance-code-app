@@ -94,6 +94,15 @@ Del onboarding:
 - Formulario `/onboarding`, que obliga a elegir la ciudad de la lista porque la
   carta necesita coordenadas y zona horaria, no un nombre escrito a mano.
 
+Pantallas del portal, todas con navegación lateral y el sistema visual de la
+marca: `/portal`, `/carta`, `/lectura-base`, `/activacion`, `/guia`, `/cuenta`
+y `/generando`, más las públicas `/` y `/planes`.
+
+Las secciones cuyo contenido depende de la capa de IA muestran su estructura y
+dicen que aún no está generada. **No se rellenan con texto de muestra**: en un
+producto cuyo entregable es una interpretación personal, un párrafo de relleno
+puede confundirse con la lectura del usuario.
+
 Lo que **no** existe todavía:
 
 - Vinculación por correo de verificación cuando el email de Google no coincide
