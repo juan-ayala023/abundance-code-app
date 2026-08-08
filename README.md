@@ -132,6 +132,27 @@ Next 16 — un cambio de major que `CLAUDE.md` §2 no contempla.
 `next/image`. Queda como decisión pendiente: aceptar el riesgo mientras no haya
 imágenes optimizadas, o evaluar el salto a Next 16.
 
+## Decisiones tomadas (delegadas, revisables)
+
+El cliente delegó estas tres. Quedan por escrito para poder revertirlas.
+
+**Geocoding: GeoNames.** Gratuito, permite almacenar los resultados —que es
+exactamente lo que hacemos al guardarlos en `portals`, y donde la licencia de
+Google Places habría dado problemas— y devuelve la zona horaria IANA en la
+misma respuesta. Vive tras `GeocodingProvider`: cambiarlo es sustituir un
+adaptador. **Requiere registrar un usuario gratuito** (ver `.env.example`).
+
+**Cálculo de la carta: API externa primero.** Permite tener cartas reales en
+días en vez de semanas y aplaza sin coste la decisión de licencia de Swiss
+Ephemeris. Irá detrás de un adaptador que siempre devuelva el mismo formato
+—el que ya guarda `portals.chart`— para poder migrar a motor propio cuando el
+volumen lo justifique. Dos condiciones al elegir proveedor: que soporte
+**Placidus** (§7) y que sus condiciones sobre datos personales sean aceptables,
+porque le enviaríamos fecha, hora y lugar de nacimiento de los clientes.
+
+**Presupuesto de IA: $0,15 por lectura, provisional.** Fijado a falta de
+conocer el precio de venta. Cuando se sepa, se ajusta.
+
 ## Decisiones abiertas
 
 Estas bloquean fases posteriores y necesitan confirmación humana:
