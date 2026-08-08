@@ -104,3 +104,23 @@ test('las páginas públicas no exigen sesión', async ({ browser }) => {
 
   await context.close()
 })
+
+test('el portal muestra el día real del ciclo de 30', async ({ page }) => {
+  await completarOnboarding(page)
+
+  // El portal se acaba de crear, así que es el día 1. El número sale de la
+  // fecha de creación, no de un contador guardado que pueda desincronizarse.
+  await expect(page.getByRole('heading', { name: 'Día 1 de 30' })).toBeVisible()
+
+  const barra = page.getByRole('progressbar', { name: 'Día 1 de 30' })
+  await expect(barra).toBeVisible()
+  await expect(barra).toHaveAttribute('aria-valuenow', '3')
+})
+
+test('el portal reúne las áreas y el cierre', async ({ page }) => {
+  await completarOnboarding(page)
+
+  await expect(page.getByRole('heading', { name: 'Áreas desbloqueadas' })).toBeVisible()
+  await expect(page.getByText('Relaciones y vínculos')).toBeVisible()
+  await expect(page.getByText(/recordar tu código y alinearte con él/)).toBeVisible()
+})

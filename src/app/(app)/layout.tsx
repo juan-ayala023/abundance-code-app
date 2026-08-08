@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { Logo } from '@/components/layout/logo'
 import { NavLateral } from '@/components/layout/nav-lateral'
 import { resolveAccess } from '@/lib/access/entitlement'
+import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Puerta de entrada al portal, y armazón de todas sus pantallas.
@@ -30,12 +32,19 @@ export default async function AppLayout({
       break
   }
 
+  const supabase = await createClient()
+  const { data: portal } = await supabase
+    .from('portals')
+    .select('created_at')
+    .maybeSingle()
+
+  const ciclo = diaDelCiclo(portal?.created_at)
+
   return (
     <div className="flex min-h-dvh">
       <aside className="hidden w-64 shrink-0 flex-col gap-10 border-r border-borde bg-fondo px-6 py-8 lg:flex">
         <Logo />
-        {/* El día del ciclo de 30 llegará con el modelo de portal. */}
-        <NavLateral diaActual={null} />
+        <NavLateral ciclo={ciclo} />
       </aside>
 
       <div className="min-w-0 flex-1">{children}</div>

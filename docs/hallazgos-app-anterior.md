@@ -28,8 +28,12 @@ Es decir, **tres estados de acceso**, no dos:
    y las activaciones, no.
 3. Con suscripción activa: todo.
 
-`resolveAccess()` hoy solo distingue «tiene acceso» de «no lo tiene». Habrá que
-modelar el ciclo. Necesita una fecha de inicio del portal, que hoy no se guarda.
+`resolveAccess()` sigue distinguiendo solo «tiene acceso» de «no lo tiene»: el
+tercer estado —pasados los 30 días, lectura sí y guía no— está pendiente.
+
+El **contador** de días sí está resuelto: `diaDelCiclo()` lo deriva de
+`portals.created_at`, comparando días de calendario en UTC. No hace falta una
+columna nueva ni un contador guardado, que podría desincronizarse.
 
 ### `activation_codes` es real y visible para el usuario
 

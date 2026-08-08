@@ -15,7 +15,11 @@ const ENLACES = [
   { href: '/cuenta', etiqueta: 'Mi cuenta', Icono: User },
 ] as const
 
-export function NavLateral({ diaActual }: { diaActual: number | null }) {
+export function NavLateral({
+  ciclo,
+}: {
+  ciclo: { dia: number; total: number } | null
+}) {
   const pathname = usePathname()
 
   return (
@@ -45,12 +49,12 @@ export function NavLateral({ diaActual }: { diaActual: number | null }) {
       </ul>
 
       <div className="mt-auto flex flex-col gap-4">
-        {diaActual !== null ? (
+        {ciclo ? (
           <div className="rounded-2xl border border-borde bg-superficie px-4 py-4 text-center">
             <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
               Tu viaje
             </p>
-            <p className="mt-1 text-xl font-light">de 30 días</p>
+            <p className="mt-1 text-xl font-light">de {ciclo.total} días</p>
             <p className="mt-2 text-xs text-tinta-suave">
               Estás construyendo tu nueva realidad día a día.
             </p>
