@@ -120,17 +120,19 @@ clase concreta de fallo.
 Cerrar el hueco de verdad exige una prueba de Playwright con sesión iniciada.
 Pendiente.
 
-## No ejecutes `npm run dev` durante `npm run verify`
+## `dev` y `verify` usan carpetas de build distintas
 
-`next dev` y `next build` comparten la carpeta `.next`. Si el servidor de
-desarrollo sigue vivo mientras se construye, va reescribiendo esos artefactos y
-el build de producción queda a medias: arranca, pero devuelve 500 en todo con un
+Por defecto `next dev` y `next build` comparten `.next`, y se pisan en las dos
+direcciones: el build deja al servidor de desarrollo sirviendo CSS y chunks que
+ya no existen, y el servidor de desarrollo deja el build a medias con un
 `Cannot find module './NNN.js'` que no se parece en nada a la causa real.
 
-`vitest.routes.setup.ts` lo detecta y aborta con un mensaje que lo explica, en
-vez de dejar que las pruebas fallen de forma incomprensible. También aborta si
-el puerto 3100 ya está ocupado, porque entonces las pruebas irían contra un
-servidor de una ejecución anterior — es decir, contra un build viejo.
+Por eso `npm run verify` construye en `.next-verify` (vía `NEXT_DIST_DIR`) y no
+toca `.next`. Puedes tener `npm run dev` abierto mientras verificas.
+
+`vitest.routes.setup.ts` mantiene además dos guardas: aborta si el puerto 3100
+ya está ocupado —las pruebas irían contra un build viejo— y si el servidor
+devuelve 500 en la home, que delata un build corrupto.
 
 ## `middleware.ts` va dentro de `src/`
 

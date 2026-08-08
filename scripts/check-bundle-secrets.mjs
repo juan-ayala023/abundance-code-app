@@ -22,7 +22,9 @@ if (existsSync('.env.local')) {
   process.loadEnvFile('.env.local')
 }
 
-const STATIC_DIR = join(process.cwd(), '.next', 'static')
+// El build de verificación usa su propia carpeta para no pisar la de `next dev`.
+const DIST_DIR = process.env.NEXT_DIST_DIR || '.next'
+const STATIC_DIR = join(process.cwd(), DIST_DIR, 'static')
 
 /** Variables que jamás pueden aparecer en código de cliente. */
 const FORBIDDEN_VARS = [
@@ -56,7 +58,7 @@ async function collectJsFiles(dir) {
 
 async function main() {
   if (!existsSync(STATIC_DIR)) {
-    console.error(`No existe ${STATIC_DIR}. Ejecuta "npm run build" primero.`)
+    console.error(`No existe ${STATIC_DIR}. Ejecuta "npm run build:verify" primero.`)
     process.exit(1)
   }
 

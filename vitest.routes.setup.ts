@@ -30,8 +30,11 @@ async function esperarServidor(timeoutMs = 60_000) {
 export async function setup() {
   if (existsSync('.env.local')) process.loadEnvFile('.env.local')
 
-  if (!existsSync('.next/server/middleware-manifest.json')) {
-    throw new Error('Falta el build de producción. Ejecuta "npm run build" antes.')
+  const distDir = process.env.NEXT_DIST_DIR || '.next'
+  if (!existsSync(`${distDir}/server/middleware-manifest.json`)) {
+    throw new Error(
+      `Falta el build de producción en ${distDir}. Ejecuta "npm run build:verify" antes.`,
+    )
   }
 
   /*
