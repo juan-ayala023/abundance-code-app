@@ -93,24 +93,41 @@ export function createGeoNamesProvider(): GeocodingProvider {
   }
 }
 
+/**
+ * El servicio gratuito de GeoNames falla de forma esporádica con timeouts de
+ * conexión. Un solo reintento convierte ese tropiezo en algo invisible para
+ * quien está escribiendo el nombre de su ciudad.
+ *
+ * Solo se reintentan los fallos de red: un error HTTP o una respuesta con
+ * forma inesperada volverían a fallar igual.
+ */
+const INTENTOS = 2
+
 async function pedir(url: URL): Promise<unknown> {
-  try {
-    const res = await fetch(url, {
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-      // Las ciudades no cambian de sitio: cachear ahorra llamadas y latencia.
-      next: { revalidate: 60 * 60 * 24 },
-    })
+  let ultimoFallo: unknown
 
-    if (!res.ok) {
-      console.error('[geonames] HTTP', res.status)
-      throw new GeocodingError('El servicio de búsqueda de ciudades no respondió.')
+  for (let intento = 1; intento <= INTENTOS; intento++) {
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+        // Las ciudades no cambian de sitio: cachear ahorra llamadas y latencia.
+        next: { revalidate: 60 * 60 * 24 },
+      })
+
+      if (!res.ok) {
+        console.error('[geonames] HTTP', res.status)
+        throw new GeocodingError('El servicio de búsqueda de ciudades no respondió.')
+      }
+
+      return await res.json()
+    } catch (error) {
+      if (error instanceof GeocodingError) throw error
+
+      ultimoFallo = error
+      console.warn(`[geonames] fallo de red (intento ${intento}/${INTENTOS})`, error)
     }
-
-    return await res.json()
-  } catch (error) {
-    if (error instanceof GeocodingError) throw error
-
-    console.error('[geonames] fallo de red', error)
-    throw new GeocodingError('No pudimos buscar ciudades ahora mismo.')
   }
+
+  console.error('[geonames] agotados los reintentos', ultimoFallo)
+  throw new GeocodingError('No pudimos buscar ciudades ahora mismo.')
 }
