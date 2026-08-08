@@ -69,4 +69,55 @@ describe('getServerEnv', () => {
 
     expect(getServerEnv().OPENAI_API_KEY).toBeUndefined()
   })
+
+  it('trata una variable VACÍA como ausente, no como inválida', async () => {
+    // Los .env se escriben con marcadores vacíos. Sin esto, tener
+    // `ANTHROPIC_API_KEY=` sin valor tumbaba el webhook de Stripe, que no
+    // tiene ninguna relación con la IA.
+    Object.assign(process.env, REQUIRED)
+    process.env.ANTHROPIC_API_KEY = ''
+    process.env.GEOCODING_API_KEY = '   '
+
+    const { getServerEnv } = await import('./server')
+
+    expect(() => getServerEnv()).not.toThrow()
+    expect(getServerEnv().ANTHROPIC_API_KEY).toBeUndefined()
+    expect(getServerEnv().GEOCODING_API_KEY).toBeUndefined()
+  })
+})
+
+describe('requireServerEnv', () => {
+  const original = { ...process.env }
+
+  beforeEach(() => {
+    vi.resetModules()
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role'
+  })
+
+  afterEach(() => {
+    process.env = { ...original }
+  })
+
+  it('devuelve el valor cuando está presente', async () => {
+    process.env.STRIPE_SECRET_KEY = 'sk_test_x'
+
+    const { requireServerEnv } = await import('./server')
+
+    expect(requireServerEnv('STRIPE_SECRET_KEY', 'hablar con Stripe')).toBe('sk_test_x')
+  })
+
+  it('el error nombra la variable Y para qué hacía falta', async () => {
+    // Un "falta configuración" genérico obliga a leer el código para saber qué
+    // configurar. Este mensaje se entiende desde el log.
+    process.env.STRIPE_SECRET_KEY = ''
+
+    const { requireServerEnv, MissingEnvError } = await import('./server')
+
+    expect(() => requireServerEnv('STRIPE_SECRET_KEY', 'hablar con Stripe')).toThrow(
+      MissingEnvError,
+    )
+    expect(() => requireServerEnv('STRIPE_SECRET_KEY', 'hablar con Stripe')).toThrow(
+      /STRIPE_SECRET_KEY.*hablar con Stripe/,
+    )
+  })
 })

@@ -6,20 +6,41 @@ import { z } from 'zod'
  * Secretos de servidor. El import de `server-only` hace que el build falle
  * si este módulo entra por error en un Client Component.
  *
- * Se valida de forma perezosa (`getServerEnv()`) y no en la carga del módulo,
- * para que `next build` no exija secretos de producción en tiempo de compilación.
+ * Solo la clave de Supabase es obligatoria: es la que necesita cualquier
+ * escritura de sistema. El resto se declara opcional y se exige en el momento
+ * de usarla, con `requireServerEnv`.
+ *
+ * El motivo no es comodidad. Si todas fueran obligatorias, desplegar el webhook
+ * de Stripe exigiría tener configurada la clave de IA, que no tiene nada que
+ * ver — y cuando falta, el error aparece disfrazado de otra cosa en la primera
+ * función que toque el entorno.
  */
+/**
+ * Una variable declarada pero vacía cuenta como ausente.
+ *
+ * Los archivos .env se escriben con marcadores vacíos (`ANTHROPIC_API_KEY=`),
+ * y una cadena vacía SÍ está presente para zod: sin esta conversión, `.optional()`
+ * no se aplica y el esquema falla por variables que nadie ha configurado todavía.
+ */
+const opcional = z.preprocess(
+  (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor),
+  z.string().min(1).optional(),
+)
+
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1),
-  ANTHROPIC_API_KEY: z.string().min(1),
-  OPENAI_API_KEY: z.string().min(1).optional(),
-  GEOCODING_API_KEY: z.string().min(1).optional(),
-  ACCESS_SHARED_SECRET: z.string().min(1).optional(),
+  STRIPE_SECRET_KEY: opcional,
+  STRIPE_WEBHOOK_SECRET: opcional,
+  ANTHROPIC_API_KEY: opcional,
+  OPENAI_API_KEY: opcional,
+  GEOCODING_API_KEY: opcional,
+  ACCESS_SHARED_SECRET: opcional,
 })
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>
+
+/** Variables opcionales en el esquema pero obligatorias para alguna función. */
+export type ServerEnvOpcional = Exclude<keyof ServerEnv, 'SUPABASE_SERVICE_ROLE_KEY'>
 
 let cached: ServerEnv | null = null
 
@@ -36,4 +57,27 @@ export function getServerEnv(): ServerEnv {
 
   cached = parsed.data
   return cached
+}
+
+export class MissingEnvError extends Error {}
+
+/**
+ * Exige una variable concreta en el punto donde hace falta.
+ *
+ * `para` describe la función que la necesita, de modo que el log diga
+ * "falta X para el webhook de Stripe" en vez de un fallo genérico de entorno.
+ */
+export function requireServerEnv(name: ServerEnvOpcional, para: string): string {
+  const value = getServerEnv()[name]
+
+  if (!value) {
+    throw new MissingEnvError(`Falta la variable de entorno ${name}, necesaria para ${para}.`)
+  }
+
+  return value
+}
+
+/** Solo para reiniciar el estado entre tests. */
+export function resetServerEnvCache() {
+  cached = null
 }

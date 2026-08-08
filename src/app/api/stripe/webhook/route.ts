@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import type Stripe from 'stripe'
+import Stripe from 'stripe'
 
-import { getServerEnv } from '@/lib/env/server'
+import { requireServerEnv } from '@/lib/env/server'
 import { interpretarEvento } from '@/lib/stripe/entitlements'
 import { getStripe } from '@/lib/stripe/client'
 import { createAdminClient } from '@/lib/supabase/server'
@@ -32,14 +32,26 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event
   try {
-    event = await getStripe().webhooks.constructEventAsync(
-      cuerpo,
-      firma,
-      getServerEnv().STRIPE_WEBHOOK_SECRET,
+    const secreto = requireServerEnv(
+      'STRIPE_WEBHOOK_SECRET',
+      'verificar la firma del webhook de Stripe',
     )
+    event = await getStripe().webhooks.constructEventAsync(cuerpo, firma, secreto)
   } catch (error) {
-    console.error('[stripe/webhook] firma no válida', error)
-    return NextResponse.json({ error: 'Firma no válida' }, { status: 400 })
+    /*
+     * Distinguir aquí importa. Un catch que devolviera 400 ante cualquier
+     * excepción convertiría un fallo de configuración —una variable de entorno
+     * ausente— en "firma no válida", y estaríamos buscando el problema en
+     * Stripe cuando está en nuestro despliegue.
+     */
+    if (error instanceof Stripe.errors.StripeSignatureVerificationError) {
+      console.error('[stripe/webhook] firma no válida', error.message)
+      return NextResponse.json({ error: 'Firma no válida' }, { status: 400 })
+    }
+
+    console.error('[stripe/webhook] no se pudo verificar el evento', error)
+    // 500 para que Stripe reintente: el evento probablemente era legítimo.
+    return NextResponse.json({ error: 'Error temporal' }, { status: 500 })
   }
 
   const db = createAdminClient()

@@ -2,7 +2,7 @@ import 'server-only'
 
 import { z } from 'zod'
 
-import { getServerEnv } from '@/lib/env/server'
+import { requireServerEnv } from '@/lib/env/server'
 
 import { GeocodingError, type GeocodingProvider, type Place } from './types'
 
@@ -44,12 +44,10 @@ export function createGeoNamesProvider(): GeocodingProvider {
       const termino = query.trim()
       if (termino.length < 2) return []
 
-      const username = getServerEnv().GEOCODING_API_KEY
-      if (!username) {
-        throw new GeocodingError(
-          'Falta GEOCODING_API_KEY (usuario de GeoNames) en el entorno.',
-        )
-      }
+      const username = requireServerEnv(
+        'GEOCODING_API_KEY',
+        'buscar ciudades en GeoNames',
+      )
 
       const url = new URL(BASE_URL)
       url.searchParams.set('q', termino)

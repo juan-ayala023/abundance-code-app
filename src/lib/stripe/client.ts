@@ -2,7 +2,7 @@ import 'server-only'
 
 import Stripe from 'stripe'
 
-import { getServerEnv } from '@/lib/env/server'
+import { requireServerEnv } from '@/lib/env/server'
 
 /**
  * Cliente de Stripe.
@@ -16,7 +16,7 @@ let cliente: Stripe | null = null
 export function getStripe(): Stripe {
   if (cliente) return cliente
 
-  cliente = new Stripe(getServerEnv().STRIPE_SECRET_KEY, {
+  cliente = new Stripe(requireServerEnv('STRIPE_SECRET_KEY', 'hablar con Stripe'), {
     // Sin fijar versión de API: se usa la de la cuenta, que es la misma con la
     // que Stripe serializa los webhooks. Fijar una distinta aquí haría que el
     // payload y el SDK dejaran de coincidir.

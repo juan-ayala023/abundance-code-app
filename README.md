@@ -104,6 +104,18 @@ Lo que **no** existe todavía:
 - Cálculo de la carta natal, capa de IA y el resto de pantallas.
 - i18n: `next-intl` está instalado pero sin cablear.
 
+## No ejecutes `npm run dev` durante `npm run verify`
+
+`next dev` y `next build` comparten la carpeta `.next`. Si el servidor de
+desarrollo sigue vivo mientras se construye, va reescribiendo esos artefactos y
+el build de producción queda a medias: arranca, pero devuelve 500 en todo con un
+`Cannot find module './NNN.js'` que no se parece en nada a la causa real.
+
+`vitest.routes.setup.ts` lo detecta y aborta con un mensaje que lo explica, en
+vez de dejar que las pruebas fallen de forma incomprensible. También aborta si
+el puerto 3100 ya está ocupado, porque entonces las pruebas irían contra un
+servidor de una ejecución anterior — es decir, contra un build viejo.
+
 ## `middleware.ts` va dentro de `src/`
 
 Con directorio `src/`, Next.js **solo** reconoce el middleware en
