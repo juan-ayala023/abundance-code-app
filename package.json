@@ -1,0 +1,64 @@
+{
+  "name": "abundance-code",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:routes": "vitest run --config vitest.routes.config.ts",
+    "db:push": "supabase db push",
+    "test:e2e": "playwright test",
+    "check:secrets": "node scripts/check-bundle-secrets.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run check:secrets && npm run test:routes"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.34",
+    "@ai-sdk/openai": "^4.0.34",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.2",
+    "@tanstack/react-query": "^5.101.4",
+    "ai": "^7.0.56",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.0.0",
+    "lucide-react": "^1.30.0",
+    "luxon": "^3.7.2",
+    "next": "^15.5.23",
+    "next-intl": "^4.13.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "server-only": "^0.0.1",
+    "stripe": "^22.4.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/luxon": "^3.7.3",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
+    "postcss": "^8.5.26",
+    "supabase": "^2.113.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "postcss": "^8.5.26"
+  }
+}
