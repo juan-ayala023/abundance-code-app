@@ -19,7 +19,8 @@
     "db:push": "supabase db push",
     "test:e2e": "playwright test",
     "check:secrets": "node scripts/check-bundle-secrets.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run check:secrets && npm run test:routes"
+    "verify": "npm run typecheck && npm run lint && npm run check:actions && npm run test && npm run build && npm run check:secrets && npm run test:routes",
+    "check:actions": "node scripts/check-server-actions.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.34",

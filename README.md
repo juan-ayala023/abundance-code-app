@@ -24,6 +24,7 @@ npm run dev
 | `npm run test:integration` | RLS contra el proyecto Supabase real |
 | `npm run test:e2e` | Tests e2e (playwright) |
 | `npm run check:secrets` | Verifica que ningún secreto de servidor llegó al bundle del cliente |
+| `npm run check:actions` | Verifica que los módulos `'use server'` solo exportan funciones asíncronas |
 | `npm run verify` | typecheck + lint + test + build + check:secrets + test:routes |
 
 `npm run verify` es la comprobación que debe pasar antes de dar por cerrada
@@ -103,6 +104,21 @@ Lo que **no** existe todavía:
 - Tabla legacy `access_tokens`: hace falta el esquema real del sistema anterior.
 - Cálculo de la carta natal, capa de IA y el resto de pantallas.
 - i18n: `next-intl` está instalado pero sin cablear.
+
+## Hueco conocido de cobertura: páginas tras login
+
+`npm run test:routes` comprueba el servidor real, pero solo puede ver lo que ve
+un visitante sin sesión: las rutas de `(app)` responden con una redirección, así
+que **sus páginas nunca llegan a renderizarse en las pruebas**. Un error de
+render en `/onboarding` o `/portal` pasa desapercibido.
+
+Ya ocurrió una vez: `actions.ts` exportaba una constante desde un módulo
+`'use server'`, cosa que Next no permite. Compilaba, pasaba el build y llegaba
+al cliente como `undefined`. De ahí `npm run check:actions`, que detecta esa
+clase concreta de fallo.
+
+Cerrar el hueco de verdad exige una prueba de Playwright con sesión iniciada.
+Pendiente.
 
 ## No ejecutes `npm run dev` durante `npm run verify`
 

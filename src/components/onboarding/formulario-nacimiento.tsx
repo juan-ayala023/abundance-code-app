@@ -3,10 +3,8 @@
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
-import {
-  ESTADO_INICIAL,
-  guardarDatosNacimiento,
-} from '@/app/(app)/onboarding/actions'
+import { guardarDatosNacimiento } from '@/app/(app)/onboarding/actions'
+import { ESTADO_INICIAL } from '@/app/(app)/onboarding/estado'
 import type { Place } from '@/lib/geo/types'
 
 import { BuscadorCiudades } from './buscador-ciudades'

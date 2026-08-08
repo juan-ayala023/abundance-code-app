@@ -6,13 +6,7 @@ import { resolveBirthInstant, BirthInstantError } from '@/lib/time/birth-instant
 import { createClient } from '@/lib/supabase/server'
 import { datosNacimientoSchema } from '@/lib/validation/schemas'
 
-export type EstadoFormulario = {
-  error: string | null
-  /** Errores por campo, para pintarlos junto a su input. */
-  campos: Record<string, string>
-}
-
-export const ESTADO_INICIAL: EstadoFormulario = { error: null, campos: {} }
+import type { EstadoFormulario } from './estado'
 
 export async function guardarDatosNacimiento(
   _estadoPrevio: EstadoFormulario,
