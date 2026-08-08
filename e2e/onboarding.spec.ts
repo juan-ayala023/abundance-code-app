@@ -101,3 +101,35 @@ test('quien tiene sesión pero NO compra acaba en vincular', async ({ browser })
     await context.close()
   }
 })
+
+test('la carta se dibuja y avisa de que el ejemplo no es real', async ({ page }) => {
+  // Sin datos de nacimiento no hay carta: primero se completa el onboarding.
+  await page.goto('/onboarding')
+  await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByLabel('Fecha de nacimiento').fill('1992-06-15')
+  await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
+  await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
+  const opcion = page.getByRole('option').first()
+  await expect(opcion).toBeVisible({ timeout: 15_000 })
+  await opcion.click()
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  await expect(page).toHaveURL(/\/portal/)
+
+  await page.goto('/carta')
+
+  // Todavía no hay motor de cálculo: lo que se ve es un ejemplo, y el usuario
+  // tiene que saberlo sin lugar a dudas.
+  await expect(page.getByText(/esto no es tu carta/i)).toBeVisible()
+
+  // La rueda existe y está etiquetada para lectores de pantalla.
+  await expect(page.getByRole('img', { name: /carta natal/i })).toBeVisible()
+
+  // Y las posiciones también están en texto, no solo en el gráfico.
+  await expect(page.getByRole('table')).toBeVisible()
+  await expect(page.getByRole('rowheader', { name: /Sol/ })).toBeVisible()
+})
+
+test('sin datos de nacimiento, la carta manda al onboarding', async ({ page }) => {
+  await page.goto('/carta')
+  await expect(page).toHaveURL(/\/onboarding/)
+})
