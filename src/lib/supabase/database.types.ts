@@ -55,6 +55,7 @@ export type Database = {
           current_period_end: string | null
           email: string
           id: string
+          last_event_at: string | null
           plan: string | null
           source: string | null
           status: string
@@ -68,6 +69,7 @@ export type Database = {
           current_period_end?: string | null
           email: string
           id?: string
+          last_event_at?: string | null
           plan?: string | null
           source?: string | null
           status: string
@@ -81,6 +83,7 @@ export type Database = {
           current_period_end?: string | null
           email?: string
           id?: string
+          last_event_at?: string | null
           plan?: string | null
           source?: string | null
           status?: string
@@ -242,6 +245,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_stripe_entitlement: {
+        Args: {
+          p_current_period_end: string
+          p_email: string
+          p_event_at: string
+          p_plan: string
+          p_status: string
+          p_stripe_customer_id: string
+          p_stripe_subscription_id: string
+        }
+        Returns: undefined
+      }
       claim_entitlement: {
         Args: never
         Returns: {
@@ -249,6 +264,7 @@ export type Database = {
           current_period_end: string | null
           email: string
           id: string
+          last_event_at: string | null
           plan: string | null
           source: string | null
           status: string
