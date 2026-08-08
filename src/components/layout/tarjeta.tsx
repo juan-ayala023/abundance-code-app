@@ -7,12 +7,15 @@ import { cn } from '@/lib/utils'
 export function Tarjeta({
   children,
   className,
+  id,
 }: {
   children: React.ReactNode
   className?: string
+  id?: string
 }) {
   return (
     <div
+      id={id}
       className={cn(
         'rounded-3xl border border-borde bg-superficie p-6 shadow-[0_1px_2px_rgba(60,53,45,0.04)]',
         className,

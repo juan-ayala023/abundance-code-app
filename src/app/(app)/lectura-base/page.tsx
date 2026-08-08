@@ -1,11 +1,13 @@
-import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
+import { CartaDescargable } from '@/components/chart/boton-descargar'
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
 import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
+import { Estrella } from '@/components/layout/estrella'
 import { Tarjeta } from '@/components/layout/tarjeta'
+import { AnalisisCompleto } from '@/components/lectura/analisis-completo'
 import type { Carta } from '@/lib/astrology/types'
 import { SECCIONES_LECTURA, lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
@@ -53,7 +55,9 @@ export default async function LecturaBasePage() {
 
         {carta ? (
           <>
-            <NatalChart carta={carta} />
+            <CartaDescargable nombreArchivo={`carta-natal-${portal.birth_date}`}>
+              <NatalChart carta={carta} />
+            </CartaDescargable>
             <TablaPosiciones carta={carta} />
           </>
         ) : (
@@ -83,8 +87,8 @@ export default async function LecturaBasePage() {
           </Tarjeta>
 
           <Tarjeta className="bg-oro-palido/40">
-            <h2 className="flex items-center gap-2 text-2xl font-light">
-              <Sparkles size={20} className="text-oro" aria-hidden="true" />
+            <h2 className="flex items-center gap-3 text-2xl font-light">
+              <Estrella />
               Resumen de tu código personal
             </h2>
             <p className="mt-3 leading-relaxed text-tinta-suave">
@@ -95,8 +99,8 @@ export default async function LecturaBasePage() {
           <div className="grid gap-5 md:grid-cols-2">
             {SECCIONES_LECTURA.map(({ clave, titulo }) => (
               <Tarjeta key={clave} className="flex flex-col gap-3">
-                <h3 className="flex items-center gap-2 text-xl font-light">
-                  <Sparkles size={16} className="text-oro" aria-hidden="true" />
+                <h3 className="flex items-center gap-3 text-xl font-light">
+                  <Estrella />
                   {titulo}
                 </h3>
                 <p className="text-sm leading-relaxed text-tinta-suave">
@@ -105,6 +109,10 @@ export default async function LecturaBasePage() {
               </Tarjeta>
             ))}
           </div>
+
+          {lectura.data.analisisCompleto ? (
+            <AnalisisCompleto texto={lectura.data.analisisCompleto} />
+          ) : null}
         </>
       ) : (
         <>
@@ -120,7 +128,7 @@ export default async function LecturaBasePage() {
                 key={clave}
                 className="flex items-center gap-2 rounded-2xl border border-dashed border-borde-fuerte px-4 py-3 text-sm text-tinta-suave"
               >
-                <Sparkles size={16} className="text-oro-claro" aria-hidden="true" />
+                <Estrella className="text-oro-claro" />
                 {titulo}
               </li>
             ))}
