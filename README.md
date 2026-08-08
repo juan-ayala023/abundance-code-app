@@ -111,6 +111,21 @@ archivo, esas pruebas fallan.
   XSS conocido. `package.json` fuerza `^8.5.26` (mismo major, compatible).
   Revisar el override al subir de versión de Next.
 
+## Claves de Stripe: nunca `sk_live`
+
+Esta app no cobra (§1). Con Stripe solo hace dos cosas:
+
+- **Verificar firmas de webhook**, que usa `STRIPE_WEBHOOK_SECRET` y **no** la
+  clave de API.
+- **Abrir el portal de facturación**, que necesita permisos mínimos.
+
+Por eso `STRIPE_SECRET_KEY` debe contener una **clave restringida** creada para
+esta app, con solo `Billing Portal Sessions: write` y `Customers: read`. Una
+clave secreta completa daría a este proceso capacidad de cobrar y reembolsar
+que no necesita para nada.
+
+En desarrollo, siempre claves de test (`sk_test_`).
+
 ## Riesgo aceptado: cuenta propietaria de Supabase
 
 El proyecto `abundance-code-dev` (`exwfdgpgftguwovshgsn`) vive bajo la cuenta
@@ -157,9 +172,9 @@ conocer el precio de venta. Cuando se sepa, se ajusta.
 
 Estas bloquean fases posteriores y necesitan confirmación humana:
 
-1. **Ortografía del dominio de la landing.** `CLAUDE.md` §3 señala que está
-   escrito `abundacecode.com` (sin la "n"). Confirmar con el cliente. El código
-   nunca lo hardcodea: usa `NEXT_PUBLIC_LANDING_URL`.
+1. ~~Ortografía del dominio de la landing.~~ **Resuelto**: el cliente confirma
+   que la landing es `abundacecode.com`, sin la "n". No es una errata. El código
+   nunca lo hardcodea de todos modos: usa `NEXT_PUBLIC_LANDING_URL`.
 2. **Proveedor de geocoding.** Afecta a coste y, sobre todo, a si la licencia
    permite almacenar los resultados en `portals` (lat, lng, tz).
 3. **Modelo de IA y presupuesto por lectura.** El proveedor por defecto es
