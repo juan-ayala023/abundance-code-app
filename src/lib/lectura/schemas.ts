@@ -40,6 +40,20 @@ export const lecturaBaseSchema = z.object({
 
 export type LecturaBase = z.infer<typeof lecturaBaseSchema>
 
+/**
+ * Lo que se le exige al modelo al generar.
+ *
+ * Se separa del anterior por una restricción del proveedor: el modo estricto de
+ * OpenAI obliga a que **todas** las propiedades sean obligatorias, y rechaza el
+ * esquema entero si una es opcional. Así que al generar se piden las nueve.
+ *
+ * El de arriba sigue admitiendo lecturas sin `analisisCompleto`, porque valida
+ * lo que ya está guardado y no todo tiene por qué haberse generado igual.
+ */
+export const lecturaGeneradaSchema = lecturaBaseSchema.extend({
+  analisisCompleto: parrafo,
+})
+
 export const activacionDiariaSchema = z.object({
   mensajePrincipal: parrafo,
   queObservar: parrafo,
