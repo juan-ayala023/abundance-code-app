@@ -26,6 +26,8 @@ npm run dev
 | `npm run test:e2e` | Tests e2e (playwright) |
 | `npm run check:secrets` | Verifica que ningún secreto de servidor llegó al bundle del cliente |
 | `npm run check:actions` | Verifica que los módulos `'use server'` solo exportan funciones asíncronas |
+| `npm run check:entorno` | Comprueba que el entorno local está completo y coherente |
+| `npm run check:produccion` | Lo mismo, exigiendo lo que solo se exige en producción (claves live, https) |
 | `npm run verify` | typecheck + lint + test + build + check:secrets + test:routes |
 
 `npm run verify` es la comprobación que debe pasar antes de dar por cerrada
@@ -107,13 +109,20 @@ Lo que **no** existe todavía:
 
 - Vinculación por correo de verificación cuando el email de Google no coincide
   con el de la compra (CLAUDE.md §3.5): requiere decidir proveedor de email.
-  Hoy la salida es entrar con otra cuenta o escribir a soporte.
+  Hoy la salida es entrar con otra cuenta o volver a la landing — y quien no
+  tenga otra cuenta de Google con ese correo se queda sin salida. **Es el único
+  hueco por el que alguien puede pagar y no recibir nada.**
+- Portal de facturación de Stripe (`/api/billing/portal`): sin él nadie puede
+  cancelar ni cambiar su tarjeta desde la app. El docstring de `getStripe()`
+  dice que la app lo abre; todavía no es verdad.
 - Redención del token legacy `/activar?token=…`: el parámetro se acepta sin
   romper nada, pero todavía no hace nada.
-- Portal de facturación de Stripe (`/api/billing/portal`).
-- Tabla legacy `access_tokens`: hace falta el esquema real del sistema anterior.
-- Cálculo de la carta natal, capa de IA y el resto de pantallas.
+- Tabla legacy `access_tokens` y `activation_codes`: hace falta el esquema real
+  del sistema anterior. Con ellas va el «Código activado» que `/cuenta` no pinta.
 - i18n: `next-intl` está instalado pero sin cablear.
+
+El cálculo de la carta natal, la capa de IA y todas las pantallas **sí están
+hechos**; estuvieron en esta lista y ya no.
 
 ## Páginas tras login: `npm run test:e2e`
 
@@ -182,6 +191,34 @@ que no necesita para nada.
 
 En desarrollo, siempre claves de test (`sk_test_`).
 
+## Dos fallos que solo existen desplegado
+
+Ninguno de los dos lo ve `verify`, porque los dos dependen de cómo se comporta
+un servidor de verdad y no del código. Los dos están corregidos; quedan escritos
+porque son el tipo de cosa que se vuelve a introducir sin darse cuenta.
+
+**El tiempo máximo de función.** Generar la lectura base tarda unos 73 s. Una
+función serverless corta mucho antes —15 s por defecto en Vercel—, así que ahí la
+lectura **nunca terminaría**, y en local todo pasa en verde porque `next start`
+no impone límite. Está declarado con `export const maxDuration` en
+`generando/page.tsx` (300 s), `activacion/page.tsx` y `guia/page.tsx` (60 s) y en
+el webhook (30 s).
+
+El despliegue elegido es **Railway**, que no es serverless: un contenedor con un
+servidor Node no corta las peticiones, así que allí el problema no existe. Los
+`maxDuration` se conservan igualmente —fuera de Vercel se ignoran— porque
+documentan cuánto tarda de verdad cada pantalla y protegen si algún día se mueve
+a una plataforma que sí corte.
+
+**Los webhooks de Stripe no expanden `customer`.** Llega como `"cus_123"`, no
+como el objeto. La lectura del email daba por hecho que venía expandido, así que
+en producción **todos los eventos de suscripción se habrían descartado en
+silencio**: cancelaciones e impagos no se aplicarían y quien dejara de pagar
+conservaría el acceso. Ahora, cuando el evento no trae email, el webhook lo
+resuelve con `customers.retrieve` — de ahí que la clave restringida necesite
+`Customers: read`. Las pruebas usaban el cliente expandido, que es cómodo de
+escribir y no se parece a lo que Stripe envía.
+
 ## Riesgo aceptado: cuenta propietaria de Supabase
 
 El proyecto `abundance-code-dev` (`exwfdgpgftguwovshgsn`) vive bajo la cuenta
@@ -189,8 +226,18 @@ institucional `juan_ayala82231@elpoli.edu.co`. Las cuentas de universidad se
 desactivan al terminar los estudios; si el proyecto de producción acaba ahí, se
 pierde el acceso a la base de datos de un cliente.
 
-Decisión tomada de forma consciente. **Revisar antes del cutover a producción**:
-ese es el último momento en que mover el proyecto sigue siendo barato.
+**Revisado en el cutover a producción (agosto de 2026): el cliente decide
+mantenerlo.** Producción corre sobre este mismo proyecto, con lo que eso implica
+y a sabiendas:
+
+- **Producción y desarrollo comparten base.** `npm run test:integration` crea y
+  borra usuarios reales contra ella; se limpian solos, pero conviven con los
+  datos de clientes.
+- **Si la cuenta se desactiva, se pierde el acceso** a datos de nacimiento,
+  cartas y lecturas de gente que ha pagado.
+
+Mitigación mínima acordada mientras siga así: copias de seguridad activas en
+Supabase y no ejecutar `test:integration` con clientes reales dentro.
 
 ## Seguridad de dependencias
 

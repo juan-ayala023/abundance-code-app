@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 
+import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
 import { resolveBirthInstant, BirthInstantError } from '@/lib/time/birth-instant'
 import { createClient } from '@/lib/supabase/server'
 import { datosNacimientoSchema } from '@/lib/validation/schemas'
@@ -69,26 +70,45 @@ export async function guardarDatosNacimiento(
     throw error
   }
 
-  const { error } = await supabase.from('portals').upsert(
-    {
-      user_id: user.id,
-      full_name: datos.fullName,
-      birth_date: datos.birthDate,
-      birth_time: datos.timeUnknown ? null : datos.birthTime,
-      time_unknown: datos.timeUnknown,
-      birth_city: datos.place.city,
-      birth_country: datos.place.country,
-      lat: datos.place.lat,
-      lng: datos.place.lng,
-      tz: datos.place.tz,
-    },
-    { onConflict: 'user_id' },
-  )
+  const { data: portal, error } = await supabase
+    .from('portals')
+    .upsert(
+      {
+        user_id: user.id,
+        full_name: datos.fullName,
+        birth_date: datos.birthDate,
+        birth_time: datos.timeUnknown ? null : datos.birthTime,
+        time_unknown: datos.timeUnknown,
+        birth_city: datos.place.city,
+        birth_country: datos.place.country,
+        lat: datos.place.lat,
+        lng: datos.place.lng,
+        tz: datos.place.tz,
+
+        // Si alguien corrige su hora o su ciudad, la carta anterior ya no
+        // describe su nacimiento. Se invalida aquí para que no quede una carta
+        // vieja que aparenta estar al día.
+        chart: null,
+        chart_version: null,
+        chart_computed_at: null,
+      },
+      { onConflict: 'user_id' },
+    )
+    .select(COLUMNAS_CARTA)
+    .single()
 
   if (error) {
     console.error('[onboarding] no se pudo guardar el portal', error)
     return { error: 'No pudimos guardar tus datos. Inténtalo de nuevo.', campos: {} }
   }
+
+  /*
+   * La carta se calcula aquí, con los datos recién guardados, para que el
+   * portal ya la tenga al llegar. Si fallara no se interrumpe el onboarding:
+   * los datos están a salvo y `asegurarCarta()` lo reintenta en la siguiente
+   * visita a la pantalla de la carta.
+   */
+  await asegurarCarta(supabase, portal)
 
   redirect('/portal')
 }

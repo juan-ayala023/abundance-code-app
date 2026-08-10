@@ -85,6 +85,35 @@ tipografía sans de peso ligero para titulares. Navegación lateral fija con
 iconos en insignias circulares doradas. Motivo «✦» como viñeta. Logo: árbol de
 la vida dentro de un anillo zodiacal.
 
+## Mockups entregados por el cliente (agosto de 2026)
+
+Tres imágenes generadas, subidas a `src/components/` y renombradas:
+
+| Archivo | Qué es | Uso |
+|---|---|---|
+| `mockup-lifestyle.png` | Mujer con el móvil, atardecer | **En uso.** Reducida a `public/portada.jpg` (1200 px, 136 KB) y montada en la home pública |
+| `mockup-movil.png` | Móvil en primer plano con el portal | **Sin usar** |
+| `mockup-paneles.png` | Paneles flotantes con cuatro pantallas | **Sin usar** |
+
+Las dos últimas están descartadas por contenido, no por calidad:
+
+1. **Llevan el concepto retirado incrustado.** `mockup-movil.png` muestra, a
+   tamaño perfectamente legible, «Tu **esfera** incluye 30 días de guía activa».
+   El cliente retiró el concepto de esfera y esa frase ya se cambió en el código
+   por «Tu portal incluye…», pero dentro de un PNG no se puede editar: publicar
+   la imagen devolvería el concepto a pantalla en el único sitio donde no se
+   puede corregir. De hecho, **el texto del código venía de este mockup**.
+2. **`mockup-paneles.png` son paneles de cristal**, el otro motivo que el
+   cliente retiró junto con la esfera.
+
+Se conservan porque el encuadre y la iluminación sirven: si se regeneran con el
+texto corregido y sin el vidrio, entran sin más trabajo.
+
+**Discrepancia de navegación, anotada y no aplicada.** Los dos mockups dibujan
+en móvil una **barra de pestañas inferior** con las cinco secciones, no el menú
+hamburguesa que tiene la app. El cliente indicó que no se tuviera en cuenta, así
+que manda lo implementado. Queda escrito por si la referencia visual se retoma.
+
 ## Aviso legal presente
 
 > La Guía Personalizada está diseñada para reflexión personal y claridad

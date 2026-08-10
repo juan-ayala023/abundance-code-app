@@ -55,7 +55,7 @@ test('completar el formulario lleva al portal', async ({ page }) => {
   await page.getByRole('button', { name: 'Continuar' }).click()
 
   await expect(page).toHaveURL(/\/portal/)
-  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/i })).toBeVisible()
 })
 
 test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => {
@@ -77,7 +77,7 @@ test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => 
 test('el portal saluda y ofrece completar los datos', async ({ page }) => {
   await page.goto('/portal')
 
-  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/i })).toBeVisible()
 
   // Sin datos de nacimiento, lo primero que se ofrece es completarlos.
   await expect(
@@ -109,7 +109,9 @@ test('quien tiene sesión pero NO compra acaba en vincular', async ({ browser })
   }
 })
 
-test('la carta se dibuja y avisa de que el ejemplo no es real', async ({ page }) => {
+test('la carta que se dibuja es la real, calculada desde los datos guardados', async ({
+  page,
+}) => {
   // Sin datos de nacimiento no hay carta: primero se completa el onboarding.
   await page.goto('/onboarding')
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
@@ -124,16 +126,30 @@ test('la carta se dibuja y avisa de que el ejemplo no es real', async ({ page })
 
   await page.goto('/carta')
 
-  // Todavía no hay motor de cálculo: lo que se ve es un ejemplo, y el usuario
-  // tiene que saberlo sin lugar a dudas.
-  await expect(page.getByText(/esto no es tu carta/i)).toBeVisible()
-
   // La rueda existe y está etiquetada para lectores de pantalla.
   await expect(page.getByRole('img', { name: /carta natal/i })).toBeVisible()
 
   // Y las posiciones también están en texto, no solo en el gráfico.
   await expect(page.getByRole('table')).toBeVisible()
   await expect(page.getByRole('rowheader', { name: /Sol/ })).toBeVisible()
+
+  // Ya no hay carta de muestra: si el cálculo funcionó, no puede aparecer ni el
+  // aviso de ejemplo ni el de fallo.
+  await expect(page.getByText(/no es tu carta/i)).toHaveCount(0)
+  await expect(page.getByText(/no hemos podido calcular/i)).toHaveCount(0)
+
+  /*
+   * El 15 de junio de 1992 Bogotá estaba en horario de verano —Colombia lo tuvo
+   * entre 1992 y 1993—, que es justo donde las bases de zonas horarias
+   * discrepan. Con hora de nacimiento conocida, la carta debe salir completa:
+   * si el instante se hubiera resuelto mal, el ascendente sería otro; si se
+   * hubiera perdido, no habría casas.
+   */
+  await expect(page.getByText(/sin hora de nacimiento/i)).toHaveCount(0)
+
+  // El Sol a mediados de junio está en Géminis, y eso no depende ni de la hora
+  // ni del lugar: es una comprobación que no puede pasar por accidente.
+  await expect(page.getByRole('row', { name: /Sol/ })).toContainText(/Géminis/i)
 })
 
 test('sin datos de nacimiento, la carta manda al onboarding', async ({ page }) => {
