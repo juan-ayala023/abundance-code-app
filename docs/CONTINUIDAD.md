@@ -523,6 +523,33 @@ que canjearlo demuestra el pago sin depender de con qué cuenta se autentique.
 - **`past_due` ahora concede acceso.** Es la gracia por impago que aplica su
   backend; la nuestra era más estricta. Quien cobra decide quién es cliente.
 
+**La única excepción: el acceso de cortesía** (agosto de 2026). La propietaria
+del negocio no podía ver su propio producto por dentro: la landing responde
+`hasAccess: false` a quien no ha comprado, y eso la incluía a ella. Se resuelve
+con `ACCESOS_CORTESIA`, una lista de correos en las variables del servidor que
+`src/lib/access/cortesia.ts` consulta y `resolveAccess()` atiende **antes** de
+mirar la base.
+
+Es a sabiendas una segunda fuente de verdad sobre el acceso, justo lo que el
+cambio de contrato vino a eliminar, y por eso está acotada: una lista explícita,
+escrita a mano, que no concede nada a nadie más. Todo lo demás lo sigue
+decidiendo la landing.
+
+**Por qué en una variable de entorno y no como una fila en `entitlements`**, que
+era lo primero que uno intenta: esa fila **dura menos de un día**.
+`revalidarSiToca()` pregunta a la landing cada 24 h, recibe «no tiene acceso»
+—correctamente, porque no ha comprado— y la sobrescribe. El acceso se caería
+solo, sin aviso, probablemente en mitad de una demostración. Cortando antes de
+tocar la base no hay nada que revalidar ni nada que revocar.
+
+Y **no en el código**, que era la otra opción: el repositorio es público, así que
+un correo escrito ahí queda publicado en GitHub.
+
+Consecuencia menor, ya resuelta: `/cuenta` no ofrece el portal de facturación a
+una cortesía —no hay compra ni cliente de Stripe que gestionar— y el estado
+`cortesia` tiene su propia traducción en los dos diccionarios, porque esa
+pantalla traduce el estado por su nombre.
+
 **Nuestro webhook de Stripe sigue en el repo, apagado.** No se borra todavía
 —nada está commiteado y sería irreversible— pero **no hay que registrar su
 endpoint en Stripe**: sería el segundo escritor del acceso. Retirarlo es el

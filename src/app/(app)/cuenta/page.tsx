@@ -7,6 +7,7 @@ import { abrirPortalDeFacturacion } from './actions'
 import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
+import { ESTADO_CORTESIA } from '@/lib/access/cortesia'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
@@ -134,7 +135,13 @@ export default async function CuentaPage({
           ninguna clave suya: la sesión del portal la abre el backend de la
           landing, que es quien tiene el cliente de Stripe.
         */}
-        {entitlement ? (
+        {/*
+          Nada que gestionar en una cortesía: no hay compra, ni cliente de
+          Stripe, ni tarjeta. El botón habría abierto un portal que su backend no
+          puede crear, y el único resultado visible sería un aviso de error en la
+          pantalla que existe para dar confianza.
+        */}
+        {entitlement && entitlement.status !== ESTADO_CORTESIA ? (
           <form action={abrirPortalDeFacturacion}>
             <button
               type="submit"

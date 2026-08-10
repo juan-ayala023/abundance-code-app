@@ -41,6 +41,13 @@ const serverEnvSchema = z.object({
   OPENAI_API_KEY: opcional,
   GEOCODING_API_KEY: opcional,
   ACCESS_SHARED_SECRET: opcional,
+  /*
+   * Correos con acceso de cortesía, separados por comas. Ver
+   * `src/lib/access/cortesia.ts`: es la única puerta de acceso que no decide la
+   * landing, y por eso vive en una variable de servidor —que solo cambia quien
+   * entra en Railway— y no en la base, donde una fila de más pasaría inadvertida.
+   */
+  ACCESOS_CORTESIA: opcional,
 })
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>

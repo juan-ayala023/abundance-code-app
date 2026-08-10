@@ -90,7 +90,8 @@
       "past_due": "Pago pendiente",
       "canceled": "Cancelado",
       "incomplete": "Incompleto",
-      "none": "Sin acceso"
+      "none": "Sin acceso",
+      "cortesia": "Cortesía"
     },
     "portalError": "No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.",
     "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta."

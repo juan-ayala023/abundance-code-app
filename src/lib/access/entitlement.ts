@@ -2,6 +2,7 @@ import 'server-only'
 
 import { cache } from 'react'
 
+import { ESTADO_CORTESIA, esCortesia } from '@/lib/access/cortesia'
 import { consultarEstado, integracionConfigurada } from '@/lib/access/landing'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
@@ -94,6 +95,22 @@ export const resolveAccess = cache(async function resolveAccess(): Promise<Acces
 
   if (!user?.email) return { kind: 'anonimo' }
 
+  /*
+   * El acceso de cortesía se resuelve **antes** de mirar la base, y a propósito.
+   *
+   * Si se resolviera después, haría falta una fila en `entitlements`, y esa fila
+   * la borraría la revalidación del día siguiente: la landing responde «no tiene
+   * acceso» a quien no ha comprado, que es exactamente el caso. Cortando aquí no
+   * hay nada que revalidar ni nada que revocar.
+   */
+  if (esCortesia(user.email)) {
+    return {
+      kind: 'concedido',
+      email: user.email,
+      entitlement: entitlementDeCortesia(user.email, user.id),
+    }
+  }
+
   // RLS deja ver la fila tanto si ya está vinculada por user_id como si solo
   // coincide el email. Por eso una sola lectura cubre los dos casos.
   const { data: entitlement } = await supabase
@@ -117,6 +134,46 @@ export const resolveAccess = cache(async function resolveAccess(): Promise<Acces
 
   return { kind: 'concedido', email: user.email, entitlement: vigente }
 })
+
+/**
+ * El entitlement que se le presenta a quien entra por cortesía.
+ *
+ * No existe en la base y no se guarda: se construye para cada petición. Guardarlo
+ * sería crear justo la fila que la revalidación borraría al día siguiente, y
+ * además dejaría en `entitlements` algo que no es una compra, en la tabla que se
+ * mira para saber quién ha comprado.
+ *
+ * El `id` es el UUID nulo, y no uno inventado: si alguna vez se cuela en un log
+ * o en una consulta, se reconoce de un vistazo como «esto no es una fila real».
+ */
+function entitlementDeCortesia(email: string, userId: string): Entitlement {
+  const ahora = new Date().toISOString()
+
+  return {
+    id: '00000000-0000-0000-0000-000000000000',
+    email,
+    user_id: userId,
+    status: ESTADO_CORTESIA,
+    has_access: true,
+    /*
+     * `source` es lo que distingue esta cortesía de una compra si algún día
+     * aparece en una pantalla o en un log. La landing usa este campo para decir
+     * de dónde viene el acceso; aquí dice que no viene de ella.
+     */
+    source: ESTADO_CORTESIA,
+    plan: null,
+    // Sin periodo de facturación: no hay nada que renovar ni que caducar.
+    current_period_end: null,
+    // Nunca se pregunta a la landing por esta persona, así que no hay fecha de
+    // comprobación que registrar.
+    last_checked_at: null,
+    last_event_at: null,
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    created_at: ahora,
+    updated_at: ahora,
+  }
+}
 
 /**
  * Vuelve a preguntar a la landing si hace más de un día que no se hace.

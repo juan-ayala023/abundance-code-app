@@ -90,7 +90,8 @@
       "past_due": "Payment pending",
       "canceled": "Cancelled",
       "incomplete": "Incomplete",
-      "none": "No access"
+      "none": "No access",
+      "cortesia": "Complimentary"
     },
     "portalError": "We couldn't open your subscription settings right now. Please try again in a few minutes.",
     "portalSinCompra": "We couldn't find a subscription linked to your account."
