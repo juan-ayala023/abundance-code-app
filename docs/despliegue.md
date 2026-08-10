@@ -4,7 +4,40 @@ Guía de la puesta en marcha real. Está ordenada a propósito: cada paso necesi
 lo anterior, y hacerlo en otro orden obliga a repetir trabajo. El webhook, por
 ejemplo, no se puede crear antes de que exista la URL desplegada.
 
-Estado: **nunca se ha desplegado**. Nada de lo que sigue está hecho.
+Estado: **desplegado y funcionando** (agosto de 2026).
+
+| Pieza | Dónde | Estado |
+|---|---|---|
+| `app.abundancecode.us` | Railway | ✅ certificado propio, login funcionando |
+| `abundancecode.us` | Hostinger | ✅ landing vendiendo |
+| `api.abundacecode.com` | Railway | ✅ backend de la landing |
+| Google OAuth | — | ✅ **en producción**, usuarios externos |
+| `APP_PUBLIC_URL` | Railway del backend | ✅ apunta a la app: **el cutover está hecho** |
+| Repositorio | GitHub | `juan-ayala023/abundance-code-app` |
+
+**Verificado de punta a punta**: entrar con Google en el dominio nuevo crea la
+sesión, la app consulta el acceso contra el backend de la landing y decide en
+consecuencia. La primera vez que las dos piezas se hablaron en producción.
+
+**Lo que falta**: la compra real —único camino que ejercita el canje del
+token—, recompilar el front de la landing con `VITE_APP_URL` para que sus
+enlaces dejen de apuntar a Lovable, y decidir qué hacer con el dominio viejo
+`abundacecode.com`, que sigue sirviendo la landing en paralelo.
+
+**Dos trampas que costaron tiempo aquí, y que se repetirán en el próximo
+despliegue:**
+
+1. **Las Redirect URLs de Supabase necesitan `/**` al final.** Sin los
+   asteriscos solo coincide la raíz, y la app vuelve a `/auth/callback?next=…`,
+   que lleva ruta y parámetros. Supabase la descarta en silencio, usa el *Site
+   URL* y deja el `?code=` colgando en la portada, donde nadie lo procesa. No
+   hay ningún error: simplemente no entras.
+2. **El TXT de verificación de Railway no puede ir en `app`.** Un nombre con
+   CNAME no admite ningún otro registro — es el propio protocolo, no Hostinger.
+   Railway lo pide en `_railway-verify.app`, que al empezar por guion bajo no
+   choca. Sin ese TXT no emite el certificado, y el síntoma es un
+   `SEC_E_WRONG_PRINCIPAL` con el comodín `*.up.railway.app` servido en su
+   lugar.
 
 ---
 
