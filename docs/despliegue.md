@@ -14,8 +14,8 @@ Decidido con el cliente (agosto de 2026): **Hostinger y Railway**.
 
 | Pieza | Dónde | Qué es |
 |---|---|---|
-| `abundacecode.com` | Hostinger | La landing que vende. **No es este proyecto** |
-| `portal.abundacecode.com` | Railway | Esta app, entera |
+| `abundancecode.us` | Hostinger | La landing que vende. **No es este proyecto** |
+| `app.abundancecode.us` | Railway | Esta app, entera |
 | Base de datos y autenticación | Supabase | `abundance-code-dev` |
 | Cobros | Stripe | La landing cobra; aquí solo se escucha el webhook |
 
@@ -129,10 +129,10 @@ de pasos; el dominio bonito viene después.
 
 ## 6. El dominio, desde Hostinger
 
-1. En Railway → **Settings → Networking → Custom Domain**: `portal.abundacecode.com`.
+1. En Railway → **Settings → Networking → Custom Domain**: `app.abundancecode.us`.
    Railway indica el destino CNAME.
 2. En Hostinger → **DNS del dominio** → registro **CNAME**:
-   - Nombre: `portal`
+   - Nombre: `app`
    - Destino: el que dé Railway
 3. Esperar propagación y comprobar que responde por https.
 
@@ -150,7 +150,7 @@ y `profile` no requieren verificación.
 
 Y en **Supabase → Authentication → URL Configuration**:
 
-- **Site URL**: `https://portal.abundacecode.com`
+- **Site URL**: `https://app.abundancecode.us`
 - **Redirect URLs**: añadir ese dominio
 
 Sin esto, el login con Google vuelve a `localhost` después de autenticar. Es el
@@ -179,7 +179,7 @@ acaba en una página que no existe.
 Stripe → **Developers → Webhooks → Add endpoint**, con el interruptor en **modo
 live** (no test):
 
-- **URL**: `https://portal.abundacecode.com/api/stripe/webhook`
+- **URL**: `https://app.abundancecode.us/api/stripe/webhook`
 - **Eventos** — exactamente estos cuatro, los que el código interpreta
   (`EVENTOS_RELEVANTES`):
   - `checkout.session.completed`
@@ -226,8 +226,8 @@ Son cuatro cosas, y **sin las dos primeras la app no puede dar acceso a nadie**:
    servidor a servidor y su CORS solo acepta peticiones desde su dominio.
 3. **La URL de esta app y su ruta de entrada.** Es el `success_url` de Stripe,
    que ellos componen con `APP_PUBLIC_URL` + `APP_ACTIVATE_PATH` (hoy
-   `/activar`). Su brief propone `app.abundacecode.com`; aquí se ha venido
-   asumiendo `portal.abundacecode.com`. **Hay que elegir una y decírsela**, o el
+   `/activar`). Su brief propone `app.abundancecode.us`; aquí se ha venido
+   asumiendo `app.abundancecode.us`. **Hay que elegir una y decírsela**, o el
    comprador aterrizará donde no hay nada.
 4. **El código corto `AC-XXXX-XXXX`.** Su correo de acceso lo incluye, pero hoy
    `/redeem` solo acepta el token largo. O añaden soporte para canjear por
@@ -255,7 +255,7 @@ Stripe tampoco lo tiene, la compra no concede acceso.
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ídem |
 | `SUPABASE_SERVICE_ROLE_KEY` | ídem — **salta RLS, jamás en el cliente** |
-| `NEXT_PUBLIC_LANDING_URL` | `https://abundacecode.com` (sin la «n», confirmado) |
+| `NEXT_PUBLIC_LANDING_URL` | `https://abundancecode.us` (sin la «n», confirmado) |
 | `LANDING_API_URL` | paso 8.bis — **sin esto nadie obtiene acceso** |
 | `APP_SHARED_SECRET` | paso 8.bis — **ídem** |
 | `OPENAI_API_KEY` | **rotada**: la anterior se pegó en un chat |

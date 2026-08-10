@@ -14,8 +14,14 @@ Lovable (React + Vite + Lovable Cloud) a **Next.js 15 + Supabase**.
 - **Código:** `c:\Users\user\Desktop\App Australia`
 - **Git:** repo propio, rama `main`, **solo local** (sin remoto). 13 commits.
 - **App anterior en producción:** `astro-ai-decoder.lovable.app`
-- **Landing de pago:** `https://abundacecode.com` — **sin la «n»**, confirmado
-  por el cliente, no es una errata.
+- **Landing de pago:** `https://abundancecode.us` (Hostinger)
+- **Esta app:** `https://app.abundancecode.us` (Railway)
+- **Backend de la landing:** `api.` del mismo dominio
+
+  **El dominio cambió en agosto de 2026.** Era `abundacecode.com` —sin la «n»,
+  y durante meses estuvo documentado aquí como intencionado y confirmado por el
+  cliente—. Ahora es `abundancecode.us`: con la «n» y en `.us`. Cualquier
+  referencia al anterior que quede por ahí está obsoleta.
 
 El pago ocurre en la landing externa. Esta app **no cobra**: valida acceso,
 calcula la carta y genera interpretaciones.
@@ -406,7 +412,7 @@ completa donde debe ir una restringida, o claves de test en producción.
 **Decidido con el cliente (agosto de 2026):**
 
 - **Hosting: Railway**, la app entera. **Hostinger** aporta el DNS del subdominio
-  `portal.abundacecode.com` y sigue alojando la landing, que no es este proyecto.
+  `app.abundancecode.us` y sigue alojando la landing, que no es este proyecto.
   Railway **no es serverless**, así que el límite de tiempo deja de ser un
   problema: la lectura de 73 s cabe sin rehacer nada. Se descartó partir la app
   en front y back porque con App Router no existen como piezas separables —las

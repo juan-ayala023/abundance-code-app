@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 
 import { resolveAccess } from '@/lib/access/entitlement'
 import { getPublicEnv } from '@/lib/env/public'
+import { urlDeReenvio } from '@/lib/access/landing'
 
 import { cerrarSesion } from './actions'
 
@@ -29,17 +30,30 @@ export default async function VincularPage({
   const params = await searchParams
   const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL
   const esInactivo = access.kind === 'inactivo' || params.estado === 'inactivo'
+  /*
+   * Llegó con un enlace de acceso caducado. No es lo mismo que «no encontramos
+   * tu compra»: esta persona SÍ compró, y tiene arreglo en un clic. Sin
+   * distinguirlo, se le decía que no constaba su compra y se quedaba sin
+   * camino, que es el peor sitio donde dejar a alguien que ha pagado.
+   */
+  const esCaducado = params.estado === 'caducado'
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-8 px-6">
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">
-          {esInactivo ? 'Tu acceso no está activo' : 'No encontramos tu compra'}
+          {esCaducado
+            ? 'Tu enlace de acceso caducó'
+            : esInactivo
+              ? 'Tu acceso no está activo'
+              : 'No encontramos tu compra'}
         </h1>
         <p className="opacity-80">
-          {esInactivo
-            ? 'Encontramos tu compra, pero la suscripción no está activa ahora mismo.'
-            : 'No hay ninguna compra registrada con este correo:'}
+          {esCaducado
+            ? 'Los enlaces de acceso valen 30 días. Pide uno nuevo y entras enseguida: tu compra sigue ahí.'
+            : esInactivo
+              ? 'Encontramos tu compra, pero la suscripción no está activa ahora mismo.'
+              : 'No hay ninguna compra registrada con este correo:'}
         </p>
         <p className="rounded-xl border border-borde bg-superficie px-4 py-3 font-mono text-sm">
           {access.email}
@@ -65,11 +79,20 @@ export default async function VincularPage({
           </button>
         </form>
 
+        {/*
+          Con el enlace caducado la acción principal es pedir otro, no comprar:
+          esta persona ya pagó. Mandarla a la página de compra sería ofrecerle
+          pagar dos veces por lo mismo.
+        */}
         <a
-          href={landingUrl}
+          href={esCaducado ? urlDeReenvio() : landingUrl}
           className="w-full rounded-xl bg-oro px-5 py-3 text-center font-medium text-white transition-colors hover:bg-oro-hondo"
         >
-          {esInactivo ? 'Renovar mi acceso' : 'Comprar mi acceso'}
+          {esCaducado
+            ? 'Pedir un enlace nuevo'
+            : esInactivo
+              ? 'Renovar mi acceso'
+              : 'Comprar mi acceso'}
         </a>
       </section>
 

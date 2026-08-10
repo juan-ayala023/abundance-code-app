@@ -78,8 +78,18 @@ export type ResultadoCanje =
   | { ok: true; acceso: CanjeLanding }
   | { ok: false; fallo: FalloCanje }
 
-/** Página de la landing que reenvía el enlace de acceso caducado. */
-export const URL_REENVIO = 'https://abundacecode.com/activar-acceso'
+/**
+ * Página de la landing que reenvía un enlace de acceso caducado.
+ *
+ * Se deriva de `NEXT_PUBLIC_LANDING_URL` en vez de escribirse a mano: el
+ * dominio ya cambió una vez —de `abundacecode.com` a `abundancecode.us`— y una
+ * URL fija aquí se habría convertido en un enlace muerto sin que nada fallara,
+ * mostrado justo a quien ya no puede entrar de otra forma.
+ */
+export function urlDeReenvio(): string {
+  const landing = process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, '') ?? ''
+  return `${landing}/activar-acceso`
+}
 
 /*
  * Un backend que no responde no puede dejar colgada una pantalla. El contrato

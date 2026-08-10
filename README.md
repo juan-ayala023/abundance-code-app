@@ -276,7 +276,7 @@ conocer el precio de venta. Cuando se sepa, se ajusta.
 Estas bloquean fases posteriores y necesitan confirmación humana:
 
 1. ~~Ortografía del dominio de la landing.~~ **Resuelto**: el cliente confirma
-   que la landing es `abundacecode.com`, sin la "n". No es una errata. El código
+   que la landing es `abundancecode.us`, sin la "n". No es una errata. El código
    nunca lo hardcodea de todos modos: usa `NEXT_PUBLIC_LANDING_URL`.
 2. **Proveedor de geocoding.** Afecta a coste y, sobre todo, a si la licencia
    permite almacenar los resultados en `portals` (lat, lng, tz).
