@@ -1,10 +1,59 @@
 # Continuidad — Abundance Code
 
 Documento para retomar el trabajo en otra conversación. Léelo entero antes de
-tocar nada, junto con `CLAUDE.md` (contexto permanente) y
+tocar nada, junto con `docs/despliegue.md` (cómo está montado en producción) y
 `docs/hallazgos-app-anterior.md` (discrepancias con el producto real).
 
 ---
+
+## 0. Lo primero: dónde está todo, agosto de 2026
+
+**El producto está desplegado y vendiendo.**
+
+| Pieza | Dónde | URL |
+|---|---|---|
+| Esta app | Railway | `https://app.abundancecode.us` |
+| Landing (vende y cobra) | Hostinger | `https://abundancecode.us` |
+| Backend de la landing | Railway | `https://api.abundacecode.com` |
+| Base de datos y auth | Supabase | proyecto `abundance-code-dev` |
+| Repositorio | GitHub | `juan-ayala023/abundance-code-app` (**público**) |
+
+**Precio real:** 49 $ el primer mes, **14,99 $/mes** desde el día 31. En Stripe
+es **una sola suscripción con 30 días de trial** más un cargo único, así que
+**todo comprador es suscriptor**: no existen las compras sueltas.
+
+**Quién decide el acceso: la landing, no esta app.** Es el contrato acordado
+entre los dos equipos (`BRIEF-APP-INTEGRACION.md`, en el repo de la landing).
+Esta app no toca Stripe: canjea el token de `/activar?token=` contra
+`/api/access/redeem` y revalida contra `/api/access/status` una vez al día.
+
+### Estado del trabajo en curso
+
+**El bilingüe español/inglés está terminado, verificado y desplegado**
+(agosto de 2026). `verify` en verde: 161 unitarias, 22 de rutas y 30 e2e.
+
+Cómo está montado, y por qué: el idioma **no va en la URL**. Lo normal en Next
+sería `/es/portal` y `/en/portal`, pero la puerta de entrada del producto es
+`/activar?token=`, que compone el backend de la landing con
+`APP_PUBLIC_URL + APP_ACTIVATE_PATH`. Meter el idioma en la ruta obligaría a que
+ese sistema —que no controlamos— supiera elegirlo, y cualquier enlace ya enviado
+por correo dejaría de funcionar. Así que vive en una cookie, y para quien tiene
+sesión se guarda además en `profiles.locale`.
+
+**La mitad del bilingüe que se olvida es el prompt.** Lo que la persona compra es
+la lectura, y la escribe un modelo que hace lo que le diga el sistema. Con «En
+español» fijo, un comprador inglés pagaría 49 $ por un texto que no puede leer,
+con la interfaz perfectamente traducida alrededor. Esa línea vive en
+`src/lib/lectura/idioma-prompt.ts` y la usan los tres generadores. El contenido
+**ya generado no se retraduce**: cambiaría bajo los pies una lectura personal ya
+leída, y costaría dinero.
+
+**Hueco conocido, pequeño:** `profiles.locale` se escribe pero **no se lee en
+ninguna parte**. El docstring de `src/i18n/idioma.ts` dice que las dos fuentes se
+sincronizan al iniciar sesión; hoy solo va de la cookie al perfil. El efecto es
+que la elección **no sigue al usuario a otro dispositivo**: entra y ve español
+aunque su perfil diga `en`. Se cierra leyendo `profiles.locale` en
+`/auth/callback` y reponiendo la cookie cuando difieren.
 
 ## 1. Qué es y dónde está
 
@@ -12,7 +61,9 @@ Migración de **Abundance Code** —portal de astrología personalizada— desde
 Lovable (React + Vite + Lovable Cloud) a **Next.js 15 + Supabase**.
 
 - **Código:** `c:\Users\user\Desktop\App Australia`
-- **Git:** repo propio, rama `main`, **solo local** (sin remoto). 13 commits.
+- **Git:** rama `main`, con remoto en GitHub (§0). El repo sigue siendo
+  **público** y lleva esta documentación interna dentro: ponerlo en privado
+  está pendiente.
 - **App anterior en producción:** `astro-ai-decoder.lovable.app`
 - **Landing de pago:** `https://abundancecode.us` (Hostinger)
 - **Esta app:** `https://app.abundancecode.us` (Railway)
@@ -178,9 +229,11 @@ Ordenado por lo que puede costarle dinero al negocio.
 
   Los dos anteriores **desaparecen si se decide no migrar** los usuarios de la
   app anterior (§7.3).
-- **i18n**: `next-intl` instalado, sin cablear. No es un hueco salvo que se
-  quiera un segundo idioma.
-- **Despliegue**: nunca se ha desplegado. Runbook en `docs/despliegue.md`.
+~~**i18n**: `next-intl` instalado, sin cablear.~~ **Hecho** (§0): interfaz y
+prompts en español e inglés, sin prefijo de idioma en la URL.
+
+~~**Despliegue**: nunca se ha desplegado.~~ **Hecho** (§0 y `docs/despliegue.md`):
+en Railway, sobre `app.abundancecode.us`.
 
 El **tercer estado de acceso** estuvo en esta lista y ya **no**: está resuelto en
 `src/lib/access/nivel.ts`, con 9 pruebas unitarias y cobertura e2e.

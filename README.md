@@ -105,6 +105,14 @@ dicen que aún no está generada. **No se rellenan con texto de muestra**: en un
 producto cuyo entregable es una interpretación personal, un párrafo de relleno
 puede confundirse con la lectura del usuario.
 
+**Bilingüe español/inglés**, con `next-intl`. El idioma **no va en la URL**: la
+puerta de entrada es `/activar?token=`, que compone el backend de la landing, y
+un prefijo de idioma rompería los enlaces ya enviados por correo. Vive en una
+cookie, con `profiles.locale` como copia duradera. Se traduce también **el
+prompt** (`src/lib/lectura/idioma-prompt.ts`): traducir los botones y dejar la
+lectura en español sería vender a un comprador inglés un texto que no puede leer.
+El contenido ya generado no se retraduce.
+
 Lo que **no** existe todavía:
 
 - Vinculación por correo de verificación cuando el email de Google no coincide
@@ -119,7 +127,10 @@ Lo que **no** existe todavía:
   romper nada, pero todavía no hace nada.
 - Tabla legacy `access_tokens` y `activation_codes`: hace falta el esquema real
   del sistema anterior. Con ellas va el «Código activado» que `/cuenta` no pinta.
-- i18n: `next-intl` está instalado pero sin cablear.
+- Que la elección de idioma **siga al usuario a otro dispositivo**. Se guarda en
+  `profiles.locale`, pero esa columna no se lee en ninguna parte: quien entra
+  desde otro navegador ve español aunque su perfil diga `en`. Ver
+  `docs/CONTINUIDAD.md` §0.
 
 El cálculo de la carta natal, la capa de IA y todas las pantallas **sí están
 hechos**; estuvieron en esta lista y ya no.
