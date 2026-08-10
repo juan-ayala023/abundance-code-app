@@ -1,5 +1,6 @@
 import { Activity, CalendarDays, Mail, Sparkles, Sun, User } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
 import { cerrarSesion } from '@/app/actions'
 import { abrirPortalDeFacturacion } from './actions'
@@ -7,7 +8,7 @@ import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
-import { MENSAJE_SOLO_LECTURA, nivelDeAcceso } from '@/lib/access/nivel'
+import { nivelDeAcceso } from '@/lib/access/nivel'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { DIAS_DE_PORTAL } from '@/lib/lectura/schemas'
 import { getPublicEnv } from '@/lib/env/public'
@@ -17,20 +18,6 @@ export const metadata: Metadata = {
   title: 'Mi cuenta · Abundance Code',
 }
 
-const ESTADO_LEGIBLE: Record<string, string> = {
-  active: 'Activo',
-  trialing: 'En periodo de prueba',
-  past_due: 'Pago pendiente',
-  canceled: 'Cancelado',
-  none: 'Sin acceso',
-}
-
-/** Lo que pudo salir mal al abrir el portal de facturación. */
-const AVISOS_PORTAL: Record<string, string> = {
-  error:
-    'No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.',
-  'sin-compra': 'No encontramos una suscripción asociada a tu cuenta.',
-}
 
 export default async function CuentaPage({
   searchParams,
@@ -38,8 +25,17 @@ export default async function CuentaPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const params = await searchParams
+  const t = await getTranslations('cuenta')
+  const tNav = await getTranslations('nav')
+  const tSus = await getTranslations('suscripcion')
+
+  /** Lo que pudo salir mal al abrir el portal de facturación. */
   const avisoPortal =
-    typeof params.portal === 'string' ? AVISOS_PORTAL[params.portal] : undefined
+    params.portal === 'error'
+      ? t('portalError')
+      : params.portal === 'sin-compra'
+        ? t('portalSinCompra')
+        : undefined
 
   const supabase = await createClient()
   const acceso = await resolveAccess()
@@ -60,21 +56,21 @@ export default async function CuentaPage({
   return (
     <Contenedor>
       <EncabezadoPagina
-        titulo="Mi Cuenta"
-        descripcion="Administra tu información y el estado de tu portal."
+        titulo={t('titulo')}
+        descripcion={t('descripcion')}
       />
 
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        <Dato Icono={User} etiqueta="Nombre" valor={perfil?.full_name ?? '—'} />
-        <Dato Icono={Mail} etiqueta="Email" valor={perfil?.email ?? '—'} />
+        <Dato Icono={User} etiqueta={t('nombre')} valor={perfil?.full_name ?? '—'} />
+        <Dato Icono={Mail} etiqueta={t('email')} valor={perfil?.email ?? '—'} />
         <Dato
           Icono={Sparkles}
-          etiqueta="Plan"
+          etiqueta={t('plan')}
           valor={entitlement?.plan ?? '—'}
         />
         <Dato
           Icono={CalendarDays}
-          etiqueta="Fecha de activación"
+          etiqueta={t('fechaActivacion')}
           valor={formatearFecha(portal?.created_at ?? perfil?.created_at)}
         />
         {/*
@@ -84,12 +80,12 @@ export default async function CuentaPage({
         */}
         <Dato
           Icono={Activity}
-          etiqueta="Estado del portal"
+          etiqueta={t('estadoPortal')}
           valor={
             entitlement
               ? [
-                  ESTADO_LEGIBLE[entitlement.status] ?? entitlement.status,
-                  ciclo && !ciclo.terminado ? `primeros ${ciclo.total} días` : null,
+                  t(`estados.${entitlement.status}` as never) || entitlement.status,
+                  ciclo && !ciclo.terminado ? t('primerosDias', { total: ciclo.total }) : null,
                 ]
                   .filter(Boolean)
                   .join(' · ')
@@ -98,8 +94,8 @@ export default async function CuentaPage({
         />
         <Dato
           Icono={Sun}
-          etiqueta="Día actual"
-          valor={ciclo ? `Día ${ciclo.dia} de ${ciclo.total}` : '—'}
+          etiqueta={t('diaActual')}
+          valor={ciclo ? tNav('dia', { dia: ciclo.dia, total: ciclo.total }) : '—'}
         />
       </div>
 
@@ -110,15 +106,9 @@ export default async function CuentaPage({
         código sería peor que su ausencia — el usuario lo conserva y lo compara.
       */}
       <Tarjeta className="bg-oro-palido/40 text-sm leading-relaxed text-tinta-suave">
-        {nivel === 'solo-lectura' ? (
-          MENSAJE_SOLO_LECTURA
-        ) : (
-          <>
-            Tu portal incluye {DIAS_DE_PORTAL} días de guía activa. Después, tu
-            lectura base seguirá disponible; la guía personalizada y las
-            funciones avanzadas requieren una suscripción activa.
-          </>
-        )}
+        {nivel === 'solo-lectura'
+          ? tSus('mensaje')
+          : t('incluye', { total: DIAS_DE_PORTAL })}
       </Tarjeta>
 
       {avisoPortal ? (
@@ -135,7 +125,7 @@ export default async function CuentaPage({
           href={landingUrl}
           className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
         >
-          Continuar con suscripción →
+          {tSus('continuar')}
         </a>
 
         {/*
@@ -150,7 +140,7 @@ export default async function CuentaPage({
               type="submit"
               className="rounded-xl border border-borde bg-superficie px-6 py-3 font-medium transition-colors hover:bg-fondo-hondo"
             >
-              Gestionar mi suscripción
+              {t('gestionar')}
             </button>
           </form>
         ) : null}
@@ -160,7 +150,7 @@ export default async function CuentaPage({
             type="submit"
             className="rounded-xl border border-borde bg-superficie px-6 py-3 font-medium transition-colors hover:bg-fondo-hondo"
           >
-            Cerrar sesión
+            {tNav('cerrarSesion')}
           </button>
         </form>
       </div>

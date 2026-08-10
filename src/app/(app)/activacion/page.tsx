@@ -1,5 +1,6 @@
 import { Check, CircleHelp, Clock, Eye, MinusCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { ArcoDeLuz } from '@/components/layout/arco'
@@ -12,6 +13,7 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { asegurarActivacion } from '@/lib/lectura/activacion'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { idiomaActual } from '@/i18n/idioma'
 import { createClient } from '@/lib/supabase/server'
 
 import { marcarActivacionLeida } from './actions'
@@ -29,11 +31,11 @@ export const metadata: Metadata = {
 }
 
 const BLOQUES = [
-  { clave: 'mensajePrincipal', titulo: 'Mensaje principal', Icono: Sparkles },
-  { clave: 'queObservar', titulo: 'Qué observar hoy', Icono: Eye },
-  { clave: 'queEvitar', titulo: 'Qué evitar', Icono: MinusCircle },
-  { clave: 'queActivar', titulo: 'Qué activar', Icono: Sun },
-  { clave: 'preguntaReflexion', titulo: 'Pregunta de reflexión', Icono: CircleHelp },
+  { clave: 'mensajePrincipal', Icono: Sparkles },
+  { clave: 'queObservar', Icono: Eye },
+  { clave: 'queEvitar', Icono: MinusCircle },
+  { clave: 'queActivar', Icono: Sun },
+  { clave: 'preguntaReflexion', Icono: CircleHelp },
 ] as const
 
 export default async function ActivacionPage() {
@@ -54,6 +56,9 @@ export default async function ActivacionPage() {
   const ciclo = diaDelCiclo(portal.created_at)
   const carta = cartaSchema.safeParse(portal.chart)
 
+  const idioma = await idiomaActual()
+  const t = await getTranslations('activacion')
+  const tNav = await getTranslations('nav')
   const acceso = await resolveAccess()
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
@@ -73,13 +78,13 @@ export default async function ActivacionPage() {
     <Contenedor>
       {/* El día va en el titular, como en el producto original. */}
       <EncabezadoPagina
-        titulo={ciclo ? `Activación del Día ${ciclo.dia}` : 'Activación de Hoy'}
-        descripcion="Una señal para observar hoy desde tu Código Personal."
-        volver={{ href: '/portal', texto: 'Volver a mi portal' }}
+        titulo={ciclo ? t('tituloDia', { dia: ciclo.dia }) : t('titulo')}
+        descripcion={t('descripcion')}
+        volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
 
       {nivel === 'solo-lectura' ? (
-        <RequiereSuscripcion seccion="La activación diaria" />
+        <RequiereSuscripcion seccion={t('seccion')} />
       ) : activacion ? (
         <>
           {/*
@@ -91,11 +96,11 @@ export default async function ActivacionPage() {
             <ArcoDeLuz className="hidden h-full max-h-80 w-full self-center lg:block" />
 
             <div className="flex flex-col divide-y divide-borde">
-              {BLOQUES.map(({ clave, titulo, Icono }) => (
+              {BLOQUES.map(({ clave, Icono }) => (
                 <section key={clave} className="flex gap-4 py-5 first:pt-0 last:pb-0">
                   <Insignia Icono={Icono} />
                   <div className="min-w-0">
-                    <h2 className="text-lg font-light">{titulo}</h2>
+                    <h2 className="text-lg font-light">{t(`bloques.${clave}` as never)}</h2>
                     <p className="mt-1 leading-relaxed text-tinta-suave">
                       {activacion.contenido[clave]}
                     </p>
@@ -105,21 +110,21 @@ export default async function ActivacionPage() {
             </div>
           </Tarjeta>
 
-          <MarcarLeida id={activacion.id} leidaEn={activacion.leidaEn} />
+          <MarcarLeida id={activacion.id} leidaEn={activacion.leidaEn} idioma={idioma} />
         </>
       ) : (
         <>
           <AvisoPendiente>
             {carta.success
-              ? 'No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.'
-              : 'Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.'}
+              ? t('noPreparada')
+              : t('sinCarta')}
           </AvisoPendiente>
 
           <Tarjeta className="flex flex-col divide-y divide-borde">
-            {BLOQUES.map(({ clave, titulo, Icono }) => (
+            {BLOQUES.map(({ clave, Icono }) => (
               <section key={clave} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
                 <Insignia Icono={Icono} />
-                <h2 className="text-lg font-light text-tinta-suave">{titulo}</h2>
+                <h2 className="text-lg font-light text-tinta-suave">{t(`bloques.${clave}` as never)}</h2>
               </section>
             ))}
           </Tarjeta>
@@ -136,7 +141,17 @@ export default async function ActivacionPage() {
  * lectura del día, no un interruptor. Se muestra la fecha para que quede claro
  * que quedó registrado.
  */
-function MarcarLeida({ id, leidaEn }: { id: string; leidaEn: string | null }) {
+async function MarcarLeida({
+  id,
+  leidaEn,
+  idioma,
+}: {
+  id: string
+  leidaEn: string | null
+  idioma: string
+}) {
+  const t = await getTranslations('activacion')
+
   if (leidaEn) {
     return (
       <p
@@ -144,7 +159,7 @@ function MarcarLeida({ id, leidaEn }: { id: string; leidaEn: string | null }) {
         className="flex items-center justify-center gap-2 text-sm text-tinta-suave"
       >
         <Check aria-hidden="true" className="size-4 text-oro-hondo" />
-        Marcada como leída el {formatearFecha(leidaEn)}.
+        {t('marcada', { fecha: formatearFecha(leidaEn, idioma) })}
       </p>
     )
   }
@@ -158,23 +173,24 @@ function MarcarLeida({ id, leidaEn }: { id: string; leidaEn: string | null }) {
           className="flex items-center gap-2 rounded-xl bg-oro px-8 py-3.5 font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           <Check size={18} aria-hidden="true" />
-          Marcar como leída
+          {t('marcar')}
         </button>
       </form>
 
       <p className="flex items-center gap-2 text-sm text-tinta-tenue">
         <Clock size={14} aria-hidden="true" />
-        Tu próxima activación se desbloquea mañana.
+        {t('siguiente')}
       </p>
     </div>
   )
 }
 
-function formatearFecha(valor: string): string {
+/** La fecha también se traduce: «10 de agosto» / «10 August». */
+function formatearFecha(valor: string, idioma: string): string {
   const fecha = new Date(valor)
   if (Number.isNaN(fecha.getTime())) return '—'
 
-  return fecha.toLocaleDateString('es', {
+  return fecha.toLocaleDateString(idioma, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

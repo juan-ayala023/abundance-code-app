@@ -2,6 +2,7 @@
 
 import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 
 import { Logo } from '@/components/layout/logo'
@@ -24,6 +25,7 @@ import { NavLateral } from '@/components/layout/nav-lateral'
  */
 export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | null }) {
   const pathname = usePathname()
+  const t = useTranslations('nav')
   const botonRef = useRef<HTMLButtonElement>(null)
   const cerrarRef = useRef<HTMLButtonElement>(null)
 
@@ -76,7 +78,7 @@ export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | nu
           className="flex items-center gap-2 rounded-xl border border-borde bg-superficie px-3.5 py-2.5 text-sm font-medium transition-colors hover:bg-fondo-hondo"
         >
           <Menu size={18} aria-hidden="true" />
-          Menú
+          {t('menu')}
         </button>
       </header>
 
@@ -98,7 +100,7 @@ export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | nu
             id="menu-portal"
             role="dialog"
             aria-modal="true"
-            aria-label="Navegación principal"
+            aria-label={t('principal')}
             className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col gap-8 overflow-y-auto border-r border-borde bg-fondo px-6 py-6 shadow-2xl motion-safe:animate-[entrar-cajon_180ms_ease-out]"
           >
             <div className="flex items-start justify-between gap-4">
@@ -111,7 +113,7 @@ export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | nu
                 className="rounded-xl border border-borde bg-superficie p-2.5 transition-colors hover:bg-fondo-hondo"
               >
                 <X size={18} aria-hidden="true" />
-                <span className="sr-only">Cerrar el menú</span>
+                <span className="sr-only">{t('cerrarMenu')}</span>
               </button>
             </div>
 

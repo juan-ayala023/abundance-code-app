@@ -1,3 +1,6 @@
+import { getTranslations } from 'next-intl/server'
+
+import { SelectorIdioma } from '@/components/layout/selector-idioma'
 import { getPublicEnv } from '@/lib/env/public'
 
 /**
@@ -24,19 +27,22 @@ import { getPublicEnv } from '@/lib/env/public'
  * cambiar.
  */
 const DOCUMENTOS = [
-  ['Privacidad', 'Privacy-Policy Abundance-Code.pdf'],
-  ['Términos', 'Terms-and-Disclaimer Abundance-Code.pdf'],
-  ['Reembolsos', 'Refund-Cancellation-Policy Abundance-Code.pdf'],
+  ['privacidad', 'Privacy-Policy Abundance-Code.pdf'],
+  ['terminos', 'Terms-and-Disclaimer Abundance-Code.pdf'],
+  ['reembolsos', 'Refund-Cancellation-Policy Abundance-Code.pdf'],
 ] as const
 
-export function PieLegal({ className }: { className?: string }) {
+export async function PieLegal({ className }: { className?: string }) {
   const landing = getPublicEnv().NEXT_PUBLIC_LANDING_URL.replace(/\/$/, '')
+  const t = await getTranslations('legal')
 
   return (
     <footer
       className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4 py-8 text-xs text-tinta-tenue ${className ?? ''}`}
     >
-      {DOCUMENTOS.map(([texto, archivo]) => (
+      <SelectorIdioma />
+
+      {DOCUMENTOS.map(([clave, archivo]) => (
         <a
           key={archivo}
           href={`${landing}/img/${encodeURIComponent(archivo)}`}
@@ -44,7 +50,7 @@ export function PieLegal({ className }: { className?: string }) {
           rel="noopener noreferrer"
           className="underline-offset-4 transition-colors hover:text-tinta-suave hover:underline"
         >
-          {texto}
+          {t(clave)}
         </a>
       ))}
 

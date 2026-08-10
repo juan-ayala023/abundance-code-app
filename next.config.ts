@@ -1,4 +1,12 @@
+import createNextIntlPlugin from 'next-intl/plugin'
 import type { NextConfig } from 'next'
+
+/*
+ * El plugin necesita saber dónde está la configuración. Se le indica de forma
+ * explícita porque el proyecto usa `src/` y su ruta por defecto no la
+ * contempla.
+ */
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -14,4 +22,4 @@ const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: false },
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)

@@ -1,3 +1,4 @@
+import { idiomaActual } from '@/i18n/idioma'
 import 'server-only'
 
 import { createLocalChartProvider } from '@/lib/astrology/local'
@@ -55,7 +56,13 @@ export async function asegurarActivacion(
 
   let contenido: ActivacionDiaria
   try {
-    contenido = await generarActivacionDiaria({ carta, transitos, dia, total })
+    contenido = await generarActivacionDiaria({
+      carta,
+      transitos,
+      dia,
+      total,
+      idioma: await idiomaActual(),
+    })
   } catch (error) {
     console.error('[activacion] no se pudo generar', { portalId, dia, error })
     return null

@@ -5,6 +5,8 @@ import { generateObject } from 'ai'
 import { MODELO_RAPIDO, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
+import type { Idioma } from '@/i18n/idioma'
+import { instruccionDeIdioma } from '@/lib/lectura/idioma-prompt'
 import type { Carta } from '@/lib/astrology/types'
 
 import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
@@ -22,10 +24,10 @@ import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
 
 export class ActivacionError extends Error {}
 
-const SISTEMA = `Eres el intérprete de Abundance Code. Escribes la Activación del Día: una señal breve para que la persona observe algo concreto hoy.
+const sistema = (idioma: Idioma) => `Eres el intérprete de Abundance Code. Escribes la Activación del Día: una señal breve para que la persona observe algo concreto hoy.
 
 CÓMO ESCRIBES
-- En español, tuteando. Directo y cálido. Sin misticismo de catálogo.
+- ${instruccionDeIdioma(idioma)} Directo y cálido. Sin misticismo de catálogo.
 - Muy breve: cada campo entre 25 y 45 palabras. Son cinco frases con intención, no un ensayo.
 - Anclado en el tránsito del día. Si el cielo toca su carta, eso es lo que se observa hoy; no repitas su lectura base.
 - Cotidiano y accionable. "Qué activar" es algo que cabe en un día normal, no un propósito de vida.
@@ -43,6 +45,7 @@ export async function generarActivacionDiaria(entrada: {
   transitos: AspectoTransito[]
   dia: number
   total: number
+  idioma: Idioma
 }): Promise<ActivacionDiaria> {
   const prompt = [
     `Día ${entrada.dia} de ${entrada.total} del portal.`,
@@ -59,7 +62,7 @@ export async function generarActivacionDiaria(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
       schema: activacionDiariaSchema,
-      system: SISTEMA,
+      system: sistema(entrada.idioma),
       prompt,
       // Texto corto y muy pautado: razonar mucho aquí no mejora el resultado y
       // sí multiplica el coste, que se paga treinta veces por usuario.

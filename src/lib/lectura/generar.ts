@@ -4,6 +4,8 @@ import { generateObject } from 'ai'
 
 import { MODELO_LECTURA, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
+import type { Idioma } from '@/i18n/idioma'
+import { instruccionDeIdioma } from '@/lib/lectura/idioma-prompt'
 import type { Carta } from '@/lib/astrology/types'
 
 import { lecturaGeneradaSchema, type LecturaBase } from './schemas'
@@ -22,12 +24,12 @@ import { lecturaGeneradaSchema, type LecturaBase } from './schemas'
 
 export class LecturaError extends Error {}
 
-const SISTEMA = `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
+const sistema = (idioma: Idioma) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
 
 Escribes la Lectura Base: la interpretación que el usuario recibe al abrir su portal. Es el entregable del producto y la leerá una sola persona, sobre su propia carta.
 
 CÓMO ESCRIBES
-- En español, tuteando, en segunda persona. Cálido y directo, nunca solemne ni místico de catálogo.
+- ${instruccionDeIdioma(idioma)} Cálido y directo, nunca solemne ni místico de catálogo.
 - Concreto. Cada afirmación debe poder rastrearse a algo de la carta: un planeta en un signo, una casa, un aspecto. Nada que valga para cualquiera.
 - Sin jerga sin explicar. Si mencionas un aspecto o una casa, di qué significa en la misma frase.
 - Nada de halagos vacíos ni de catástrofes. Describes tensiones reales y también lo que sostiene a la persona.
@@ -43,6 +45,7 @@ QUÉ NO HACES
 export async function generarLecturaBase(entrada: {
   nombre: string | null
   carta: Carta
+  idioma: Idioma
 }): Promise<LecturaBase> {
   const nombre = entrada.nombre?.trim() || null
 
@@ -61,7 +64,7 @@ export async function generarLecturaBase(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: lecturaGeneradaSchema,
-      system: SISTEMA,
+      system: sistema(entrada.idioma),
       prompt,
       // La lectura es el entregable y se genera una sola vez por usuario: es
       // donde tiene sentido gastar en razonamiento.

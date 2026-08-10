@@ -2,6 +2,7 @@ import 'server-only'
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { idiomaActual } from '@/i18n/idioma'
 import { cartaSchema } from '@/lib/astrology/schema'
 import type { Database } from '@/lib/supabase/database.types'
 
@@ -46,6 +47,7 @@ export async function asegurarLecturaBase(
   let lectura: LecturaBase
   try {
     lectura = await generarLecturaBase({
+      idioma: await idiomaActual(),
       nombre: portal.full_name,
       carta: carta.data,
     })

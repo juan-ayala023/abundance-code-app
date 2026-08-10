@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/layout/logo";
 import { PieLegal } from "@/components/layout/pie-legal";
@@ -10,7 +11,8 @@ import { PieLegal } from "@/components/layout/pie-legal";
  * y `/planes` existen para completar una acción, y ahí una imagen grande solo
  * retrasa el botón que la persona vino a pulsar. Aquí sí cabe dar tono.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations('home')
   return (
     <>
       <main className="mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center gap-10 px-4 py-12 sm:px-6 lg:flex-row lg:gap-16">
@@ -28,7 +30,7 @@ export default function HomePage() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/portada.jpg"
-          alt="Una mujer consulta su portal de Abundance Code en el móvil, al atardecer."
+          alt={t('alt')}
           width={1200}
           height={1200}
           fetchPriority="high"
@@ -40,7 +42,7 @@ export default function HomePage() {
 
           <div className="flex flex-col gap-3">
             <h1 className="text-4xl font-light tracking-tight">
-              Tu código personal, leído desde el cielo
+              {t('titulo')}
             </h1>
             <p className="text-tinta-suave">
               Tu carta natal calculada y una interpretación creada para ti, en
@@ -53,13 +55,13 @@ export default function HomePage() {
               href="/activar"
               className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
             >
-              Ya compré, quiero entrar
+              {t('entrar')}
             </Link>
             <Link
               href="/planes"
               className="rounded-xl border border-borde bg-superficie px-6 py-3 font-medium transition-colors hover:bg-fondo-hondo"
             >
-              Ver planes
+              {t('planes')}
             </Link>
           </div>
         </div>

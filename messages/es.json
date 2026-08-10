@@ -1,0 +1,228 @@
+{
+  "nav": {
+    "portal": "Mi Portal",
+    "lecturaBase": "Lectura Base",
+    "activacion": "Activación de Hoy",
+    "guia": "Guía Personalizada",
+    "cuenta": "Mi Cuenta",
+    "cerrarSesion": "Cerrar sesión",
+    "principal": "Navegación principal",
+    "menu": "Menú",
+    "cerrarMenu": "Cerrar el menú",
+    "volverAlPortal": "Volver a mi portal",
+    "dia": "Día {dia} de {total}",
+    "viaje": "Tu viaje",
+    "viajeDias": "de {total} días",
+    "viajeTexto": "Estás construyendo tu nueva realidad día a día."
+  },
+  "idioma": {
+    "etiqueta": "Idioma",
+    "cambiar": "Cambiar idioma"
+  },
+  "home": {
+    "titulo": "Tu código personal, leído desde el cielo",
+    "descripcion": "Tu carta natal calculada y una interpretación creada para ti, en tu portal privado.",
+    "entrar": "Ya compré, quiero entrar",
+    "planes": "Ver planes",
+    "alt": "Una mujer consulta su portal de Abundance Code en el móvil, al atardecer."
+  },
+  "planes": {
+    "titulo": "Planes",
+    "descripcion": "La compra se realiza en nuestra web principal. Al terminar, vuelve aquí y entra con la cuenta de Google del correo que hayas usado.",
+    "comprar": "Ir a comprar →",
+    "yaCompre": "Ya compré"
+  },
+  "activar": {
+    "titulo": "Activar tu acceso",
+    "descripcion": "Entra con la cuenta de Google asociada al correo que usaste al comprar.",
+    "conToken": "Puedes entrar con cualquier cuenta de Google: tu enlace ya lleva la compra dentro y la vinculamos sola.",
+    "sinToken": "Si compraste con un correo distinto al de tu cuenta de Google, entra igualmente: te ayudamos a vincular la compra en el siguiente paso.",
+    "google": "Entrar con Google",
+    "conectando": "Conectando…",
+    "errorGoogle": "No pudimos conectar con Google. Revisa tu conexión y vuelve a intentarlo.",
+    "errores": {
+      "cancelado": "Cancelaste el inicio de sesión. Puedes volver a intentarlo cuando quieras.",
+      "sin_codigo": "Ese enlace de acceso ya no es válido. Entra con Google desde aquí.",
+      "sesion": "No pudimos completar tu sesión. Vuelve a intentarlo."
+    }
+  },
+  "vincular": {
+    "tituloCaducado": "Tu enlace de acceso caducó",
+    "tituloInactivo": "Tu acceso no está activo",
+    "tituloSinCompra": "No encontramos tu compra",
+    "textoCaducado": "Los enlaces de acceso valen 30 días. Pide uno nuevo y entras enseguida: tu compra sigue ahí.",
+    "textoInactivo": "Encontramos tu compra, pero la suscripción no está activa ahora mismo.",
+    "textoSinCompra": "No hay ninguna compra registrada con este correo:",
+    "quePuedesHacer": "Qué puedes hacer",
+    "otroCorreo": "Si compraste con otro correo, entra con la cuenta de Google que corresponda a ese correo.",
+    "otraCuenta": "Probar con otra cuenta",
+    "pedirEnlace": "Pedir un enlace nuevo",
+    "renovar": "Renovar mi acceso",
+    "comprar": "Comprar mi acceso",
+    "soporte": "¿Compraste y sigues viendo esto? Escríbenos con el correo que usaste al pagar y lo vinculamos a mano."
+  },
+  "suscripcion": {
+    "necesita": "{seccion} necesita suscripción",
+    "mensaje": "Tu suscripción no está activa ahora mismo. Tu lectura base y tu carta natal siguen siendo tuyas y seguirán aquí. La guía personalizada y las activaciones diarias necesitan una suscripción activa.",
+    "continuar": "Continuar con suscripción →",
+    "volverLectura": "Volver a mi lectura base"
+  },
+  "legal": {
+    "privacidad": "Privacidad",
+    "terminos": "Términos",
+    "reembolsos": "Reembolsos"
+  },
+  "cuenta": {
+    "titulo": "Mi Cuenta",
+    "descripcion": "Administra tu información y el estado de tu portal.",
+    "nombre": "Nombre",
+    "email": "Email",
+    "plan": "Plan",
+    "fechaActivacion": "Fecha de activación",
+    "estadoPortal": "Estado del portal",
+    "diaActual": "Día actual",
+    "primerosDias": "primeros {total} días",
+    "incluye": "Tu portal incluye {total} días de guía activa. Después, tu lectura base seguirá disponible; la guía personalizada y las funciones avanzadas requieren una suscripción activa.",
+    "gestionar": "Gestionar mi suscripción",
+    "estados": {
+      "active": "Activo",
+      "trialing": "En periodo de prueba",
+      "past_due": "Pago pendiente",
+      "canceled": "Cancelado",
+      "incomplete": "Incompleto",
+      "none": "Sin acceso"
+    },
+    "portalError": "No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.",
+    "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta."
+  },
+  "portal": {
+    "bienvenida": "Bienvenido a tu Portal",
+    "bienvenidaConNombre": "Bienvenido a tu Portal, {nombre}",
+    "subtitulo": "Este es tu espacio privado de lectura, claridad y alineación.",
+    "primerPaso": "Primer paso",
+    "completaDatos": "Completa tus datos de nacimiento",
+    "completaDatosTexto": "Sin fecha, hora y lugar no podemos calcular tu carta. Es lo único que necesitamos de ti.",
+    "empezar": "Empezar",
+    "portalActivo": "Portal activo",
+    "incluye": "Tu portal incluye {total} días de guía activa. Después, tu lectura base seguirá disponible y podrás decidir si deseas continuar con guía avanzada.",
+    "completado": "{progreso}% completado",
+    "codigoNatal": "Tu Código Natal",
+    "codigoNatalTexto": "Tu mapa energético único revela tu esencia, talentos naturales y camino de vida.",
+    "verLectura": "Ver lectura completa",
+    "patronCentral": "Tu Patrón Central",
+    "preparando": "Se está preparando desde tu Código Natal.",
+    "trasDatos": "Disponible cuando completes tus datos de nacimiento.",
+    "trasDatosCorto": "Disponible tras completar tus datos.",
+    "activacionHoy": "Activación de hoy",
+    "activacionDia": "Activación del Día {dia}",
+    "activacionTitulo": "Activación de Hoy",
+    "activacionTexto": "Una activación energética diaria para elevar tu frecuencia y alinear tus acciones.",
+    "leerActivacion": "Leer activación completa",
+    "guia": "Guía Personalizada",
+    "guiaTexto": "Hazme una pregunta sobre tus decisiones, bloqueos o señales que estás recibiendo.",
+    "hacerPregunta": "Hacer una pregunta",
+    "cierre": "✦ No se trata de cambiar quién eres, sino de recordar tu código y alinearte con él. ✦"
+  },
+  "areas": {
+    "titulo": "Áreas desbloqueadas",
+    "abundancia": "Abundancia y dinero",
+    "decisiones": "Decisiones",
+    "proposito": "Propósito",
+    "bloqueos": "Bloqueos internos",
+    "relaciones": "Relaciones y vínculos"
+  },
+  "lectura": {
+    "titulo": "Tu Lectura Base Personalizada",
+    "descripcion": "Una interpretación creada desde tu Código Natal para ayudarte a entender tus patrones, bloqueos y áreas de expansión.",
+    "cartaPendiente": "Tu carta todavía no está calculada. Aparecerá aquí en cuanto conectemos el motor de cálculo.",
+    "enEstaLectura": "En esta lectura",
+    "resumen": "Resumen de tu Código Personal",
+    "noGenerada": "Tu lectura todavía no está generada. Estas son las secciones que incluirá; el texto llegará cuando conectemos la capa de interpretación.",
+    "secciones": {
+      "energiaPrincipal": "Tu energía principal",
+      "patronesAbundancia": "Tus patrones de abundancia",
+      "bloqueosInternos": "Tus bloqueos internos",
+      "formaDecidir": "Tu forma de decidir",
+      "senalesPersonales": "Tus señales personales",
+      "fortalezas": "Tus fortalezas",
+      "recomendacionInicial": "Tu recomendación inicial"
+    }
+  },
+  "activacion": {
+    "tituloDia": "Activación del Día {dia}",
+    "titulo": "Activación de Hoy",
+    "descripcion": "Una señal para observar hoy desde tu Código Personal.",
+    "seccion": "La activación diaria",
+    "bloques": {
+      "mensajePrincipal": "Mensaje principal",
+      "queObservar": "Qué observar hoy",
+      "queEvitar": "Qué evitar",
+      "queActivar": "Qué activar",
+      "preguntaReflexion": "Pregunta de reflexión"
+    },
+    "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
+    "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
+    "marcar": "Marcar como leída",
+    "marcada": "Marcada como leída el {fecha}.",
+    "siguiente": "Tu próxima activación se desbloquea mañana."
+  },
+  "guia": {
+    "titulo": "Guía Personalizada",
+    "descripcion": "Consulta tu Código Personal cuando necesites claridad sobre una decisión, un bloqueo o una señal que estás viviendo.",
+    "seccion": "La guía personalizada",
+    "consultar": "Consultar mi guía",
+    "consultando": "Consultando tu Código Personal…"
+  },
+  "generando": {
+    "pasos": {
+      "carta": {
+        "titulo": "Calculando tu carta natal",
+        "descripcion": "Posicionando planetas y aspectos clave."
+      },
+      "patrones": {
+        "titulo": "Identificando tus patrones de abundancia",
+        "descripcion": "Reconociendo ciclos, tensiones y fortalezas personales."
+      },
+      "bloqueos": {
+        "titulo": "Analizando tus bloqueos internos",
+        "descripcion": "Comprendiendo lo que puede estar limitando tu expansión."
+      },
+      "guia": {
+        "titulo": "Preparando tu guía personalizada",
+        "descripcion": "Organizando la lectura creada para ti."
+      },
+      "portal": {
+        "titulo": "Activando tu portal privado",
+        "descripcion": "Abriendo tu espacio personal de lectura."
+      }
+    },
+    "error": "No hemos podido preparar tu lectura.",
+    "errorTexto": "Vuelve a intentarlo en unos minutos; tus datos y tu carta están guardados.",
+    "lista": "Tu lectura está lista. Abriéndola…",
+    "esperando": "Interpretando tu carta. Es el paso más largo de los {total}: puede tardar un minuto, no cierres esta página.",
+    "paso": "Paso {n} de {total}",
+    "progresoLabel": "Progreso de tu lectura",
+    "titulo": "Preparando tu lectura",
+    "descripcion": "Estamos calculando tu carta y creando tu interpretación. Tarda alrededor de un minuto.",
+    "cabecera1": "Estamos preparando tu",
+    "cabecera2": "lectura personal",
+    "cabeceraTexto": "Conectando los datos de tu nacimiento con los patrones que darán forma a tu guía personalizada.",
+    "completado": "Completado"
+  },
+  "guia_form": {
+    "pregunta": "¿Qué necesitas entender hoy?",
+    "placeholder": "Escribe tu pregunta aquí…",
+    "sugeridasTitulo": "— Preguntas sugeridas —",
+    "restantes": "Te quedan <b>{n}</b> de {total} consultas por día, incluidas durante tu período activo.",
+    "agotadas": "Has usado tus {total} consultas de hoy. Vuelven a estar disponibles mañana.",
+    "responde": "Tu guía responde",
+    "aviso": "La Guía Personalizada está diseñada para reflexión personal y claridad interna. No reemplaza asesoría médica, legal, financiera o psicológica profesional.",
+    "sugeridas": {
+      "bloqueo": "¿Qué bloqueo necesito observar ahora?",
+      "decision": "¿Qué decisión estoy evitando?",
+      "patron": "¿Qué patrón de abundancia estoy repitiendo?",
+      "senal": "¿Qué señal debería mirar esta semana?",
+      "energia": "¿Qué energía necesito activar hoy?"
+    }
+  }
+}

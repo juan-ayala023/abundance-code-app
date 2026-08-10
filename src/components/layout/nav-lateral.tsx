@@ -3,22 +3,24 @@
 import { Home, LogOut, MessageCircle, Sparkles, Sun, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { cerrarSesion } from '@/app/actions'
 import { cn } from '@/lib/utils'
 
 /**
- * Las etiquetas van en Mayúsculas Iniciales porque así están en el producto que
- * el usuario ya conoce: «Mi Portal», «Lectura Base», «Guía Personalizada». No
- * es el uso habitual del español, pero aquí funcionan como nombres propios de
- * cada sección, y manda el producto.
+ * Las etiquetas en español van en Mayúsculas Iniciales porque así están en el
+ * producto que el usuario ya conoce: «Mi Portal», «Lectura Base», «Guía
+ * Personalizada». No es el uso habitual del español, pero aquí funcionan como
+ * nombres propios de cada sección, y manda el producto. En inglés esa
+ * capitalización es la normal para nombres de sección, así que coincide.
  */
 const ENLACES = [
-  { href: '/portal', etiqueta: 'Mi Portal', Icono: Home },
-  { href: '/lectura-base', etiqueta: 'Lectura Base', Icono: Sparkles },
-  { href: '/activacion', etiqueta: 'Activación de Hoy', Icono: Sun },
-  { href: '/guia', etiqueta: 'Guía Personalizada', Icono: MessageCircle },
-  { href: '/cuenta', etiqueta: 'Mi Cuenta', Icono: User },
+  { href: '/portal', clave: 'portal', Icono: Home },
+  { href: '/lectura-base', clave: 'lecturaBase', Icono: Sparkles },
+  { href: '/activacion', clave: 'activacion', Icono: Sun },
+  { href: '/guia', clave: 'guia', Icono: MessageCircle },
+  { href: '/cuenta', clave: 'cuenta', Icono: User },
 ] as const
 
 export function NavLateral({
@@ -27,11 +29,12 @@ export function NavLateral({
   ciclo: { dia: number; total: number } | null
 }) {
   const pathname = usePathname()
+  const t = useTranslations('nav')
 
   return (
-    <nav aria-label="Navegación principal" className="flex h-full flex-col gap-8">
+    <nav aria-label={t('principal')} className="flex h-full flex-col gap-8">
       <ul className="flex flex-col gap-1">
-        {ENLACES.map(({ href, etiqueta, Icono }) => {
+        {ENLACES.map(({ href, clave, Icono }) => {
           const activo = pathname === href || pathname.startsWith(`${href}/`)
 
           return (
@@ -47,7 +50,7 @@ export function NavLateral({
                 )}
               >
                 <Icono size={18} aria-hidden="true" />
-                {etiqueta}
+                {t(clave)}
               </Link>
             </li>
           )
@@ -58,12 +61,10 @@ export function NavLateral({
         {ciclo ? (
           <div className="rounded-2xl border border-borde bg-superficie px-4 py-4 text-center">
             <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-              Tu viaje
+              {t('viaje')}
             </p>
-            <p className="mt-1 text-xl font-light">de {ciclo.total} días</p>
-            <p className="mt-2 text-xs text-tinta-suave">
-              Estás construyendo tu nueva realidad día a día.
-            </p>
+            <p className="mt-1 text-xl font-light">{t('viajeDias', { total: ciclo.total })}</p>
+            <p className="mt-2 text-xs text-tinta-suave">{t('viajeTexto')}</p>
           </div>
         ) : null}
 
@@ -73,7 +74,7 @@ export function NavLateral({
             className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-tinta-suave transition-colors hover:bg-fondo-hondo"
           >
             <LogOut size={18} aria-hidden="true" />
-            Cerrar sesión
+            {t('cerrarSesion')}
           </button>
         </form>
       </div>

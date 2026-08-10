@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { generarLectura } from '@/app/(app)/generando/actions'
 
@@ -16,6 +17,7 @@ type Estado = 'generando' | 'lista' | 'error'
  * que no significa nada.
  */
 export function Generacion({ pasosTotales }: { pasosTotales: number }) {
+  const t = useTranslations('generando')
   const router = useRouter()
   const [estado, setEstado] = useState<Estado>('generando')
   const lanzada = useRef(false)
@@ -54,8 +56,7 @@ export function Generacion({ pasosTotales }: { pasosTotales: number }) {
         role="alert"
         className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm"
       >
-        <strong>No hemos podido preparar tu lectura.</strong> Vuelve a intentarlo
-        en unos minutos; tus datos y tu carta están guardados.
+        <strong>{t('error')}</strong> {t('errorTexto')}
       </div>
     )
   }
@@ -63,8 +64,8 @@ export function Generacion({ pasosTotales }: { pasosTotales: number }) {
   return (
     <p role="status" aria-live="polite" className="text-center text-sm text-tinta-suave">
       {estado === 'lista'
-        ? 'Tu lectura está lista. Abriéndola…'
-        : `Interpretando tu carta. Es el paso más largo de los ${pasosTotales}: puede tardar un minuto, no cierres esta página.`}
+        ? t('lista')
+        : t('esperando', { total: pasosTotales })}
     </p>
   )
 }

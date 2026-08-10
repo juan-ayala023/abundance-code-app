@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { resolveAccess } from '@/lib/access/entitlement'
+import { getTranslations } from 'next-intl/server'
+
 import { getPublicEnv } from '@/lib/env/public'
 import { urlDeReenvio } from '@/lib/access/landing'
 
@@ -37,23 +39,24 @@ export default async function VincularPage({
    * camino, que es el peor sitio donde dejar a alguien que ha pagado.
    */
   const esCaducado = params.estado === 'caducado'
+  const t = await getTranslations('vincular')
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-8 px-6">
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">
           {esCaducado
-            ? 'Tu enlace de acceso caducó'
+            ? t('tituloCaducado')
             : esInactivo
-              ? 'Tu acceso no está activo'
-              : 'No encontramos tu compra'}
+              ? t('tituloInactivo')
+              : t('tituloSinCompra')}
         </h1>
         <p className="opacity-80">
           {esCaducado
-            ? 'Los enlaces de acceso valen 30 días. Pide uno nuevo y entras enseguida: tu compra sigue ahí.'
+            ? t('textoCaducado')
             : esInactivo
-              ? 'Encontramos tu compra, pero la suscripción no está activa ahora mismo.'
-              : 'No hay ninguna compra registrada con este correo:'}
+              ? t('textoInactivo')
+              : t('textoSinCompra')}
         </p>
         <p className="rounded-xl border border-borde bg-superficie px-4 py-3 font-mono text-sm">
           {access.email}
@@ -62,12 +65,11 @@ export default async function VincularPage({
 
       <section className="flex flex-col gap-4">
         <h2 className="text-sm font-semibold uppercase tracking-wide opacity-60">
-          Qué puedes hacer
+          {t('quePuedesHacer')}
         </h2>
 
         <p className="text-sm opacity-80">
-          Si compraste con otro correo, entra con la cuenta de Google que
-          corresponda a ese correo.
+          {t('otroCorreo')}
         </p>
 
         <form action={cerrarSesion}>
@@ -75,7 +77,7 @@ export default async function VincularPage({
             type="submit"
             className="w-full rounded-xl border border-borde bg-superficie px-5 py-3 font-medium transition-colors hover:bg-fondo-hondo"
           >
-            Probar con otra cuenta
+            {t('otraCuenta')}
           </button>
         </form>
 
@@ -89,16 +91,15 @@ export default async function VincularPage({
           className="w-full rounded-xl bg-oro px-5 py-3 text-center font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           {esCaducado
-            ? 'Pedir un enlace nuevo'
+            ? t('pedirEnlace')
             : esInactivo
-              ? 'Renovar mi acceso'
-              : 'Comprar mi acceso'}
+              ? t('renovar')
+              : t('comprar')}
         </a>
       </section>
 
       <p className="text-sm opacity-70">
-        ¿Compraste y sigues viendo esto? Escríbenos con el correo que usaste al
-        pagar y lo vinculamos a mano.
+        {t('soporte')}
       </p>
     </main>
   )

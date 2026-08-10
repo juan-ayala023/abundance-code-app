@@ -1,5 +1,6 @@
 import { BookOpen, Check, DoorOpen, Lock, Route, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
@@ -30,32 +31,13 @@ export const metadata: Metadata = {
  */
 export const maxDuration = 300
 
+/** Solo los iconos: los textos viven en los diccionarios. */
 const PASOS = [
-  {
-    titulo: 'Calculando tu carta natal',
-    descripcion: 'Posicionando planetas y aspectos clave.',
-    Icono: Sun,
-  },
-  {
-    titulo: 'Identificando tus patrones de abundancia',
-    descripcion: 'Reconociendo ciclos, tensiones y fortalezas personales.',
-    Icono: Route,
-  },
-  {
-    titulo: 'Analizando tus bloqueos internos',
-    descripcion: 'Comprendiendo lo que puede estar limitando tu expansión.',
-    Icono: Lock,
-  },
-  {
-    titulo: 'Preparando tu guía personalizada',
-    descripcion: 'Organizando la lectura creada para ti.',
-    Icono: BookOpen,
-  },
-  {
-    titulo: 'Activando tu portal privado',
-    descripcion: 'Abriendo tu espacio personal de lectura.',
-    Icono: DoorOpen,
-  },
+  { clave: 'carta', Icono: Sun },
+  { clave: 'patrones', Icono: Route },
+  { clave: 'bloqueos', Icono: Lock },
+  { clave: 'guia', Icono: BookOpen },
+  { clave: 'portal', Icono: DoorOpen },
 ] as const
 
 /**
@@ -86,17 +68,17 @@ export default async function GenerandoPage() {
    */
   const completados = portal.chart ? 1 : 0
   const progreso = Math.round((completados / PASOS.length) * 100)
+  const t = await getTranslations('generando')
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center gap-10 px-6 py-12">
       <header className="flex flex-col gap-3 text-center">
         <h1 className="text-4xl font-light leading-tight tracking-tight">
-          Estamos preparando tu{' '}
-          <span className="italic text-oro-hondo">lectura personal</span>
+          {t('cabecera1')}{' '}
+          <span className="italic text-oro-hondo">{t('cabecera2')}</span>
         </h1>
         <p className="text-tinta-suave">
-          Conectando los datos de tu nacimiento con los patrones que darán forma
-          a tu guía personalizada.
+          {t('cabeceraTexto')}
         </p>
       </header>
 
@@ -104,7 +86,7 @@ export default async function GenerandoPage() {
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline justify-between text-sm">
             <span className="text-tinta-suave">
-              Paso {Math.min(completados + 1, PASOS.length)} de {PASOS.length}
+              {t('paso', { n: Math.min(completados + 1, PASOS.length), total: PASOS.length })}
             </span>
             <span className="text-tinta-tenue">{progreso} %</span>
           </div>
@@ -113,7 +95,7 @@ export default async function GenerandoPage() {
             aria-valuenow={progreso}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label="Progreso de tu lectura"
+            aria-label={t('progresoLabel')}
             className="h-2 overflow-hidden rounded-full bg-oro-palido"
           >
             {/* Sin transición: el ancho refleja un estado guardado, no una
@@ -123,19 +105,19 @@ export default async function GenerandoPage() {
         </div>
 
         <ol className="flex flex-col gap-5">
-          {PASOS.map(({ titulo, descripcion, Icono }, indice) => {
+          {PASOS.map(({ clave, Icono }, indice) => {
             const hecho = indice < completados
 
             return (
-              <li key={titulo} className="flex gap-4">
+              <li key={indice} className="flex gap-4">
                 <Insignia Icono={hecho ? Check : Icono} />
                 <div className="min-w-0">
                   <h2 className={`font-light ${hecho ? '' : 'text-tinta-suave'}`}>
-                    {titulo}
+                    {t(`pasos.${clave}.titulo` as never)}
                   </h2>
-                  <p className="text-sm text-tinta-suave">{descripcion}</p>
+                  <p className="text-sm text-tinta-suave">{t(`pasos.${clave}.descripcion` as never)}</p>
                 </div>
-                {hecho && <span className="sr-only">Completado</span>}
+                {hecho && <span className="sr-only">{t('completado')}</span>}
               </li>
             )
           })}

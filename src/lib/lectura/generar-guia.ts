@@ -5,6 +5,8 @@ import { generateText } from 'ai'
 import { MODELO_RAPIDO, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
+import type { Idioma } from '@/i18n/idioma'
+import { instruccionDeIdioma } from '@/lib/lectura/idioma-prompt'
 import type { Carta } from '@/lib/astrology/types'
 
 /**
@@ -23,10 +25,10 @@ export class GuiaError extends Error {}
 /** Lo que se le permite escribir. Corta respuestas que se van de largo. */
 const MAXIMO_TOKENS = 700
 
-const SISTEMA = `Eres el intérprete de Abundance Code. Respondes consultas de la Guía Personalizada: alguien te trae una pregunta concreta y tú la miras desde su carta natal.
+const sistema = (idioma: Idioma) => `Eres el intérprete de Abundance Code. Respondes consultas de la Guía Personalizada: alguien te trae una pregunta concreta y tú la miras desde su carta natal.
 
 CÓMO RESPONDES
-- En español, tuteando. Cálido, sereno y directo.
+- ${instruccionDeIdioma(idioma)} Cálido, sereno y directo.
 - Entre 120 y 200 palabras. Una respuesta, no un ensayo.
 - Anclada en SU carta: menciona la colocación o el tránsito concreto del que sacas lo que dices. Sin eso, la respuesta valdría para cualquiera y el producto pierde su sentido.
 - Devuelves claridad, no instrucciones. Ayudas a ver el patrón; la decisión es suya.
@@ -47,6 +49,7 @@ export async function generarRespuestaGuia(entrada: {
   /** Resumen de la lectura base, si existe: mantiene coherencia con lo ya leído. */
   resumen: string | null
   pregunta: string
+  idioma: Idioma
 }): Promise<{ respuesta: string; modelo: string; tokens: number }> {
   const prompt = [
     'CARTA NATAL:',
@@ -62,7 +65,7 @@ export async function generarRespuestaGuia(entrada: {
   try {
     const { text, usage } = await generateText({
       model: modelo(MODELO_RAPIDO),
-      system: SISTEMA,
+      system: sistema(entrada.idioma),
       prompt,
       maxOutputTokens: MAXIMO_TOKENS,
       providerOptions: opcionesRazonamiento('low'),

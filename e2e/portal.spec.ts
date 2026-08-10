@@ -419,3 +419,55 @@ test('el portal no muestra interpretación de relleno', async ({ page }) => {
   // Sin lectura generada se dice que está en camino, no se rellena.
   await expect(page.getByText(/se está preparando desde tu código natal/i)).toBeVisible()
 })
+
+/**
+ * El cambio de idioma, de punta a punta.
+ *
+ * Traducir la interfaz sin comprobarlo deja un fallo que no rompe nada y no se
+ * ve: si a un diccionario le falta una clave, next-intl pinta la clave en crudo
+ * —«portal.bienvenida»— justo donde debería ir el texto. Las unitarias
+ * comparan los dos diccionarios entre sí; esto comprueba que el botón cambia la
+ * pantalla de verdad y que la elección sobrevive a navegar.
+ */
+test('el botón de idioma cambia la interfaz y se mantiene', async ({ page }) => {
+  await completarOnboarding(page)
+
+  // Arranca en español: es el idioma del producto original.
+  await expect(page.getByRole('heading', { name: /Bienvenido a tu Portal/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'English' }).click()
+
+  // La misma pantalla, en inglés.
+  await expect(page.getByRole('heading', { name: /Welcome to your Portal/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'My Account' })).toBeVisible()
+
+  // Y sigue en inglés al cambiar de pantalla: la elección no es de una página.
+  await page.goto('/cuenta')
+  await expect(page.getByRole('heading', { name: 'My Account' })).toBeVisible()
+
+  /*
+   * Las pantallas donde los textos venían de una lista. next-intl NO resuelve
+   * `t('sugeridas.0')` sobre un array de JSON: devuelve la clave en crudo y los
+   * botones salen vacíos. Pasó de verdad, y solo lo delató la prueba que pulsa
+   * una sugerencia por su nombre.
+   */
+  await page.goto('/guia')
+  await expect(page.getByRole('button', { name: 'What decision am I avoiding?' })).toBeVisible()
+
+  await page.goto('/generando')
+  await expect(page.getByText('Calculating your birth chart')).toBeVisible()
+
+  // Ninguna clave sin traducir asomando en la pantalla.
+  await expect(page.getByText(/^[a-z_]+\.[a-zA-Z.]+$/)).toHaveCount(0)
+
+  /*
+   * Y se puede volver. El botón reenvía a la ruta en la que se pulsa, así que
+   * lo primero que tiene que cambiar es esta misma pantalla —no otra—, y
+   * después se comprueba que la vuelta también sobrevive a navegar.
+   */
+  await page.getByRole('button', { name: 'Español' }).click()
+  await expect(page.getByText('Calculando tu carta natal')).toBeVisible()
+
+  await page.goto('/cuenta')
+  await expect(page.getByRole('heading', { name: 'Mi Cuenta' })).toBeVisible()
+})

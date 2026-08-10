@@ -1,9 +1,10 @@
 'use server'
 
+import { idiomaActual } from '@/i18n/idioma'
 import { z } from 'zod'
 
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
-import { MENSAJE_SOLO_LECTURA, nivelDeAcceso } from '@/lib/access/nivel'
+import { nivelDeAcceso } from '@/lib/access/nivel'
 import { createLocalChartProvider } from '@/lib/astrology/local'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { aspectosDeTransito } from '@/lib/astrology/transitos'
@@ -53,7 +54,7 @@ export async function consultarGuia(
 
   if (nivel === 'solo-lectura') {
     return {
-      error: MENSAJE_SOLO_LECTURA,
+      error: await mensajeSoloLectura(),
       respuesta: null,
       pregunta: null,
     }
@@ -92,7 +93,8 @@ export async function consultarGuia(
   let resultado
   try {
     resultado = await generarRespuestaGuia({
-      carta: carta.data,
+      idioma: await idiomaActual(),
+    carta: carta.data,
       transitos,
       resumen: lectura.success ? lectura.data.resumen : null,
       pregunta: pregunta.data,
@@ -148,4 +150,17 @@ async function calcularTransitosDeHoy(carta: Parameters<typeof aspectosDeTransit
     console.error('[guia] no se pudieron calcular los tránsitos', error)
     return []
   }
+}
+
+/**
+ * El mismo texto que ve quien abre `/guia` sin suscripción.
+ *
+ * Vive en los diccionarios y no en una constante: la acción de servidor es la
+ * defensa de verdad —el formulario solo informa— así que este mensaje puede
+ * llegarle a alguien que forzó el envío, y tiene que llegarle en su idioma.
+ */
+async function mensajeSoloLectura(): Promise<string> {
+  const { getTranslations } = await import('next-intl/server')
+  const t = await getTranslations('suscripcion')
+  return t('mensaje')
 }

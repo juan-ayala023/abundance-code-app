@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { CartaDescargable } from '@/components/chart/boton-descargar'
@@ -32,13 +33,15 @@ export default async function LecturaBasePage() {
   // Se valida lo que hay guardado: una lectura a medias no debe pintarse como
   // si estuviera completa.
   const lectura = lecturaBaseSchema.safeParse(portal.base_reading)
+  const t = await getTranslations('lectura')
+  const tNav = await getTranslations('nav')
 
   return (
     <Contenedor>
       <EncabezadoPagina
-        titulo="Tu Lectura Base Personalizada"
-        descripcion="Una interpretación creada desde tu Código Natal para ayudarte a entender tus patrones, bloqueos y áreas de expansión."
-        volver={{ href: '/portal', texto: 'Volver a mi portal' }}
+        titulo={t('titulo')}
+        descripcion={t('descripcion')}
+        volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
 
       <Tarjeta className="flex flex-col gap-6 p-8">
@@ -62,8 +65,7 @@ export default async function LecturaBasePage() {
           <>
             <DatosDeNacimiento portal={portal} />
             <AvisoPendiente>
-              Tu carta todavía no está calculada. Aparecerá aquí en cuanto
-              conectemos el motor de cálculo.
+              {t('cartaPendiente')}
             </AvisoPendiente>
           </>
         )}
@@ -73,15 +75,15 @@ export default async function LecturaBasePage() {
         <>
           <Tarjeta className="bg-oro-palido/40">
             <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-              En esta lectura
+              {t('enEstaLectura')}
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {SECCIONES_LECTURA.map(({ clave, titulo }) => (
+              {SECCIONES_LECTURA.map(({ clave }) => (
                 <li
                   key={clave}
                   className="rounded-full border border-borde bg-superficie px-3 py-1.5 text-xs text-tinta-suave"
                 >
-                  {titulo}
+                  {t(`secciones.${clave}` as never)}
                 </li>
               ))}
             </ul>
@@ -90,7 +92,7 @@ export default async function LecturaBasePage() {
           <Tarjeta className="bg-oro-palido/40">
             <h2 className="flex items-center gap-3 text-2xl font-light">
               <Estrella />
-              Resumen de tu Código Personal
+              {t('resumen')}
             </h2>
             {/* `max-w-prose`: el resumen es prosa suelta y a 1280 px daría
                 líneas de 180 caracteres. */}
@@ -100,11 +102,11 @@ export default async function LecturaBasePage() {
           </Tarjeta>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {SECCIONES_LECTURA.map(({ clave, titulo }) => (
+            {SECCIONES_LECTURA.map(({ clave }) => (
               <Tarjeta key={clave} className="flex flex-col gap-3">
                 <h3 className="flex items-center gap-3 text-xl font-light">
                   <Estrella />
-                  {titulo}
+                  {t(`secciones.${clave}` as never)}
                 </h3>
                 <p className="text-sm leading-relaxed text-tinta-suave">
                   {lectura.data[clave]}
@@ -120,19 +122,17 @@ export default async function LecturaBasePage() {
       ) : (
         <>
           <AvisoPendiente>
-            Tu lectura todavía no está generada. Estas son las secciones que
-            incluirá; el texto llegará cuando conectemos la capa de
-            interpretación.
+            {t('noGenerada')}
           </AvisoPendiente>
 
           <ul className="grid gap-3 md:grid-cols-2">
-            {SECCIONES_LECTURA.map(({ clave, titulo }) => (
+            {SECCIONES_LECTURA.map(({ clave }) => (
               <li
                 key={clave}
                 className="flex items-center gap-2 rounded-2xl border border-dashed border-borde-fuerte px-4 py-3 text-sm text-tinta-suave"
               >
                 <Estrella className="text-oro-claro" />
-                {titulo}
+                {t(`secciones.${clave}` as never)}
               </li>
             ))}
           </ul>

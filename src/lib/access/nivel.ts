@@ -59,7 +59,3 @@ export function nivelDeAcceso(entitlement: EntitlementParaNivel): NivelAcceso {
 
   return tieneAcceso(entitlement) ? 'completo' : 'solo-lectura'
 }
-
-/** Lo que se le dice al usuario cuando una sección pide suscripción. */
-export const MENSAJE_SOLO_LECTURA =
-  'Tu suscripción no está activa ahora mismo. Tu lectura base y tu carta natal siguen siendo tuyas y seguirán aquí. La guía personalizada y las activaciones diarias necesitan una suscripción activa.'

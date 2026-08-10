@@ -1,7 +1,7 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
 import { Tarjeta } from '@/components/layout/tarjeta'
-import { MENSAJE_SOLO_LECTURA } from '@/lib/access/nivel'
 import { getPublicEnv } from '@/lib/env/public'
 
 /**
@@ -12,15 +12,16 @@ import { getPublicEnv } from '@/lib/env/public'
  * Es el momento en que más importa decirlo: quien llega aquí acaba de encontrar
  * una puerta cerrada.
  */
-export function RequiereSuscripcion({ seccion }: { seccion: string }) {
+export async function RequiereSuscripcion({ seccion }: { seccion: string }) {
   const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL
+  const t = await getTranslations('suscripcion')
 
   return (
     <Tarjeta className="flex flex-col gap-5 bg-oro-palido/40">
       <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-light">{seccion} necesita suscripción</h2>
+        <h2 className="text-xl font-light">{t('necesita', { seccion })}</h2>
         <p className="text-sm leading-relaxed text-tinta-suave">
-          {MENSAJE_SOLO_LECTURA}
+          {t('mensaje')}
         </p>
       </div>
 
@@ -29,10 +30,10 @@ export function RequiereSuscripcion({ seccion }: { seccion: string }) {
           href={landingUrl}
           className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
         >
-          Continuar con suscripción →
+          {t('continuar')}
         </a>
         <Link href="/lectura-base" className="text-sm underline underline-offset-4">
-          Volver a mi lectura base
+          {t('volverLectura')}
         </Link>
       </div>
     </Tarjeta>

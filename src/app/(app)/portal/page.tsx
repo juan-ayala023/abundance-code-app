@@ -1,5 +1,6 @@
 import { Compass, GitBranch, MessageCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
 import { Contenedor } from '@/components/layout/contenedor'
 import { AreasDesbloqueadas } from '@/components/layout/areas-desbloqueadas'
@@ -30,16 +31,18 @@ export default async function PortalPage() {
 
   // El resumen de su lectura, no un texto de muestra. Ver la tarjeta de abajo.
   const lectura = lecturaBaseSchema.safeParse(portal?.base_reading)
+  const t = await getTranslations('portal')
+  const tNav = await getTranslations('nav')
 
   return (
     <Contenedor>
       <div className="flex items-start justify-between gap-6">
         <header className="flex flex-col gap-2">
           <h1 className="text-4xl font-light tracking-tight lg:text-5xl">
-            Bienvenido a tu Portal{nombre ? `, ${nombre}` : ''}
+            {nombre ? t('bienvenidaConNombre', { nombre }) : t('bienvenida')}
           </h1>
           <p className="text-tinta-suave">
-            Este es tu espacio privado de lectura, claridad y alineación.
+            {t('subtitulo')}
           </p>
         </header>
 
@@ -53,11 +56,11 @@ export default async function PortalPage() {
       {!tieneDatos ? (
         <TarjetaAccion
           Icono={Compass}
-          sobretitulo="Primer paso"
-          titulo="Completa tus datos de nacimiento"
-          descripcion="Sin fecha, hora y lugar no podemos calcular tu carta. Es lo único que necesitamos de ti."
+          sobretitulo={t('primerPaso')}
+          titulo={t('completaDatos')}
+          descripcion={t('completaDatosTexto')}
           href="/onboarding"
-          accion="Empezar"
+          accion={t('empezar')}
         />
       ) : null}
 
@@ -68,18 +71,16 @@ export default async function PortalPage() {
               <Insignia Icono={Sparkles} />
               <div className="min-w-0">
                 <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-                  Portal activo
+                  {t('portalActivo')}
                 </p>
                 <h2 className="text-3xl font-light">
-                  Día {ciclo.dia} de {ciclo.total}
+                  {tNav('dia', { dia: ciclo.dia, total: ciclo.total })}
                 </h2>
               </div>
             </div>
 
             <p className="text-sm leading-relaxed text-tinta-suave">
-              Tu portal incluye {ciclo.total} días de guía activa. Después, tu
-              lectura base seguirá disponible y podrás decidir si deseas
-              continuar con guía avanzada.
+              {t('incluye', { total: ciclo.total })}
             </p>
 
             <div className="mt-auto flex flex-col gap-2">
@@ -88,7 +89,7 @@ export default async function PortalPage() {
                 aria-valuenow={ciclo.progreso}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label={`Día ${ciclo.dia} de ${ciclo.total}`}
+                aria-label={tNav('dia', { dia: ciclo.dia, total: ciclo.total })}
                 className="h-1.5 overflow-hidden rounded-full bg-fondo-hondo"
               >
                 <div
@@ -96,19 +97,19 @@ export default async function PortalPage() {
                   style={{ width: `${ciclo.progreso}%` }}
                 />
               </div>
-              <p className="text-xs text-oro-hondo">{ciclo.progreso}% completado</p>
+              <p className="text-xs text-oro-hondo">{t('completado', { progreso: ciclo.progreso })}</p>
             </div>
           </Tarjeta>
         ) : null}
 
         <TarjetaAccion
           Icono={Compass}
-          titulo="Tu Código Natal"
-          descripcion="Tu mapa energético único revela tu esencia, talentos naturales y camino de vida."
+          titulo={t('codigoNatal')}
+          descripcion={t('codigoNatalTexto')}
           href={tieneDatos ? '/carta' : undefined}
-          accion={tieneDatos ? 'Ver lectura completa' : undefined}
+          accion={tieneDatos ? t('verLectura') : undefined}
           pendiente={
-            tieneDatos ? undefined : 'Disponible cuando completes tus datos de nacimiento.'
+            tieneDatos ? undefined : t('trasDatos')
           }
         />
 
@@ -121,17 +122,17 @@ export default async function PortalPage() {
         */}
         <TarjetaAccion
           Icono={GitBranch}
-          titulo="Tu Patrón Central"
+          titulo={t('patronCentral')}
           descripcion={lectura.success ? lectura.data.resumen : undefined}
           recorte
           href={lectura.success ? '/lectura-base' : undefined}
-          accion={lectura.success ? 'Ver lectura completa' : undefined}
+          accion={lectura.success ? t('verLectura') : undefined}
           pendiente={
             lectura.success
               ? undefined
               : tieneDatos
-                ? 'Se está preparando desde tu Código Natal.'
-                : 'Disponible cuando completes tus datos de nacimiento.'
+                ? t('preparando')
+                : t('trasDatos')
           }
         />
       </div>
@@ -139,29 +140,28 @@ export default async function PortalPage() {
       <div className="grid gap-5 lg:grid-cols-2">
         <TarjetaAccion
           Icono={Sun}
-          sobretitulo="Activación de hoy"
-          titulo={ciclo ? `Activación del Día ${ciclo.dia}` : 'Activación de Hoy'}
-          descripcion="Una activación energética diaria para elevar tu frecuencia y alinear tus acciones."
+          sobretitulo={t('activacionHoy')}
+          titulo={ciclo ? t('activacionDia', { dia: ciclo.dia }) : t('activacionTitulo')}
+          descripcion={t('activacionTexto')}
           href={tieneDatos ? '/activacion' : undefined}
-          accion={tieneDatos ? 'Leer activación completa' : undefined}
-          pendiente={tieneDatos ? undefined : 'Disponible tras completar tus datos.'}
+          accion={tieneDatos ? t('leerActivacion') : undefined}
+          pendiente={tieneDatos ? undefined : t('trasDatosCorto')}
         />
 
         <TarjetaAccion
           Icono={MessageCircle}
-          titulo="Guía Personalizada"
-          descripcion="Hazme una pregunta sobre tus decisiones, bloqueos o señales que estás recibiendo."
+          titulo={t('guia')}
+          descripcion={t('guiaTexto')}
           href={tieneDatos ? '/guia' : undefined}
-          accion={tieneDatos ? 'Hacer una pregunta' : undefined}
-          pendiente={tieneDatos ? undefined : 'Disponible tras completar tus datos.'}
+          accion={tieneDatos ? t('hacerPregunta') : undefined}
+          pendiente={tieneDatos ? undefined : t('trasDatosCorto')}
         />
       </div>
 
       <AreasDesbloqueadas />
 
       <p className="py-4 text-center text-sm italic text-tinta-suave">
-        ✦ No se trata de cambiar quién eres, sino de recordar tu código y
-        alinearte con él. ✦
+        {t('cierre')}
       </p>
     </Contenedor>
   )

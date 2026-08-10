@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { FormularioConsulta } from '@/components/guia/formulario-consulta'
@@ -34,6 +35,9 @@ export default async function GuiaPage() {
   if (!portal?.birth_date) redirect('/onboarding')
 
   // Pasados los 30 días sin suscripción, la guía se cierra. La lectura base no.
+  const t = await getTranslations('guia')
+  const tForm = await getTranslations('guia_form')
+  const tNav = await getTranslations('nav')
   const acceso = await resolveAccess()
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
@@ -57,13 +61,13 @@ export default async function GuiaPage() {
   return (
     <Contenedor className="max-w-5xl">
       <EncabezadoPagina
-        titulo="Guía Personalizada"
-        descripcion="Consulta tu Código Personal cuando necesites claridad sobre una decisión, un bloqueo o una señal que estás viviendo."
-        volver={{ href: '/portal', texto: 'Volver a mi portal' }}
+        titulo={t('titulo')}
+        descripcion={t('descripcion')}
+        volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
 
       {nivel === 'solo-lectura' ? (
-        <RequiereSuscripcion seccion="La guía personalizada" />
+        <RequiereSuscripcion seccion={t('seccion')} />
       ) : (
         <Tarjeta className="flex flex-col gap-8">
           <p className="text-lg italic leading-relaxed text-tinta-suave">
@@ -82,9 +86,7 @@ export default async function GuiaPage() {
         legal o financiero.
       */}
       <p className="text-center text-sm text-tinta-tenue">
-        La Guía Personalizada está diseñada para reflexión personal y claridad
-        interna. No reemplaza asesoría médica, legal, financiera o psicológica
-        profesional.
+        {tForm('aviso')}
       </p>
     </Contenedor>
   )

@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from 'lucide-react'
 import { useActionState, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useFormStatus } from 'react-dom'
 
 import { consultarGuia } from '@/app/(app)/guia/actions'
@@ -9,13 +10,12 @@ import { ESTADO_INICIAL } from '@/app/(app)/guia/estado'
 import { Estrella } from '@/components/layout/estrella'
 import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 
-const SUGERENCIAS = [
-  '¿Qué bloqueo necesito observar ahora?',
-  '¿Qué decisión estoy evitando?',
-  '¿Qué patrón de abundancia estoy repitiendo?',
-  '¿Qué señal debería mirar esta semana?',
-  '¿Qué energía necesito activar hoy?',
-] as const
+/*
+ * Claves con nombre, no un arreglo. next-intl no resuelve `t('sugeridas.0')`
+ * sobre un array de JSON: devuelve la clave en crudo y los botones salen
+ * vacíos. Con nombres además se lee a qué pregunta corresponde cada una.
+ */
+const SUGERENCIAS = ['bloqueo', 'decision', 'patron', 'senal', 'energia'] as const
 
 const MAXIMO = 500
 const MINIMO = 10
@@ -27,6 +27,7 @@ const MINIMO = 10
  * la acción de servidor: esto es información para el usuario, no la defensa.
  */
 export function FormularioConsulta({ restantes }: { restantes: number }) {
+  const t = useTranslations('guia_form')
   const [pregunta, setPregunta] = useState('')
   const [estado, enviar] = useActionState(consultarGuia, ESTADO_INICIAL)
 
@@ -44,7 +45,7 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
             className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue"
           >
             <Estrella className="text-oro" />
-            ¿Qué necesitas entender hoy?
+            {t('pregunta')}
           </label>
           <textarea
             id="pregunta"
@@ -53,7 +54,7 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
             maxLength={MAXIMO}
             value={pregunta}
             onChange={(evento) => setPregunta(evento.target.value)}
-            placeholder="Escribe tu pregunta aquí…"
+            placeholder={t('placeholder')}
             className="resize-y rounded-2xl border border-borde bg-fondo px-4 py-3 leading-relaxed"
           />
           <p className="self-end text-xs text-tinta-tenue" aria-live="polite">
@@ -62,10 +63,12 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <p className="text-center text-sm text-tinta-suave">— Preguntas sugeridas —</p>
+          <p className="text-center text-sm text-tinta-suave">{t('sugeridasTitulo')}</p>
           <ul className="flex flex-wrap justify-center gap-2">
-            {SUGERENCIAS.map((sugerencia) => (
-              <li key={sugerencia}>
+            {SUGERENCIAS.map((clave) => {
+              const sugerencia = t(`sugeridas.${clave}` as never)
+              return (
+              <li key={clave}>
                 <button
                   type="button"
                   onClick={() => setPregunta(sugerencia)}
@@ -74,7 +77,8 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
                   {sugerencia}
                 </button>
               </li>
-            ))}
+              )
+            })}
           </ul>
         </div>
 
@@ -101,16 +105,13 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
           <ShieldCheck size={15} aria-hidden="true" className="shrink-0 text-oro" />
           <span>
             {agotadas ? (
-              <>
-                Has usado tus {CONSULTAS_GUIA_POR_DIA} consultas de hoy. Vuelven
-                a estar disponibles mañana.
-              </>
+              t('agotadas', { total: CONSULTAS_GUIA_POR_DIA })
             ) : (
-              <>
-                Te quedan <strong>{disponibles}</strong> de{' '}
-                {CONSULTAS_GUIA_POR_DIA} consultas por día, incluidas durante tu
-                período activo.
-              </>
+              t.rich('restantes', {
+                n: disponibles,
+                total: CONSULTAS_GUIA_POR_DIA,
+                b: (trozo) => <strong>{trozo}</strong>,
+              })
             )}
           </span>
         </p>
@@ -123,7 +124,7 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
           ) : null}
           <h2 className="flex items-center gap-3 text-xl font-light">
             <Estrella />
-            Tu guía responde
+            {t('responde')}
           </h2>
           {/* El modelo separa en párrafos; respetarlos hace la respuesta legible. */}
           {estado.respuesta.split(/\n{2,}/).map((parrafo, indice) => (
@@ -143,6 +144,7 @@ export function FormularioConsulta({ restantes }: { restantes: number }) {
  * vería nada.
  */
 function Enviar({ deshabilitado }: { deshabilitado: boolean }) {
+  const t = useTranslations('guia')
   const { pending } = useFormStatus()
 
   return (
@@ -152,7 +154,7 @@ function Enviar({ deshabilitado }: { deshabilitado: boolean }) {
       className="mx-auto flex items-center gap-2.5 rounded-full bg-oro px-10 py-4 text-lg font-medium text-white shadow-sm transition-colors hover:bg-oro-hondo disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Estrella className="text-white" />
-      {pending ? 'Consultando tu Código Personal…' : 'Consultar mi guía'}
+      {pending ? t('consultando') : t('consultar')}
     </button>
   )
 }
