@@ -473,6 +473,44 @@ primer paso después de commitear.
 `APP_SHARED_SECRET`. Sin ellos la integración se degrada sola y el acceso se
 sirve desde la caché — que es justo lo que el contrato pide.
 
+### Dos cosas que se comprobaron al leer su repositorio
+
+**WooCommerce NO es un canal de venta.** Su `/api/webhooks/woocommerce` daba a
+entender que podía haber compras que esta app no escucha. No las hay: ese
+webhook solo sincroniza el **catálogo de productos** hacia `public.products`,
+filtra por `product.*` y acusa recibo de todo lo demás sin hacer nada.
+Comprobado también por el otro lado — en todo su backend solo dos sitios emiten
+credenciales de acceso, el webhook de Stripe Checkout y el reenvío del enlace.
+**Stripe es el único camino por el que alguien obtiene acceso.**
+
+**La landing y esta app comparten el mismo proyecto de Supabase**
+(`exwfdgpgftguwovshgsn`), y no estaba decidido: se descubrió al mirar. Sus
+tablas `subscriptions`, `orders`, `products` y `blog_posts` viven en la nuestra.
+
+**Y ya hubo una colisión, silenciosa.** Dos nombres de tabla coinciden:
+
+| Tabla | Forma real (la nuestra) | Lo que espera su código |
+|---|---|---|
+| `profiles` | `id, email, full_name, locale, created_at` | `name`, `birth_date`, `is_activated`, `activation_code`, `subscription_status`… |
+| `daily_activations` | `id, portal_id, day_number, content, read_at` | `user_id` |
+
+Su `schema.sql` usa `create table if not exists`. Cuando se aplicó, las
+nuestras ya existían: **no dio error, simplemente no hizo nada**, y su backend
+quedó apuntando a tablas con la forma equivocada. Su flujo de compra no está
+afectado —usa `subscriptions`, que es solo suya—, por eso todo funciona; lo que
+estaría roto son sus endpoints de perfil.
+
+De paso, esto responde la incógnita de `activation_codes`: en su diseño
+**`activation_code` es una columna de `profiles`**, no una tabla. Y en la base
+real no existe.
+
+`service_role` no tiene `GRANT` sobre sus tablas —la misma trampa ya
+documentada— así que no se pudo leer cuántas filas tienen `subscriptions` y
+`orders`. **No se puede afirmar que no haya clientes reales.**
+
+**Decisión pendiente del cliente:** ¿deben estos dos sistemas compartir base de
+datos? Hoy lo hacen sin haberlo decidido.
+
 ### El modelo de precios, por fin conocido
 
 **49 $ el primer mes y 15 $/mes después** (confirmado por el cliente, agosto de

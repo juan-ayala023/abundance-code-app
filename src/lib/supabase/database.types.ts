@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.15"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       daily_activations: {
@@ -55,8 +80,8 @@ export type Database = {
           current_period_end: string | null
           email: string
           has_access: boolean | null
-          last_checked_at: string | null
           id: string
+          last_checked_at: string | null
           last_event_at: string | null
           plan: string | null
           source: string | null
@@ -71,8 +96,8 @@ export type Database = {
           current_period_end?: string | null
           email: string
           has_access?: boolean | null
-          last_checked_at?: string | null
           id?: string
+          last_checked_at?: string | null
           last_event_at?: string | null
           plan?: string | null
           source?: string | null
@@ -87,8 +112,8 @@ export type Database = {
           current_period_end?: string | null
           email?: string
           has_access?: boolean | null
-          last_checked_at?: string | null
           id?: string
+          last_checked_at?: string | null
           last_event_at?: string | null
           plan?: string | null
           source?: string | null
@@ -254,11 +279,11 @@ export type Database = {
       apply_landing_entitlement: {
         Args: {
           p_checked_at: string
-          p_current_period_end: string | null
+          p_current_period_end: string
           p_email: string
           p_has_access: boolean
-          p_plan: string | null
-          p_source: string | null
+          p_plan: string
+          p_source: string
           p_status: string
           p_user_id: string
         }
@@ -278,6 +303,12 @@ export type Database = {
           updated_at: string
           user_id: string | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "entitlements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       apply_stripe_entitlement: {
         Args: {
@@ -297,7 +328,9 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           email: string
+          has_access: boolean | null
           id: string
+          last_checked_at: string | null
           last_event_at: string | null
           plan: string | null
           source: string | null
@@ -442,6 +475,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
