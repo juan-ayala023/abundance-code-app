@@ -91,12 +91,16 @@ export type Aspecto = {
  */
 export type Precision = 'exact' | 'partial'
 
+export const SISTEMAS_CASAS = ['placidus', 'whole-sign', 'koch', 'equal'] as const
+
+export type SistemaCasas = (typeof SISTEMAS_CASAS)[number]
+
 export type Carta = {
   precision: Precision
   /** Instante UTC del nacimiento, ISO 8601. */
   utc: string
   /** Sistema de casas usado. Placidus por defecto. */
-  sistemaCasas: 'placidus' | 'whole-sign' | 'koch' | 'equal'
+  sistemaCasas: SistemaCasas
 
   planetas: PosicionPlanetaria[]
 

@@ -16,16 +16,25 @@ import { useRef, useState } from 'react'
 export function CartaDescargable({
   children,
   nombreArchivo,
+  cabecera,
 }: {
   children: React.ReactNode
   nombreArchivo: string
+  /**
+   * Lo que va a la izquierda del botón, en la misma fila. Existe para que el
+   * botón quede arriba a la derecha de la tarjeta —como en el original— sin
+   * sacar de aquí la referencia al SVG, que es lo que permite exportarlo.
+   */
+  cabecera?: React.ReactNode
 }) {
   const contenedor = useRef<HTMLDivElement>(null)
   const [estado, setEstado] = useState<'listo' | 'trabajando' | 'error'>('listo')
 
   async function descargar() {
-    const svg = contenedor.current?.querySelector('svg')
-    if (!svg) return
+    // `role="img"` es la rueda. Buscar un `svg` cualquiera podría encontrar el
+    // icono de otro elemento si algún día se mete uno dentro.
+    const svg = contenedor.current?.querySelector('svg[role="img"]')
+    if (!(svg instanceof SVGSVGElement)) return
 
     setEstado('trabajando')
 
@@ -47,8 +56,9 @@ export function CartaDescargable({
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex justify-end">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        {cabecera}
         <button
           type="button"
           onClick={descargar}

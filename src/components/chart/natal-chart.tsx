@@ -217,10 +217,17 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                 fontSize={26}
                 fill="var(--color-tinta)"
               >
+                {/*
+                  Una sola cadena, no varios nodos. Un `<title>` solo puede
+                  contener texto, y React avisa —una vez por planeta— si recibe
+                  un array. El navegador se quedaría con el primer trozo, así
+                  que el lector de pantalla oiría «Sol» en vez de «Sol en
+                  Cáncer».
+                */}
                 <title>
-                  {NOMBRE_CUERPO[planeta.cuerpo]} en{' '}
-                  {NOMBRE_SIGNO[signoDe(planeta.longitud)]}
-                  {planeta.retrogrado ? ', retrógrado' : ''}
+                  {`${NOMBRE_CUERPO[planeta.cuerpo]} en ${NOMBRE_SIGNO[signoDe(planeta.longitud)]}${
+                    planeta.retrogrado ? ', retrógrado' : ''
+                  }`}
                 </title>
                 {GLIFO_CUERPO[planeta.cuerpo]}
               </text>
