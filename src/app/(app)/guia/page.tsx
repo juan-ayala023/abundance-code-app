@@ -8,7 +8,6 @@ import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
 import { Tarjeta } from '@/components/layout/tarjeta'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
-import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 

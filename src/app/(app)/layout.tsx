@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Logo } from '@/components/layout/logo'
 import { NavLateral } from '@/components/layout/nav-lateral'
 import { NavMovil } from '@/components/layout/nav-movil'
+import { PieLegal } from '@/components/layout/pie-legal'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { createClient } from '@/lib/supabase/server'
@@ -67,7 +68,14 @@ export default async function AppLayout({
         <NavLateral ciclo={ciclo} />
       </aside>
 
-      <div className="min-w-0 flex-1">{children}</div>
+      {/*
+        El pie va dentro de la columna de contenido y no fuera: así respeta el
+        ancho del portal y no se cuela debajo de la barra lateral.
+      */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex-1">{children}</div>
+        <PieLegal />
+      </div>
     </div>
   )
 }
