@@ -46,17 +46,71 @@ export const EVENTOS_RELEVANTES = [
   'customer.subscription.deleted',
 ] as const
 
-export function interpretarEvento(event: Stripe.Event): ActualizacionEntitlement | null {
+/**
+ * @param emailDeRespaldo Email resuelto por quien llama cuando el evento no lo
+ * trae. Se pasa como argumento —en vez de consultarlo aquí— para que esta
+ * función siga siendo pura y probable sin red.
+ */
+export function interpretarEvento(
+  event: Stripe.Event,
+  emailDeRespaldo: string | null = null,
+): ActualizacionEntitlement | null {
   const eventAt = new Date(event.created * 1000).toISOString()
 
   switch (event.type) {
     case 'checkout.session.completed':
-      return desdeCheckout(event.data.object as Stripe.Checkout.Session, eventAt)
+      return desdeCheckout(
+        event.data.object as Stripe.Checkout.Session,
+        eventAt,
+        emailDeRespaldo,
+      )
 
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted':
-      return desdeSuscripcion(event.data.object as Stripe.Subscription, eventAt)
+      return desdeSuscripcion(
+        event.data.object as Stripe.Subscription,
+        eventAt,
+        emailDeRespaldo,
+      )
+
+    default:
+      return null
+  }
+}
+
+/**
+ * Id del cliente cuyo email hay que ir a buscar, o null si no hace falta.
+ *
+ * **Esto es lo que hace que las suscripciones funcionen fuera de las pruebas.**
+ * Un webhook de Stripe NO expande `customer`: llega como `"cus_123"`, no como
+ * el objeto. Así que en un evento real de suscripción no hay email por ninguna
+ * parte, y sin email no se puede emparejar la compra con la cuenta.
+ *
+ * Con eventos de ejemplo escritos a mano es fácil no verlo —se escribe el
+ * cliente expandido porque es cómodo— y el resultado sería que en producción se
+ * descartan en silencio TODAS las cancelaciones, impagos y renovaciones: quien
+ * cancelara conservaría el acceso indefinidamente, y el log solo diría
+ * `applied: false`.
+ *
+ * Resolverlo cuesta una llamada a `customers.retrieve`, que es justo el permiso
+ * «Customers: read» que el README ya exige en la clave restringida.
+ */
+export function clienteSinEmail(event: Stripe.Event): string | null {
+  if (interpretarEvento(event) !== null) return null
+
+  switch (event.type) {
+    case 'checkout.session.completed': {
+      const sesion = event.data.object as Stripe.Checkout.Session
+      // Un pago sin completar no concede nada: no merece la llamada.
+      if (sesion.payment_status === 'unpaid') return null
+      return idDe(sesion.customer)
+    }
+
+    case 'customer.subscription.created':
+    case 'customer.subscription.updated':
+    case 'customer.subscription.deleted':
+      return idDe((event.data.object as Stripe.Subscription).customer)
 
     default:
       return null
@@ -66,9 +120,10 @@ export function interpretarEvento(event: Stripe.Event): ActualizacionEntitlement
 function desdeCheckout(
   session: Stripe.Checkout.Session,
   eventAt: string,
+  emailDeRespaldo: string | null,
 ): ActualizacionEntitlement | null {
   const email = normalizarEmail(
-    session.customer_email ?? session.customer_details?.email ?? null,
+    session.customer_email ?? session.customer_details?.email ?? emailDeRespaldo,
   )
 
   // Sin email no hay forma de emparejar la compra con la cuenta de Google.
@@ -93,9 +148,10 @@ function desdeCheckout(
 function desdeSuscripcion(
   sub: Stripe.Subscription,
   eventAt: string,
+  emailDeRespaldo: string | null,
 ): ActualizacionEntitlement | null {
   // `deleted` puede llegar con estado activo; el evento manda sobre el campo.
-  const email = normalizarEmail(leerEmailDeSuscripcion(sub))
+  const email = normalizarEmail(leerEmailDeSuscripcion(sub) ?? emailDeRespaldo)
   if (!email) return null
 
   return {

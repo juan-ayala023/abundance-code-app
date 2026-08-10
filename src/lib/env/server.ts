@@ -29,6 +29,12 @@ const opcional = z.preprocess(
 
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  /*
+   * Backend de la landing: es quien cobra y, por tanto, quien sabe quién ha
+   * pagado. Ver `src/lib/access/landing.ts` y `BRIEF-APP-INTEGRACION.md`.
+   */
+  LANDING_API_URL: opcional,
+  APP_SHARED_SECRET: opcional,
   STRIPE_SECRET_KEY: opcional,
   STRIPE_WEBHOOK_SECRET: opcional,
   ANTHROPIC_API_KEY: opcional,

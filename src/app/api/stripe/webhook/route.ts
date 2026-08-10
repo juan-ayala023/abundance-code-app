@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import Stripe from 'stripe'
 
 import { requireServerEnv } from '@/lib/env/server'
-import { interpretarEvento } from '@/lib/stripe/entitlements'
+import { clienteSinEmail, interpretarEvento } from '@/lib/stripe/entitlements'
 import { getStripe } from '@/lib/stripe/client'
 import { createAdminClient } from '@/lib/supabase/server'
 
@@ -20,6 +20,15 @@ import { createAdminClient } from '@/lib/supabase/server'
  * El middleware excluye esta ruta a propósito: no hay sesión de usuario que
  * refrescar y no debe pasar por el ciclo de cookies.
  */
+
+/**
+ * Margen sobre el valor por defecto (15 s). El manejador es rápido, pero entre
+ * un arranque en frío y dos viajes a la base de datos puede rozarlo, y agotar
+ * el tiempo aquí significa que Stripe da el evento por fallido. Se recupera
+ * —hay reintento y el registro se borra al fallar— pero el acceso del cliente
+ * llegaría con retraso, que es justo lo que no puede pasar tras un pago.
+ */
+export const maxDuration = 30
 
 export async function POST(request: NextRequest) {
   const firma = request.headers.get('stripe-signature')
@@ -73,7 +82,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Error temporal' }, { status: 500 })
   }
 
-  const actualizacion = interpretarEvento(event)
+  const actualizacion = await interpretarConEmail(event)
 
   if (!actualizacion) {
     // Evento que no nos afecta, o sin email con el que emparejar la compra.
@@ -120,4 +129,56 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ received: true, applied: true })
+}
+
+/**
+ * Interpreta el evento, yendo a buscar el email del cliente si no viene.
+ *
+ * Stripe **no expande `customer`** en los webhooks: llega como `"cus_123"`. Sin
+ * este paso, un `customer.subscription.deleted` real no tiene email por ningún
+ * lado, se descarta como «evento que no nos afecta» y la cancelación no se
+ * aplica jamás — el cliente deja de pagar y conserva el acceso.
+ *
+ * Se resuelve aquí y no dentro de `interpretarEvento` para que aquella siga sin
+ * red y se pueda probar con eventos escritos a mano.
+ */
+async function interpretarConEmail(event: Stripe.Event) {
+  const directo = interpretarEvento(event)
+  if (directo) return directo
+
+  const clienteId = clienteSinEmail(event)
+  if (!clienteId) return null
+
+  let email: string | null = null
+
+  try {
+    const cliente = await getStripe().customers.retrieve(clienteId)
+    // Un cliente borrado no expone email; no hay a quién emparejar.
+    email = 'deleted' in cliente && cliente.deleted ? null : (cliente.email ?? null)
+  } catch (error) {
+    /*
+     * No se propaga. Devolver 500 haría que Stripe reintentara indefinidamente
+     * un evento que quizá nunca podamos resolver, y el registro de idempotencia
+     * ya está escrito. Queda en el log con el id del evento para poder
+     * reprocesarlo a mano.
+     */
+    console.error('[stripe/webhook] no se pudo resolver el email del cliente', {
+      eventId: event.id,
+      type: event.type,
+      clienteId,
+      error,
+    })
+    return null
+  }
+
+  if (!email) {
+    console.error('[stripe/webhook] el cliente de Stripe no tiene email', {
+      eventId: event.id,
+      type: event.type,
+      clienteId,
+    })
+    return null
+  }
+
+  return interpretarEvento(event, email)
 }

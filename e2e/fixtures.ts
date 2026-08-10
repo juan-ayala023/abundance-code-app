@@ -50,6 +50,75 @@ export async function crearUsuario(etiqueta: string, conCompra: boolean): Promis
   return { id: data.user!.id, email }
 }
 
+/**
+ * Siembra la activación de un día concreto para el portal del usuario.
+ *
+ * Se escribe con la clave de servicio porque en producción las activaciones las
+ * genera el servidor, no el usuario: sembrarlas por la vía del cliente probaría
+ * un camino que no existe.
+ */
+export async function sembrarActivacion(userId: string, dia: number) {
+  const { data: portal, error } = await admin
+    .from('portals')
+    .select('id')
+    .eq('user_id', userId)
+    .single()
+
+  if (error || !portal) {
+    throw new Error(`No se encontró el portal del usuario: ${error?.message}`)
+  }
+
+  const { error: errorActivacion } = await admin.from('daily_activations').insert({
+    portal_id: portal.id,
+    day_number: dia,
+    content: {
+      mensajePrincipal: 'Hoy tu atención vale más que tu esfuerzo.',
+      queObservar: 'Dónde se te va la energía sin darte cuenta.',
+      queEvitar: 'Decir que sí antes de haberlo pensado.',
+      queActivar: 'Una conversación que llevas aplazando.',
+      preguntaReflexion: '¿Qué estoy sosteniendo que ya no me sostiene a mí?',
+    },
+  })
+
+  if (errorActivacion) {
+    throw new Error(`No se pudo sembrar la activación: ${errorActivacion.message}`)
+  }
+}
+
+/**
+ * Envejece el portal para simular que el ciclo de 30 días ya terminó.
+ *
+ * Se mueve `created_at` hacia atrás porque es de donde se deriva el día del
+ * ciclo: no hay contador guardado que tocar. Esperar 30 días no era una opción.
+ */
+export async function envejecerPortal(userId: string, dias: number) {
+  const fecha = new Date()
+  fecha.setUTCDate(fecha.getUTCDate() - dias)
+
+  const { error } = await admin
+    .from('portals')
+    .update({ created_at: fecha.toISOString() })
+    .eq('user_id', userId)
+
+  if (error) throw new Error(`No se pudo envejecer el portal: ${error.message}`)
+}
+
+/**
+ * Deja la compra como la deja Stripe cuando alguien se da de baja.
+ *
+ * Con el precio real —49 $ el primer mes y 15 $/mes después— todo comprador es
+ * un suscriptor, así que este es el estado de cualquiera que cancele: el camino
+ * normal, no un borde.
+ */
+export async function cancelarCompra(email: string) {
+  const { error } = await admin
+    .from('entitlements')
+    .update({ status: 'canceled', stripe_subscription_id: 'sub_e2e' })
+    .eq('email', email)
+
+  if (error) throw new Error(`No se pudo cancelar la compra: ${error.message}`)
+}
+
 export async function borrarUsuario(usuario: UsuarioE2E) {
   await admin.auth.admin.deleteUser(usuario.id)
   await admin.from('entitlements').delete().eq('email', usuario.email)

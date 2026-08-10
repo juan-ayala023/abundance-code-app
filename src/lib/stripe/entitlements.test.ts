@@ -1,7 +1,7 @@
 import type Stripe from 'stripe'
 import { describe, expect, it } from 'vitest'
 
-import { interpretarEvento } from './entitlements'
+import { clienteSinEmail, interpretarEvento } from './entitlements'
 
 const CREATED = 1_770_000_000 // segundos epoch
 const FECHA_EVENTO = new Date(CREATED * 1000).toISOString()
@@ -151,15 +151,46 @@ describe('eventos de suscripción', () => {
     expect(r?.plan).toBe('price_1')
   })
 
-  it('devuelve null si el cliente llega sin expandir y no hay email', () => {
-    const r = interpretarEvento(
+  /**
+   * Así llega SIEMPRE un webhook de verdad: Stripe no expande `customer`.
+   *
+   * Los casos de arriba escriben el cliente expandido porque es cómodo, y eso
+   * ocultaba que en producción ningún evento de suscripción se aplicaba.
+   */
+  describe('tal como llega de Stripe, con el cliente sin expandir', () => {
+    const sinExpandir = () =>
       evento('customer.subscription.updated', {
         ...suscripcion('active'),
         customer: 'cus_1',
-      }),
-    )
+      })
 
-    expect(r).toBeNull()
+    it('no puede resolverse por sí solo: no hay email en el evento', () => {
+      expect(interpretarEvento(sinExpandir())).toBeNull()
+    })
+
+    it('pide el id del cliente para ir a buscarlo', () => {
+      expect(clienteSinEmail(sinExpandir())).toBe('cus_1')
+    })
+
+    it('se aplica cuando quien llama aporta el email', () => {
+      const r = interpretarEvento(sinExpandir(), 'Cliente@Example.com')
+
+      expect(r).toMatchObject({
+        email: 'cliente@example.com',
+        status: 'active',
+        stripeSubscriptionId: 'sub_1',
+      })
+    })
+
+    it('no pide nada cuando el evento ya trae email', () => {
+      expect(
+        clienteSinEmail(evento('customer.subscription.updated', suscripcion('active'))),
+      ).toBeNull()
+    })
+
+    it('no pide nada para un evento que no nos afecta', () => {
+      expect(clienteSinEmail(evento('invoice.created', { customer: 'cus_1' }))).toBeNull()
+    })
   })
 })
 

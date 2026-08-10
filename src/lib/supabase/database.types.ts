@@ -54,6 +54,8 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           email: string
+          has_access: boolean | null
+          last_checked_at: string | null
           id: string
           last_event_at: string | null
           plan: string | null
@@ -68,6 +70,8 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           email: string
+          has_access?: boolean | null
+          last_checked_at?: string | null
           id?: string
           last_event_at?: string | null
           plan?: string | null
@@ -82,6 +86,8 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           email?: string
+          has_access?: boolean | null
+          last_checked_at?: string | null
           id?: string
           last_event_at?: string | null
           plan?: string | null
@@ -245,6 +251,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_landing_entitlement: {
+        Args: {
+          p_checked_at: string
+          p_current_period_end: string | null
+          p_email: string
+          p_has_access: boolean
+          p_plan: string | null
+          p_source: string | null
+          p_status: string
+          p_user_id: string
+        }
+        Returns: {
+          created_at: string
+          current_period_end: string | null
+          email: string
+          has_access: boolean | null
+          id: string
+          last_checked_at: string | null
+          last_event_at: string | null
+          plan: string | null
+          source: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string | null
+        }[]
+      }
       apply_stripe_entitlement: {
         Args: {
           p_current_period_end: string
