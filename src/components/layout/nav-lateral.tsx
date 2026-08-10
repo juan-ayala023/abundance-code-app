@@ -7,12 +7,18 @@ import { usePathname } from 'next/navigation'
 import { cerrarSesion } from '@/app/actions'
 import { cn } from '@/lib/utils'
 
+/**
+ * Las etiquetas van en Mayúsculas Iniciales porque así están en el producto que
+ * el usuario ya conoce: «Mi Portal», «Lectura Base», «Guía Personalizada». No
+ * es el uso habitual del español, pero aquí funcionan como nombres propios de
+ * cada sección, y manda el producto.
+ */
 const ENLACES = [
-  { href: '/portal', etiqueta: 'Mi portal', Icono: Home },
-  { href: '/lectura-base', etiqueta: 'Lectura base', Icono: Sparkles },
-  { href: '/activacion', etiqueta: 'Activación de hoy', Icono: Sun },
-  { href: '/guia', etiqueta: 'Guía personalizada', Icono: MessageCircle },
-  { href: '/cuenta', etiqueta: 'Mi cuenta', Icono: User },
+  { href: '/portal', etiqueta: 'Mi Portal', Icono: Home },
+  { href: '/lectura-base', etiqueta: 'Lectura Base', Icono: Sparkles },
+  { href: '/activacion', etiqueta: 'Activación de Hoy', Icono: Sun },
+  { href: '/guia', etiqueta: 'Guía Personalizada', Icono: MessageCircle },
+  { href: '/cuenta', etiqueta: 'Mi Cuenta', Icono: User },
 ] as const
 
 export function NavLateral({

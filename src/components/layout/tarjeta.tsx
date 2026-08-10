@@ -3,7 +3,14 @@ import type { LucideIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
-/** Superficie base de todo el portal. */
+/**
+ * Superficie base de todo el portal.
+ *
+ * El relleno es menor por debajo de `sm`. Con `p-7` fijo, una tarjeta en una
+ * pantalla de 390 px se quedaba con 56 px de relleno propio más los 32 del
+ * contenedor: 88 px de 390, casi una cuarta parte de la pantalla sin contenido.
+ * Eso es lo que dejaba la tabla de posiciones sin sitio.
+ */
 export function Tarjeta({
   children,
   className,
@@ -17,7 +24,7 @@ export function Tarjeta({
     <div
       id={id}
       className={cn(
-        'rounded-3xl border border-borde bg-superficie p-6 shadow-[0_1px_2px_rgba(60,53,45,0.04)]',
+        'rounded-3xl border border-borde bg-superficie p-5 sm:p-7 shadow-[0_1px_3px_rgba(60,53,45,0.05),0_8px_24px_-12px_rgba(60,53,45,0.10)]',
         className,
       )}
     >
@@ -50,6 +57,7 @@ export function TarjetaAccion({
   sobretitulo,
   titulo,
   descripcion,
+  recorte,
   href,
   accion,
   pendiente,
@@ -57,7 +65,10 @@ export function TarjetaAccion({
   Icono: LucideIcon
   sobretitulo?: string
   titulo: string
-  descripcion: string
+  /** Opcional: una tarjeta cuyo contenido aún no existe solo lleva `pendiente`. */
+  descripcion?: string
+  /** Limita la descripción a seis líneas visibles. Para textos largos. */
+  recorte?: boolean
   href?: string
   accion?: string
   pendiente?: string
@@ -76,7 +87,22 @@ export function TarjetaAccion({
         </div>
       </div>
 
-      <p className="text-sm leading-relaxed text-tinta-suave">{descripcion}</p>
+      {/*
+        `recorte` limita las líneas VISIBLES, no el texto: el párrafo entero
+        sigue en el DOM, así que un lector de pantalla lo lee completo y el
+        enlace de debajo lleva a la versión larga. Se usa para el resumen de la
+        lectura, que mide unas 90 palabras y descuadraría la fila de tarjetas.
+      */}
+      {descripcion ? (
+        <p
+          className={cn(
+            'text-sm leading-relaxed text-tinta-suave',
+            recorte ? 'line-clamp-6' : undefined,
+          )}
+        >
+          {descripcion}
+        </p>
+      ) : null}
 
       {href && accion ? (
         <Link

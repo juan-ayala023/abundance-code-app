@@ -50,6 +50,19 @@ body {
   outline-offset: 2px;
 }
 
+/*
+ * Entrada del cajón de navegación en móvil. Se aplica con `motion-safe:`, y
+ * además el bloque de abajo la neutraliza para quien pide menos movimiento.
+ */
+@keyframes entrar-cajon {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

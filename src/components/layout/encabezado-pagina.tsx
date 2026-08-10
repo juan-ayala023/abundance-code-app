@@ -21,10 +21,18 @@ export function EncabezadoPagina({
         </Link>
       ) : null}
 
-      <h1 className="text-4xl font-light tracking-tight">{titulo}</h1>
+      {/*
+        Los titulares van grandes y de peso ligero: es lo que da el aire de la
+        marca. En el producto original ocupan casi el ancho de la columna.
+      */}
+      <h1 className="text-4xl font-light leading-tight tracking-tight lg:text-5xl">
+        {titulo}
+      </h1>
 
       {descripcion ? (
-        <p className="max-w-prose text-tinta-suave">{descripcion}</p>
+        <p className="max-w-2xl text-lg leading-relaxed text-tinta-suave">
+          {descripcion}
+        </p>
       ) : null}
     </header>
   )

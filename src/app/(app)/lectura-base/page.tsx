@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { CartaDescargable } from '@/components/chart/boton-descargar'
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
+import { Contenedor } from '@/components/layout/contenedor'
 import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { Estrella } from '@/components/layout/estrella'
 import { Tarjeta } from '@/components/layout/tarjeta'
@@ -33,38 +34,38 @@ export default async function LecturaBasePage() {
   const lectura = lecturaBaseSchema.safeParse(portal.base_reading)
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-10 lg:px-10">
+    <Contenedor>
       <EncabezadoPagina
-        titulo="Tu lectura base personalizada"
-        descripcion="Una interpretación creada desde tu carta natal para ayudarte a entender tus patrones, bloqueos y áreas de expansión."
+        titulo="Tu Lectura Base Personalizada"
+        descripcion="Una interpretación creada desde tu Código Natal para ayudarte a entender tus patrones, bloqueos y áreas de expansión."
         volver={{ href: '/portal', texto: 'Volver a mi portal' }}
       />
 
-      <Tarjeta className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-            Tu carta natal
-          </p>
-          <h2 className="text-2xl font-light">{portal.full_name}</h2>
-          <p className="text-sm text-tinta-suave">
-            {portal.birth_date}
-            {portal.birth_time ? ` · ${String(portal.birth_time).slice(0, 5)}` : ''} ·{' '}
-            {portal.birth_city}
-          </p>
-        </div>
-
+      <Tarjeta className="flex flex-col gap-6 p-8">
         {carta ? (
-          <>
-            <CartaDescargable nombreArchivo={`carta-natal-${portal.birth_date}`}>
+          /*
+            Rueda y tabla en paralelo a partir de `xl`. Apiladas dejaban medio
+            ancho vacío en pantallas grandes y obligaban a bajar para relacionar
+            un planeta del dibujo con su fila. Por debajo de `xl` se apilan, que
+            es lo único legible en una columna estrecha.
+          */
+          <CartaDescargable
+            nombreArchivo={`carta-natal-${portal.birth_date}`}
+            cabecera={<DatosDeNacimiento portal={portal} />}
+          >
+            <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
               <NatalChart carta={carta} />
-            </CartaDescargable>
-            <TablaPosiciones carta={carta} />
-          </>
+              <TablaPosiciones carta={carta} />
+            </div>
+          </CartaDescargable>
         ) : (
-          <AvisoPendiente>
-            Tu carta todavía no está calculada. Aparecerá aquí en cuanto
-            conectemos el motor de cálculo.
-          </AvisoPendiente>
+          <>
+            <DatosDeNacimiento portal={portal} />
+            <AvisoPendiente>
+              Tu carta todavía no está calculada. Aparecerá aquí en cuanto
+              conectemos el motor de cálculo.
+            </AvisoPendiente>
+          </>
         )}
       </Tarjeta>
 
@@ -89,14 +90,16 @@ export default async function LecturaBasePage() {
           <Tarjeta className="bg-oro-palido/40">
             <h2 className="flex items-center gap-3 text-2xl font-light">
               <Estrella />
-              Resumen de tu código personal
+              Resumen de tu Código Personal
             </h2>
-            <p className="mt-3 leading-relaxed text-tinta-suave">
+            {/* `max-w-prose`: el resumen es prosa suelta y a 1280 px daría
+                líneas de 180 caracteres. */}
+            <p className="mt-4 max-w-prose text-lg leading-relaxed text-tinta-suave">
               {lectura.data.resumen}
             </p>
           </Tarjeta>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {SECCIONES_LECTURA.map(({ clave, titulo }) => (
               <Tarjeta key={clave} className="flex flex-col gap-3">
                 <h3 className="flex items-center gap-3 text-xl font-light">
@@ -135,6 +138,27 @@ export default async function LecturaBasePage() {
           </ul>
         </>
       )}
-    </main>
+    </Contenedor>
+  )
+}
+
+/** Nombre, fecha, hora y lugar: la cabecera de la tarjeta de la carta. */
+function DatosDeNacimiento({
+  portal,
+}: {
+  portal: { full_name: string | null; birth_date: string | null; birth_time: string | null; birth_city: string | null }
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
+        Tu carta natal
+      </p>
+      <h2 className="text-2xl font-light">{portal.full_name}</h2>
+      <p className="text-sm text-tinta-suave">
+        {portal.birth_date}
+        {portal.birth_time ? ` · ${String(portal.birth_time).slice(0, 5)}` : ''} ·{' '}
+        {portal.birth_city}
+      </p>
+    </div>
   )
 }

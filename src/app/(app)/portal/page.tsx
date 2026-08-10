@@ -1,10 +1,12 @@
 import { Compass, GitBranch, MessageCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
 
+import { Contenedor } from '@/components/layout/contenedor'
 import { AreasDesbloqueadas } from '@/components/layout/areas-desbloqueadas'
 import { IndicadorCiclo } from '@/components/layout/indicador-ciclo'
 import { Insignia, Tarjeta, TarjetaAccion } from '@/components/layout/tarjeta'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -26,12 +28,15 @@ export default async function PortalPage() {
   const tieneDatos = Boolean(portal?.birth_date)
   const ciclo = diaDelCiclo(portal?.created_at)
 
+  // El resumen de su lectura, no un texto de muestra. Ver la tarjeta de abajo.
+  const lectura = lecturaBaseSchema.safeParse(portal?.base_reading)
+
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 lg:px-10">
+    <Contenedor>
       <div className="flex items-start justify-between gap-6">
         <header className="flex flex-col gap-2">
           <h1 className="text-4xl font-light tracking-tight lg:text-5xl">
-            Bienvenido a tu portal{nombre ? `, ${nombre}` : ''}
+            Bienvenido a tu Portal{nombre ? `, ${nombre}` : ''}
           </h1>
           <p className="text-tinta-suave">
             Este es tu espacio privado de lectura, claridad y alineación.
@@ -72,7 +77,7 @@ export default async function PortalPage() {
             </div>
 
             <p className="text-sm leading-relaxed text-tinta-suave">
-              Tu esfera incluye {ciclo.total} días de guía activa. Después, tu
+              Tu portal incluye {ciclo.total} días de guía activa. Después, tu
               lectura base seguirá disponible y podrás decidir si deseas
               continuar con guía avanzada.
             </p>
@@ -98,20 +103,36 @@ export default async function PortalPage() {
 
         <TarjetaAccion
           Icono={Compass}
-          titulo="Tu código natal"
+          titulo="Tu Código Natal"
           descripcion="Tu mapa energético único revela tu esencia, talentos naturales y camino de vida."
           href={tieneDatos ? '/carta' : undefined}
-          accion={tieneDatos ? 'Ver mi carta' : undefined}
+          accion={tieneDatos ? 'Ver lectura completa' : undefined}
           pendiente={
             tieneDatos ? undefined : 'Disponible cuando completes tus datos de nacimiento.'
           }
         />
 
+        {/*
+          Aquí había un párrafo escrito a mano —«estás en un ciclo de expansión
+          y claridad»— igual para todo el mundo. En un producto cuyo entregable
+          es una interpretación personal, un texto así puesto junto al resto se
+          lee como si fuera la lectura de quien mira. Ahora sale su resumen real
+          o se dice que aún no está.
+        */}
         <TarjetaAccion
           Icono={GitBranch}
-          titulo="Tu patrón central"
-          descripcion="Estás en un ciclo de expansión y claridad. Es un momento ideal para tomar decisiones alineadas con tu propósito."
-          pendiente="Se leerá desde tu carta cuando conectemos la interpretación."
+          titulo="Tu Patrón Central"
+          descripcion={lectura.success ? lectura.data.resumen : undefined}
+          recorte
+          href={lectura.success ? '/lectura-base' : undefined}
+          accion={lectura.success ? 'Ver lectura completa' : undefined}
+          pendiente={
+            lectura.success
+              ? undefined
+              : tieneDatos
+                ? 'Se está preparando desde tu Código Natal.'
+                : 'Disponible cuando completes tus datos de nacimiento.'
+          }
         />
       </div>
 
@@ -119,7 +140,7 @@ export default async function PortalPage() {
         <TarjetaAccion
           Icono={Sun}
           sobretitulo="Activación de hoy"
-          titulo={ciclo ? `Activación del día ${ciclo.dia}` : 'Activación de hoy'}
+          titulo={ciclo ? `Activación del Día ${ciclo.dia}` : 'Activación de Hoy'}
           descripcion="Una activación energética diaria para elevar tu frecuencia y alinear tus acciones."
           href={tieneDatos ? '/activacion' : undefined}
           accion={tieneDatos ? 'Leer activación completa' : undefined}
@@ -128,7 +149,7 @@ export default async function PortalPage() {
 
         <TarjetaAccion
           Icono={MessageCircle}
-          titulo="Guía personalizada"
+          titulo="Guía Personalizada"
           descripcion="Hazme una pregunta sobre tus decisiones, bloqueos o señales que estás recibiendo."
           href={tieneDatos ? '/guia' : undefined}
           accion={tieneDatos ? 'Hacer una pregunta' : undefined}
@@ -142,6 +163,6 @@ export default async function PortalPage() {
         ✦ No se trata de cambiar quién eres, sino de recordar tu código y
         alinearte con él. ✦
       </p>
-    </main>
+    </Contenedor>
   )
 }
