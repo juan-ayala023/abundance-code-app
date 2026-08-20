@@ -10,6 +10,7 @@ import { Tarjeta } from '@/components/layout/tarjeta'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
+import { AREAS } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
 
 /**
@@ -24,7 +25,23 @@ export const metadata: Metadata = {
   title: 'Guía personalizada · Abundance Code',
 }
 
-export default async function GuiaPage() {
+export default async function GuiaPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  /*
+   * Se llega aquí desde las cinco áreas del portal, con `?area=relaciones`.
+   *
+   * Viaja la CLAVE del área y no la pregunta: la pregunta se resuelve aquí,
+   * contra la lista cerrada de `AREAS`, así que un enlace manipulado no puede
+   * meter texto arbitrario en un campo que acaba en el prompt del modelo. Un
+   * área que no exista simplemente no rellena nada.
+   */
+  const params = await searchParams
+  const area = typeof params.area === 'string' ? params.area : null
+  const areaValida = AREAS.some((candidata) => candidata.clave === area)
+
   const supabase = await createClient()
 
   const { data: portal } = await supabase
@@ -38,6 +55,7 @@ export default async function GuiaPage() {
   const t = await getTranslations('guia')
   const tForm = await getTranslations('guia_form')
   const tNav = await getTranslations('nav')
+  const tAreas = await getTranslations('areas')
   const acceso = await resolveAccess()
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
@@ -76,7 +94,12 @@ export default async function GuiaPage() {
             la intención y recibe la guía que tu alma está lista para escuchar.
           </p>
 
-          <FormularioConsulta restantes={restantes} />
+          <FormularioConsulta
+            restantes={restantes}
+            preguntaInicial={
+              areaValida ? tAreas(`preguntas.${area}` as never) : undefined
+            }
+          />
         </Tarjeta>
       )}
 

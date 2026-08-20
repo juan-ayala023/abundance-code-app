@@ -37,7 +37,7 @@ export async function consultarGuia(
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, chart, base_reading, created_at')
+    .select('id, full_name, chart, base_reading, created_at')
     .maybeSingle()
 
   if (!portal) {
@@ -93,6 +93,7 @@ export async function consultarGuia(
   let resultado
   try {
     resultado = await generarRespuestaGuia({
+      nombre: portal.full_name,
       idioma: await idiomaActual(),
     carta: carta.data,
       transitos,

@@ -67,7 +67,13 @@ export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | nu
   return (
     <>
       <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-borde bg-fondo/95 px-4 py-3 backdrop-blur lg:hidden">
-        <Logo size={52} />
+        {/*
+          `mx-0` anula el `mx-auto` que `Logo` trae por defecto. Dentro de un
+          flex ese margen automático absorbe el espacio libre de la fila, así
+          que empujaba el logo al centro pese al `justify-between` de la
+          cabecera. El cliente lo quiere a la izquierda.
+        */}
+        <Logo size={52} variante="tinta" className="mx-0" />
 
         <button
           ref={botonRef}
@@ -104,7 +110,7 @@ export function NavMovil({ ciclo }: { ciclo: { dia: number; total: number } | nu
             className="absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col gap-8 overflow-y-auto border-r border-borde bg-fondo px-6 py-6 shadow-2xl motion-safe:animate-[entrar-cajon_180ms_ease-out]"
           >
             <div className="flex items-start justify-between gap-4">
-              <Logo size={88} />
+              <Logo size={88} variante="tinta" className="mx-0" />
 
               <button
                 ref={cerrarRef}

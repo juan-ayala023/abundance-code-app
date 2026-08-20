@@ -294,9 +294,33 @@ Stripe tampoco lo tiene, la compra no concede acceso.
 | `OPENAI_API_KEY` | **rotada**: la anterior se pegó en un chat |
 | `GEOCODING_API_KEY` | usuario de GeoNames (`abundane`) |
 | `SUPABASE_PROYECTO_CONFIRMADO` | `sí` |
+| `ACCESOS_CORTESIA` | correos que entran sin haber comprado, separados por comas |
 
 Al cambiar cualquier `NEXT_PUBLIC_*`, **volver a construir**: van dentro del
 bundle, no se leen al arrancar.
+
+### `ACCESOS_CORTESIA` se olvida, y falla en silencio
+
+Faltaba en esta tabla, y por eso se coló en producción sin que nadie lo notara:
+la propietaria del negocio no conseguía entrar a ver su propio producto, y la
+pantalla que le salía era «no encontramos tu compra» — que es exactamente lo que
+la app le dice a un desconocido. No hay ningún error en los registros, porque
+desde el punto de vista del código no pasó nada raro: preguntó a la landing, la
+landing dijo que ese correo no ha comprado, y la app le hizo caso.
+
+Es la lista explícita de correos de `src/lib/access/cortesia.ts`. Sin ella, **solo
+entra quien haya pagado de verdad**, incluida la persona que vende el producto.
+
+Dos detalles al ponerla:
+
+- **No es `NEXT_PUBLIC_`**, así que no hace falta reconstruir: basta con reiniciar
+  el servicio. Pero sí hace falta reiniciar — `getServerEnv()` cachea el valor
+  en memoria la primera vez que se lee, así que cambiar la variable sin reiniciar
+  no tiene ningún efecto.
+- **Debe coincidir con el correo de Google con el que esa persona inicia sesión**,
+  no con el que usa para escribirte. La comparación ignora mayúsculas, pero no
+  adivina alias: `maria@gmail.com` y `maria+trabajo@gmail.com` son distintos para
+  la app aunque el correo llegue al mismo buzón.
 
 ## 11. Comprobar que funciona de verdad
 

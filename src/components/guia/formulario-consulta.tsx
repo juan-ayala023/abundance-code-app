@@ -26,9 +26,24 @@ const MINIMO = 10
  * `restantes` es el contador al cargar la página. El límite de verdad lo aplica
  * la acción de servidor: esto es información para el usuario, no la defensa.
  */
-export function FormularioConsulta({ restantes }: { restantes: number }) {
+export function FormularioConsulta({
+  restantes,
+  preguntaInicial = '',
+}: {
+  restantes: number
+  /**
+   * Pregunta con la que llega el campo ya escrito, cuando se entra desde una de
+   * las cinco áreas del portal.
+   *
+   * Se pasa como estado inicial y no como `defaultValue`: el campo es
+   * controlado, así que un `defaultValue` lo dejaría vacío. Y sigue siendo
+   * editable a propósito —es una pregunta de partida, no un formulario cerrado—:
+   * la mayoría la va a retocar antes de enviarla, que es justo lo que se busca.
+   */
+  preguntaInicial?: string
+}) {
   const t = useTranslations('guia_form')
-  const [pregunta, setPregunta] = useState('')
+  const [pregunta, setPregunta] = useState(preguntaInicial)
   const [estado, enviar] = useActionState(consultarGuia, ESTADO_INICIAL)
 
   // Si acaba de responderse una consulta, ya se ha gastado.

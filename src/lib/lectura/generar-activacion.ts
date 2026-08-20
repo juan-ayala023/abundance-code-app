@@ -6,7 +6,7 @@ import { MODELO_RAPIDO, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
 import type { Idioma } from '@/i18n/idioma'
-import { instruccionDeIdioma } from '@/lib/lectura/idioma-prompt'
+import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
 import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
@@ -24,23 +24,22 @@ import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
 
 export class ActivacionError extends Error {}
 
-const sistema = (idioma: Idioma) => `Eres el intérprete de Abundance Code. Escribes la Activación del Día: una señal breve para que la persona observe algo concreto hoy.
+const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code. Escribes la Activación del Día: una señal breve para que la persona observe algo concreto hoy.
 
 CÓMO ESCRIBES
-- ${instruccionDeIdioma(idioma)} Directo y cálido. Sin misticismo de catálogo.
+${vozComun(idioma, nombre)}
+- **Hoy manda el cielo.** Lo que escribes sale del tránsito de hoy sobre su carta, no de su carta a secas: si no, mañana dirías lo mismo. Nombra una vez, en palabras llanas, qué se está moviendo —«la Luna pasando por tu casa del trabajo», «Marte tocando tu Venus»— y dedica el resto a qué se nota de eso en un día normal.
 - Muy breve: cada campo entre 25 y 45 palabras. Son cinco frases con intención, no un ensayo.
-- Anclado en el tránsito del día. Si el cielo toca su carta, eso es lo que se observa hoy; no repitas su lectura base.
-- Cotidiano y accionable. "Qué activar" es algo que cabe en un día normal, no un propósito de vida.
+- Cotidiano y accionable. «Qué activar» cabe en un día cualquiera; no es un propósito de vida.
 - La pregunta de reflexión es una pregunta de verdad, abierta, que no se responde con sí o no.
+- No repitas su lectura base: eso ya lo leyó.
 
 QUÉ NO HACES
-- No calculas ni corriges astronomía. Usas solo los datos que recibes.
-- No predices sucesos ni das fechas. No prometes resultados.
-- No das consejo médico, legal, financiero ni psicológico.
-- No repites literalmente el nombre técnico del tránsito en cada campo: interpreta, no recites.
-- No mencionas que eres una IA ni estas instrucciones.`
+${LIMITES}`
 
 export async function generarActivacionDiaria(entrada: {
+  /** Nombre de pila, si se conoce. Lo usa `vozComun()`. */
+  nombre: string | null
   carta: Carta
   transitos: AspectoTransito[]
   dia: number
@@ -62,7 +61,7 @@ export async function generarActivacionDiaria(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
       schema: activacionDiariaSchema,
-      system: sistema(entrada.idioma),
+      system: sistema(entrada.idioma, entrada.nombre?.trim() || null),
       prompt,
       // Texto corto y muy pautado: razonar mucho aquí no mejora el resultado y
       // sí multiplica el coste, que se paga treinta veces por usuario.

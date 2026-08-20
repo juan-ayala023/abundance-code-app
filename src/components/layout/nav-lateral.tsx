@@ -58,12 +58,20 @@ export function NavLateral({
       </ul>
 
       <div className="mt-auto flex flex-col gap-4">
+        {/*
+          Este recuadro llevaba «de 30 días» en grande, entre el rótulo y la
+          frase. Se quitó con el resto de los contadores: era el más insistente
+          de todos, porque la barra lateral acompaña al usuario a todas las
+          pantallas y le recordaba el plazo en cada una.
+
+          El recuadro se queda sin él. Lo que decía el número lo dice ya la frase
+          de abajo, sin ponerle plazo a nada.
+        */}
         {ciclo ? (
           <div className="rounded-2xl border border-borde bg-superficie px-4 py-4 text-center">
             <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
               {t('viaje')}
             </p>
-            <p className="mt-1 text-xl font-light">{t('viajeDias', { total: ciclo.total })}</p>
             <p className="mt-2 text-xs text-tinta-suave">{t('viajeTexto')}</p>
           </div>
         ) : null}

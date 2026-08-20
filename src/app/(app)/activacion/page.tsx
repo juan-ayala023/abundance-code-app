@@ -1,4 +1,4 @@
-import { Check, CircleHelp, Clock, Eye, MinusCircle, Sparkles, Sun } from 'lucide-react'
+import { CircleHelp, Clock, Eye, MinusCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
@@ -13,10 +13,7 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { asegurarActivacion } from '@/lib/lectura/activacion'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
-import { idiomaActual } from '@/i18n/idioma'
 import { createClient } from '@/lib/supabase/server'
-
-import { marcarActivacionLeida } from './actions'
 
 /**
  * Esta pantalla **genera durante el render**: si hoy no hay activación, la pide
@@ -43,7 +40,7 @@ export default async function ActivacionPage() {
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, birth_date, created_at, chart')
+    .select('id, full_name, birth_date, created_at, chart')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
@@ -56,7 +53,6 @@ export default async function ActivacionPage() {
   const ciclo = diaDelCiclo(portal.created_at)
   const carta = cartaSchema.safeParse(portal.chart)
 
-  const idioma = await idiomaActual()
   const t = await getTranslations('activacion')
   const tNav = await getTranslations('nav')
   const acceso = await resolveAccess()
@@ -71,14 +67,22 @@ export default async function ActivacionPage() {
    */
   const activacion =
     nivel === 'completo' && ciclo && carta.success
-      ? await asegurarActivacion(portal.id, carta.data, ciclo.dia, ciclo.total)
+      ? await asegurarActivacion(portal.id, carta.data, ciclo.dia, ciclo.total, portal.full_name)
       : null
 
   return (
     <Contenedor>
-      {/* El día va en el titular, como en el producto original. */}
+      {/*
+        El titular decía «Activación del Día 13», como en el producto original.
+        El cliente pidió que el número de día no aparezca en ninguna pantalla, así
+        que ahora es siempre «Activación de Hoy».
+
+        El día **sigue existiendo y sigue mandando**: es lo que decide cuál de las
+        treinta activaciones toca hoy, y se le pasa a `asegurarActivacion()` unas
+        líneas más arriba. Lo que se quitó es enseñarlo, no contarlo.
+      */}
       <EncabezadoPagina
-        titulo={ciclo ? t('tituloDia', { dia: ciclo.dia }) : t('titulo')}
+        titulo={t('titulo')}
         descripcion={t('descripcion')}
         volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
@@ -110,7 +114,15 @@ export default async function ActivacionPage() {
             </div>
           </Tarjeta>
 
-          <MarcarLeida id={activacion.id} leidaEn={activacion.leidaEn} idioma={idioma} />
+          {/*
+            Aquí estaba el botón «Marcar como leída». Se retiró a petición del
+            cliente; se conserva el aviso de cuándo llega la siguiente, que no
+            dice ningún número y evita que la pantalla parezca un final.
+          */}
+          <p className="flex items-center justify-center gap-2 text-sm text-tinta-tenue">
+            <Clock size={14} aria-hidden="true" />
+            {t('siguiente')}
+          </p>
         </>
       ) : (
         <>
@@ -132,67 +144,4 @@ export default async function ActivacionPage() {
       )}
     </Contenedor>
   )
-}
-
-/**
- * «Marcar como leída».
- *
- * Una vez marcada no se ofrece deshacer: es un gesto de haber terminado la
- * lectura del día, no un interruptor. Se muestra la fecha para que quede claro
- * que quedó registrado.
- */
-async function MarcarLeida({
-  id,
-  leidaEn,
-  idioma,
-}: {
-  id: string
-  leidaEn: string | null
-  idioma: string
-}) {
-  const t = await getTranslations('activacion')
-
-  if (leidaEn) {
-    return (
-      <p
-        role="status"
-        className="flex items-center justify-center gap-2 text-sm text-tinta-suave"
-      >
-        <Check aria-hidden="true" className="size-4 text-oro-hondo" />
-        {t('marcada', { fecha: formatearFecha(leidaEn, idioma) })}
-      </p>
-    )
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <form action={marcarActivacionLeida}>
-        <input type="hidden" name="id" value={id} />
-        <button
-          type="submit"
-          className="flex items-center gap-2 rounded-xl bg-oro px-8 py-3.5 font-medium text-white transition-colors hover:bg-oro-hondo"
-        >
-          <Check size={18} aria-hidden="true" />
-          {t('marcar')}
-        </button>
-      </form>
-
-      <p className="flex items-center gap-2 text-sm text-tinta-tenue">
-        <Clock size={14} aria-hidden="true" />
-        {t('siguiente')}
-      </p>
-    </div>
-  )
-}
-
-/** La fecha también se traduce: «10 de agosto» / «10 August». */
-function formatearFecha(valor: string, idioma: string): string {
-  const fecha = new Date(valor)
-  if (Number.isNaN(fecha.getTime())) return '—'
-
-  return fecha.toLocaleDateString(idioma, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
 }

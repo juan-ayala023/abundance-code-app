@@ -64,7 +64,7 @@ export default async function AppLayout({
       <NavMovil ciclo={ciclo} />
 
       <aside className="hidden w-72 shrink-0 flex-col gap-10 border-r border-borde bg-fondo px-7 py-9 lg:flex">
-        <Logo />
+        <Logo variante="tinta" />
         <NavLateral ciclo={ciclo} />
       </aside>
 

@@ -12,7 +12,6 @@
     "volverAlPortal": "Back to my portal",
     "dia": "Day {dia} of {total}",
     "viaje": "Your journey",
-    "viajeDias": "of {total} days",
     "viajeTexto": "You're building your new reality one day at a time."
   },
   "idioma": {
@@ -81,6 +80,7 @@
     "fechaActivacion": "Activation date",
     "estadoPortal": "Portal status",
     "diaActual": "Current day",
+    "completado": "{progreso}% complete",
     "primerosDias": "first {total} days",
     "incluye": "Your portal includes {total} days of active guidance. After that, your base reading stays available; personal guidance and advanced features require an active subscription.",
     "gestionar": "Manage my subscription",
@@ -104,18 +104,13 @@
     "completaDatos": "Complete your birth details",
     "completaDatosTexto": "Without date, time and place we can't calculate your chart. It's the only thing we need from you.",
     "empezar": "Start",
-    "portalActivo": "Portal active",
-    "incluye": "Your portal includes {total} days of active guidance. After that, your base reading stays available and you can decide whether to continue with advanced guidance.",
-    "completado": "{progreso}% complete",
+    "verCartaCompleta": "See my full chart",
     "codigoNatal": "Your Natal Code",
     "codigoNatalTexto": "Your unique energetic map reveals your essence, natural talents and life path.",
     "verLectura": "Read the full reading",
-    "patronCentral": "Your Central Pattern",
-    "preparando": "It's being prepared from your Natal Code.",
     "trasDatos": "Available once you complete your birth details.",
     "trasDatosCorto": "Available once you complete your details.",
     "activacionHoy": "Today's activation",
-    "activacionDia": "Day {dia} Activation",
     "activacionTitulo": "Today's Activation",
     "activacionTexto": "A daily energetic activation to raise your frequency and align your actions.",
     "leerActivacion": "Read the full activation",
@@ -125,20 +120,31 @@
     "cierre": "✦ It's not about changing who you are, but about remembering your code and aligning with it. ✦"
   },
   "areas": {
-    "titulo": "Unlocked areas",
+    "titulo": "Your five areas",
+    "subtitulo": "Where each one lives in your chart. Tap one to ask your guide.",
     "abundancia": "Abundance and money",
     "decisiones": "Decisions",
     "proposito": "Purpose",
     "bloqueos": "Inner blocks",
-    "relaciones": "Relationships and bonds"
+    "relaciones": "Relationships and bonds",
+    "casa": "House {numero}",
+    "medioCielo": "Midheaven",
+    "en": "in",
+    "preguntas": {
+      "abundancia": "What pattern keeps repeating in my relationship with money?",
+      "decisiones": "What decision am I avoiding, and what is really holding me back?",
+      "proposito": "Where does my chart point when I think about my purpose?",
+      "bloqueos": "What inner block keeps coming back, and where does it come from?",
+      "relaciones": "What pattern do I repeat in my relationships?"
+    }
   },
   "lectura": {
     "titulo": "Your Personalised Base Reading",
     "descripcion": "An interpretation written from your Natal Code to help you understand your patterns, blocks and areas of expansion.",
-    "cartaPendiente": "Your chart isn't calculated yet. It will appear here as soon as we connect the calculation engine.",
+    "cartaPendiente": "Your chart is not calculated yet. It calculates itself as soon as you complete your birth details; if you already did, come back in a moment.",
     "enEstaLectura": "In this reading",
     "resumen": "Summary of your Personal Code",
-    "noGenerada": "Your reading isn't generated yet. These are the sections it will include; the text will arrive once we connect the interpretation layer.",
+    "noGenerada": "Your reading isn't written yet. These are the sections it will have. If you just completed your details, it takes about a minute — come back in a moment.",
     "secciones": {
       "energiaPrincipal": "Your main energy",
       "patronesAbundancia": "Your abundance patterns",
@@ -150,7 +156,6 @@
     }
   },
   "activacion": {
-    "tituloDia": "Day {dia} Activation",
     "titulo": "Today's Activation",
     "descripcion": "A sign to watch for today, read from your Personal Code.",
     "seccion": "Daily activation",
@@ -163,8 +168,6 @@
     },
     "noPreparada": "We couldn't prepare today's activation. Try again in a few minutes. These are the parts it will have.",
     "sinCarta": "Your activation will arrive as soon as your chart is calculated. These are the parts it will have.",
-    "marcar": "Mark as read",
-    "marcada": "Marked as read on {fecha}.",
     "siguiente": "Your next activation unlocks tomorrow."
   },
   "guia": {
@@ -225,5 +228,94 @@
       "senal": "What sign should I watch for this week?",
       "energia": "What energy do I need to activate today?"
     }
+  },
+  "carta": {
+    "sol": "Sun",
+    "luna": "Moon",
+    "ascendente": "Rising",
+    "sinHora": "Needs your exact birth time."
+  },
+  "signos": {
+    "aries": "Aries",
+    "tauro": "Taurus",
+    "geminis": "Gemini",
+    "cancer": "Cancer",
+    "leo": "Leo",
+    "virgo": "Virgo",
+    "libra": "Libra",
+    "escorpio": "Scorpio",
+    "sagitario": "Sagittarius",
+    "capricornio": "Capricorn",
+    "acuario": "Aquarius",
+    "piscis": "Pisces"
+  },
+  "retrato": {
+    "titulo": "Who you are, according to your chart",
+    "descripcion": "A walk through your chart piece by piece: what each planet does in the way you are, think, love and act.",
+    "pendiente": "We are writing your portrait from your chart. It takes about a minute the first time; after that it stays saved.",
+    "noDisponible": "We couldn't prepare your portrait right now. Come back in a while and we'll try again.",
+    "requiereSuscripcion": "Your portrait is written with an active subscription. Your chart and your base reading remain yours.",
+    "titulos": {
+      "sol": "The way you are",
+      "luna": "Your emotional world",
+      "ascendente": "How you come across",
+      "mercurio": "How you think and speak",
+      "venus": "How you love and what you value",
+      "marte": "How you act and how you fight",
+      "jupiter": "Where you expand",
+      "saturno": "Your lesson and your limit",
+      "habilidades": "Your abilities",
+      "nudo": "Your central knot"
+    },
+    "marcas": {
+      "sol": "Sun in",
+      "luna": "Moon in",
+      "ascendente": "Rising in",
+      "mercurio": "Mercury in",
+      "venus": "Venus in",
+      "marte": "Mars in",
+      "jupiter": "Jupiter in",
+      "saturno": "Saturn in",
+      "habilidades": "Aspects and elements",
+      "nudo": "The tightest aspects"
+    }
+  },
+  "cielo": {
+    "sobretitulo": "Today's sky",
+    "titulo": "What is touching your chart today",
+    "linea": "{planeta} in {signo} is {aspecto} your natal {natal}.",
+    "sinAspectos": "No planet comes close to a point in your chart today. A quiet backdrop: whatever moves, moves from within.",
+    "pie": "Calculated from today's real sky against your birth chart."
+  },
+  "cuerpos": {
+    "sol": "Sun",
+    "luna": "Moon",
+    "mercurio": "Mercury",
+    "venus": "Venus",
+    "marte": "Mars",
+    "jupiter": "Jupiter",
+    "saturno": "Saturn",
+    "urano": "Uranus",
+    "neptuno": "Neptune",
+    "pluton": "Pluto"
+  },
+  "aspectos": {
+    "conjuncion": "conjunct",
+    "sextil": "sextile",
+    "cuadratura": "square",
+    "trigono": "trine",
+    "oposicion": "opposite"
+  },
+  "equilibrio": {
+    "titulo": "Your elemental balance",
+    "dominante": "Your chart leans toward {elemento}.",
+    "ausente": "No planet sits in {elemento}: what that element gives, you build rather than receive.",
+    "repartido": "Your chart spreads its weight: no element rules the others."
+  },
+  "elementos": {
+    "fuego": "Fire",
+    "tierra": "Earth",
+    "aire": "Air",
+    "agua": "Water"
   }
 }

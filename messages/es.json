@@ -12,7 +12,6 @@
     "volverAlPortal": "Volver a mi portal",
     "dia": "Día {dia} de {total}",
     "viaje": "Tu viaje",
-    "viajeDias": "de {total} días",
     "viajeTexto": "Estás construyendo tu nueva realidad día a día."
   },
   "idioma": {
@@ -81,6 +80,7 @@
     "fechaActivacion": "Fecha de activación",
     "estadoPortal": "Estado del portal",
     "diaActual": "Día actual",
+    "completado": "{progreso}% completado",
     "primerosDias": "primeros {total} días",
     "incluye": "Tu portal incluye {total} días de guía activa. Después, tu lectura base seguirá disponible; la guía personalizada y las funciones avanzadas requieren una suscripción activa.",
     "gestionar": "Gestionar mi suscripción",
@@ -104,18 +104,13 @@
     "completaDatos": "Completa tus datos de nacimiento",
     "completaDatosTexto": "Sin fecha, hora y lugar no podemos calcular tu carta. Es lo único que necesitamos de ti.",
     "empezar": "Empezar",
-    "portalActivo": "Portal activo",
-    "incluye": "Tu portal incluye {total} días de guía activa. Después, tu lectura base seguirá disponible y podrás decidir si deseas continuar con guía avanzada.",
-    "completado": "{progreso}% completado",
+    "verCartaCompleta": "Ver mi carta completa",
     "codigoNatal": "Tu Código Natal",
     "codigoNatalTexto": "Tu mapa energético único revela tu esencia, talentos naturales y camino de vida.",
     "verLectura": "Ver lectura completa",
-    "patronCentral": "Tu Patrón Central",
-    "preparando": "Se está preparando desde tu Código Natal.",
     "trasDatos": "Disponible cuando completes tus datos de nacimiento.",
     "trasDatosCorto": "Disponible tras completar tus datos.",
     "activacionHoy": "Activación de hoy",
-    "activacionDia": "Activación del Día {dia}",
     "activacionTitulo": "Activación de Hoy",
     "activacionTexto": "Una activación energética diaria para elevar tu frecuencia y alinear tus acciones.",
     "leerActivacion": "Leer activación completa",
@@ -125,20 +120,31 @@
     "cierre": "✦ No se trata de cambiar quién eres, sino de recordar tu código y alinearte con él. ✦"
   },
   "areas": {
-    "titulo": "Áreas desbloqueadas",
+    "titulo": "Tus cinco áreas",
+    "subtitulo": "Dónde vive cada una en tu carta. Toca una para preguntarle a tu guía.",
     "abundancia": "Abundancia y dinero",
     "decisiones": "Decisiones",
     "proposito": "Propósito",
     "bloqueos": "Bloqueos internos",
-    "relaciones": "Relaciones y vínculos"
+    "relaciones": "Relaciones y vínculos",
+    "casa": "Casa {numero}",
+    "medioCielo": "Medio Cielo",
+    "en": "en",
+    "preguntas": {
+      "abundancia": "¿Qué patrón se repite en mi relación con el dinero?",
+      "decisiones": "¿Qué decisión estoy evitando y qué me frena de verdad?",
+      "proposito": "¿Hacia dónde apunta mi carta cuando pienso en mi propósito?",
+      "bloqueos": "¿Qué bloqueo interno se me repite y de dónde viene?",
+      "relaciones": "¿Qué patrón repito en mis vínculos?"
+    }
   },
   "lectura": {
     "titulo": "Tu Lectura Base Personalizada",
     "descripcion": "Una interpretación creada desde tu Código Natal para ayudarte a entender tus patrones, bloqueos y áreas de expansión.",
-    "cartaPendiente": "Tu carta todavía no está calculada. Aparecerá aquí en cuanto conectemos el motor de cálculo.",
+    "cartaPendiente": "Tu carta todavía no está calculada. Se calcula sola en cuanto completas tus datos de nacimiento; si ya lo hiciste, vuelve a entrar en un momento.",
     "enEstaLectura": "En esta lectura",
     "resumen": "Resumen de tu Código Personal",
-    "noGenerada": "Tu lectura todavía no está generada. Estas son las secciones que incluirá; el texto llegará cuando conectemos la capa de interpretación.",
+    "noGenerada": "Tu lectura todavía no está escrita. Estas son las secciones que tendrá. Si acabas de completar tus datos, tarda alrededor de un minuto: vuelve a entrar en un momento.",
     "secciones": {
       "energiaPrincipal": "Tu energía principal",
       "patronesAbundancia": "Tus patrones de abundancia",
@@ -150,7 +156,6 @@
     }
   },
   "activacion": {
-    "tituloDia": "Activación del Día {dia}",
     "titulo": "Activación de Hoy",
     "descripcion": "Una señal para observar hoy desde tu Código Personal.",
     "seccion": "La activación diaria",
@@ -163,8 +168,6 @@
     },
     "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
     "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
-    "marcar": "Marcar como leída",
-    "marcada": "Marcada como leída el {fecha}.",
     "siguiente": "Tu próxima activación se desbloquea mañana."
   },
   "guia": {
@@ -225,5 +228,94 @@
       "senal": "¿Qué señal debería mirar esta semana?",
       "energia": "¿Qué energía necesito activar hoy?"
     }
+  },
+  "carta": {
+    "sol": "Sol",
+    "luna": "Luna",
+    "ascendente": "Ascendente",
+    "sinHora": "Necesita tu hora exacta de nacimiento."
+  },
+  "signos": {
+    "aries": "Aries",
+    "tauro": "Tauro",
+    "geminis": "Géminis",
+    "cancer": "Cáncer",
+    "leo": "Leo",
+    "virgo": "Virgo",
+    "libra": "Libra",
+    "escorpio": "Escorpio",
+    "sagitario": "Sagitario",
+    "capricornio": "Capricornio",
+    "acuario": "Acuario",
+    "piscis": "Piscis"
+  },
+  "retrato": {
+    "titulo": "Quién eres, según tu carta",
+    "descripcion": "Un recorrido por tu carta pieza a pieza: qué función cumple cada planeta en tu forma de ser, de pensar, de querer y de actuar.",
+    "pendiente": "Estamos escribiendo tu retrato a partir de tu carta. Tarda alrededor de un minuto la primera vez; después queda guardado.",
+    "noDisponible": "No hemos podido preparar tu retrato ahora mismo. Vuelve a entrar en un rato y lo intentamos de nuevo.",
+    "requiereSuscripcion": "Tu retrato se escribe con una suscripción activa. Tu carta y tu lectura base siguen siendo tuyas.",
+    "titulos": {
+      "sol": "Tu forma de ser",
+      "luna": "Tu mundo emocional",
+      "ascendente": "Cómo te ven al llegar",
+      "mercurio": "Cómo piensas y cómo hablas",
+      "venus": "Cómo quieres y qué valoras",
+      "marte": "Cómo actúas y cómo peleas",
+      "jupiter": "Dónde te expandes",
+      "saturno": "Tu lección y tu límite",
+      "habilidades": "Tus habilidades",
+      "nudo": "Tu nudo central"
+    },
+    "marcas": {
+      "sol": "Sol en",
+      "luna": "Luna en",
+      "ascendente": "Ascendente en",
+      "mercurio": "Mercurio en",
+      "venus": "Venus en",
+      "marte": "Marte en",
+      "jupiter": "Júpiter en",
+      "saturno": "Saturno en",
+      "habilidades": "Aspectos y elementos",
+      "nudo": "Los aspectos más cerrados"
+    }
+  },
+  "cielo": {
+    "sobretitulo": "El cielo de hoy",
+    "titulo": "Lo que hoy toca tu carta",
+    "linea": "{planeta} en {signo} hace {aspecto} a tu {natal} natal.",
+    "sinAspectos": "Hoy ningún planeta se acerca a un punto de tu carta. Es un día de fondo tranquilo: lo que se mueva, se mueve desde dentro.",
+    "pie": "Calculado con el cielo real de hoy sobre tu carta de nacimiento."
+  },
+  "cuerpos": {
+    "sol": "Sol",
+    "luna": "Luna",
+    "mercurio": "Mercurio",
+    "venus": "Venus",
+    "marte": "Marte",
+    "jupiter": "Júpiter",
+    "saturno": "Saturno",
+    "urano": "Urano",
+    "neptuno": "Neptuno",
+    "pluton": "Plutón"
+  },
+  "aspectos": {
+    "conjuncion": "conjunción",
+    "sextil": "sextil",
+    "cuadratura": "cuadratura",
+    "trigono": "trígono",
+    "oposicion": "oposición"
+  },
+  "equilibrio": {
+    "titulo": "Tu equilibrio elemental",
+    "dominante": "Tu carta pesa en {elemento}.",
+    "ausente": "No hay ningún planeta en {elemento}: lo que ese elemento da, lo construyes tú, no te viene dado.",
+    "repartido": "Tu carta reparte sus fuerzas: ningún elemento manda sobre los demás."
+  },
+  "elementos": {
+    "fuego": "Fuego",
+    "tierra": "Tierra",
+    "aire": "Aire",
+    "agua": "Agua"
   }
 }

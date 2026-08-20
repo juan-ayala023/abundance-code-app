@@ -93,10 +93,24 @@ export default async function CuentaPage({
               : '—'
           }
         />
+        {/*
+          El progreso del ciclo vivía en una tarjeta propia en `/portal`, con un
+          número enorme y una barra que avanzaba. Aquí va dentro de la ficha que
+          ya mostraba el día: el mismo dato, sin ser lo primero que se ve al
+          entrar al producto. Ver el comentario de `portal/page.tsx`.
+        */}
         <Dato
           Icono={Sun}
           etiqueta={t('diaActual')}
           valor={ciclo ? tNav('dia', { dia: ciclo.dia, total: ciclo.total }) : '—'}
+          progreso={
+            ciclo
+              ? {
+                  porcentaje: ciclo.progreso,
+                  etiqueta: t('completado', { progreso: ciclo.progreso }),
+                }
+              : undefined
+          }
         />
       </div>
 
@@ -169,10 +183,20 @@ function Dato({
   Icono,
   etiqueta,
   valor,
+  progreso,
 }: {
   Icono: typeof User
   etiqueta: string
   valor: string
+  /**
+   * Barra de progreso opcional. Solo la pasa la ficha del día; el resto de
+   * datos de esta pantalla no son cantidades y no llevan barra.
+   *
+   * La etiqueta viene ya traducida desde arriba en vez de resolverla aquí: el
+   * componente padre ya tiene el traductor cargado, y hacer `Dato` asíncrono
+   * por una sola cadena añadiría una espera a cada una de las seis fichas.
+   */
+  progreso?: { porcentaje: number; etiqueta: string }
 }) {
   return (
     /*
@@ -183,7 +207,11 @@ function Dato({
     */
     <Tarjeta className="flex min-w-0 items-center gap-4">
       <Insignia Icono={Icono} />
-      <div className="min-w-0">
+      {/*
+        `flex-1` para que la barra de progreso ocupe el ancho de la tarjeta y no
+        el del texto que tiene encima, que cambia de largo según el día.
+      */}
+      <div className="min-w-0 flex-1">
         <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
           {etiqueta}
         </p>
@@ -195,6 +223,27 @@ function Dato({
           espacios donde partir.
         */}
         <p className="wrap-anywhere text-lg font-light">{valor}</p>
+
+        {/*
+          La barra es fina y sin porcentaje al lado a propósito: aquí solo tiene
+          que situar, no marcar el paso. El número exacto ya está arriba, en
+          «Día N de 30».
+        */}
+        {progreso ? (
+          <div
+            role="progressbar"
+            aria-valuenow={progreso.porcentaje}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={progreso.etiqueta}
+            className="mt-2.5 h-1 overflow-hidden rounded-full bg-fondo-hondo"
+          >
+            <div
+              className="h-full rounded-full bg-oro-claro"
+              style={{ width: `${progreso.porcentaje}%` }}
+            />
+          </div>
+        ) : null}
       </div>
     </Tarjeta>
   )

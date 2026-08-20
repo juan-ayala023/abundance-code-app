@@ -173,6 +173,8 @@ export type Database = {
           birth_time: string | null
           chart: Json | null
           chart_computed_at: string | null
+          chart_reading: Json | null
+          chart_reading_at: string | null
           chart_version: string | null
           created_at: string
           full_name: string | null
@@ -194,6 +196,8 @@ export type Database = {
           birth_time?: string | null
           chart?: Json | null
           chart_computed_at?: string | null
+          chart_reading?: Json | null
+          chart_reading_at?: string | null
           chart_version?: string | null
           created_at?: string
           full_name?: string | null
@@ -215,6 +219,8 @@ export type Database = {
           birth_time?: string | null
           chart?: Json | null
           chart_computed_at?: string | null
+          chart_reading?: Json | null
+          chart_reading_at?: string | null
           chart_version?: string | null
           created_at?: string
           full_name?: string | null

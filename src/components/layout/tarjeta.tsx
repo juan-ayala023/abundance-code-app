@@ -16,7 +16,11 @@ export function Tarjeta({
   className,
   id,
 }: {
-  children: React.ReactNode
+  /**
+   * Opcional: una tarjeta vacía es el hueco que ocupará la que aún se está
+   * cargando. La usa el esqueleto del retrato en `/carta`.
+   */
+  children?: React.ReactNode
   className?: string
   id?: string
 }) {

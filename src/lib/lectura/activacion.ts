@@ -1,8 +1,7 @@
 import { idiomaActual } from '@/i18n/idioma'
 import 'server-only'
 
-import { createLocalChartProvider } from '@/lib/astrology/local'
-import { aspectosDeTransito } from '@/lib/astrology/transitos'
+import { transitosDeHoy } from '@/lib/astrology/cielo'
 import type { Carta } from '@/lib/astrology/types'
 import { createAdminClient } from '@/lib/supabase/server'
 
@@ -24,6 +23,12 @@ import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
 export type ActivacionGuardada = {
   id: string
   contenido: ActivacionDiaria
+  /**
+   * Hoy siempre es `null`: el botón «Marcar como leída» se retiró de la pantalla
+   * a petición del cliente, así que ya nadie escribe `read_at`. Se conserva el
+   * campo —y la columna— porque la lectura no cuesta nada y devolver el botón
+   * sería reponer la interfaz, no rehacer los datos.
+   */
   leidaEn: string | null
 }
 
@@ -32,6 +37,8 @@ export async function asegurarActivacion(
   carta: Carta,
   dia: number,
   total: number,
+  /** Nombre de pila de quien la recibe. Se le pasa al modelo para que le hable a alguien. */
+  nombre: string | null,
 ): Promise<ActivacionGuardada | null> {
   const admin = createAdminClient()
 
@@ -51,12 +58,13 @@ export async function asegurarActivacion(
     console.error('[activacion] contenido guardado inválido', { portalId, dia })
   }
 
-  const transitos = await calcularTransitos(carta)
+  const transitos = await transitosDeHoy(carta)
   if (!transitos) return null
 
   let contenido: ActivacionDiaria
   try {
     contenido = await generarActivacionDiaria({
+      nombre,
       carta,
       transitos,
       dia,
@@ -83,35 +91,4 @@ export async function asegurarActivacion(
   }
 
   return { id: guardada.id, contenido, leidaEn: guardada.read_at }
-}
-
-/**
- * El cielo de hoy, contra la carta de nacimiento.
- *
- * Se toma el mediodía UTC del día en curso y no el instante exacto: así la
- * activación de un día es la misma se pida a la hora que se pida, y regenerarla
- * da el mismo punto de partida. La Luna se mueve unos 13° al día, de modo que
- * el mediodía es el mejor representante del conjunto.
- *
- * La posición geográfica es la del nacimiento y da igual: las longitudes
- * eclípticas son geocéntricas. Se pide `partial` porque no hacen falta casas.
- */
-async function calcularTransitos(carta: Carta) {
-  const hoy = new Date()
-  hoy.setUTCHours(12, 0, 0, 0)
-
-  try {
-    const cielo = await createLocalChartProvider().calcular({
-      utc: hoy.toISOString(),
-      lat: 0,
-      lng: 0,
-      tz: 'UTC',
-      precision: 'partial',
-    })
-
-    return aspectosDeTransito(carta, cielo)
-  } catch (error) {
-    console.error('[activacion] no se pudieron calcular los tránsitos', error)
-    return null
-  }
 }
