@@ -36,6 +36,7 @@ export default async function LecturaBasePage() {
   const lectura = lecturaBaseSchema.safeParse(portal.base_reading)
   const t = await getTranslations('lectura')
   const tNav = await getTranslations('nav')
+  const tCarta = await getTranslations('carta')
 
   return (
     <Contenedor>
@@ -55,7 +56,7 @@ export default async function LecturaBasePage() {
           */
           <CartaDescargable
             nombreArchivo={`carta-natal-${portal.birth_date}`}
-            cabecera={<DatosDeNacimiento portal={portal} />}
+            cabecera={<DatosDeNacimiento portal={portal} etiqueta={tCarta('tuCartaNatal')} />}
           >
             <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
               <NatalChart carta={carta} />
@@ -64,7 +65,7 @@ export default async function LecturaBasePage() {
           </CartaDescargable>
         ) : (
           <>
-            <DatosDeNacimiento portal={portal} />
+            <DatosDeNacimiento portal={portal} etiqueta={tCarta('tuCartaNatal')} />
             <AvisoPendiente>
               {t('cartaPendiente')}
             </AvisoPendiente>
@@ -170,13 +171,16 @@ export default async function LecturaBasePage() {
 /** Nombre, fecha, hora y lugar: la cabecera de la tarjeta de la carta. */
 function DatosDeNacimiento({
   portal,
+  etiqueta,
 }: {
+  /** Ya traducida por la página: este componente no es asíncrono. */
+  etiqueta: string
   portal: { full_name: string | null; birth_date: string | null; birth_time: string | null; birth_city: string | null }
 }) {
   return (
     <div className="flex flex-col gap-1">
       <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-        Tu carta natal
+        {etiqueta}
       </p>
       <h2 className="text-2xl font-light">{portal.full_name}</h2>
       <p className="text-sm text-tinta-suave">

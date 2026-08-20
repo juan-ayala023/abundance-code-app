@@ -176,7 +176,8 @@
     "descripcion": "Consult your Personal Code whenever you need clarity about a decision, a block or a sign you're living through.",
     "seccion": "Personal guidance",
     "consultar": "Ask my guidance",
-    "consultando": "Consulting your Personal Code…"
+    "consultando": "Consulting your Personal Code…",
+    "intro": "Sometimes you do not need more information. Sometimes what you need is clarity. Your Personal Code has answers. Ask from intention and receive the guidance your soul is ready to hear."
   },
   "generando": {
     "pasos": {
@@ -235,7 +236,12 @@
     "sol": "Sun",
     "luna": "Moon",
     "ascendente": "Rising",
-    "sinHora": "Needs your exact birth time."
+    "sinHora": "Needs your exact birth time.",
+    "titulo": "Your Birth Chart",
+    "sinHoraAviso": "Your chart was calculated <b>without a birth time</b>, so it shows the planets but not the houses, the Ascendant or the Midheaven. If you ever find it out, <enlace>you can add it</enlace> and the chart is recalculated.",
+    "noCalculada": "<b>We could not calculate your chart.</b> It usually means the date, time or place of birth do not fit together. Check them and we will try again.",
+    "revisarDatos": "Review my birth details",
+    "tuCartaNatal": "Your birth chart"
   },
   "signos": {
     "aries": "Aries",
@@ -319,5 +325,34 @@
     "tierra": "Earth",
     "aire": "Air",
     "agua": "Water"
+  },
+  "tabla": {
+    "leyenda": "Planetary positions of the birth chart",
+    "planeta": "Planet",
+    "signo": "Sign",
+    "grado": "Degree",
+    "casa": "House",
+    "retrogrado": "retrograde"
+  },
+  "rueda": {
+    "titulo": "Birth chart",
+    "descripcionExacta": "Astrological wheel with the twelve signs, {planetas} planets, the twelve houses, the Ascendant and the Midheaven. Below is a table with the same positions in text.",
+    "descripcionParcial": "Astrological wheel with the twelve signs and {planetas} planets, without houses, because the birth time is unknown. Below is a table with the same positions in text.",
+    "pieParcial": "This chart was calculated without a birth time. The planet positions are correct, but <b>it does not include houses, Ascendant or Midheaven</b>: those depend on the exact time.",
+    "enSigno": "{cuerpo} in {signo}",
+    "enSignoRetrogrado": "{cuerpo} in {signo}, retrograde"
+  },
+  "onboarding": {
+    "titulo": "Your birth details",
+    "descripcion": "This is what we use to calculate your birth chart. Time and place matter as much as the date: they determine the exact position of the sky above you.",
+    "nombre": "Full name",
+    "fecha": "Date of birth",
+    "hora": "Time of birth",
+    "horaDesconocida": "I don't know my birth time",
+    "avisoSinHora": "We will calculate your chart using local noon. The planet positions will be correct, but <b>we will not be able to include the houses, the ascendant or the midheaven</b>: those depend on the exact time. Your chart will say so.",
+    "ciudad": "City of birth",
+    "ciudadPlaceholder": "Start typing and pick from the list",
+    "guardando": "Saving…",
+    "continuar": "Continue"
   }
 }

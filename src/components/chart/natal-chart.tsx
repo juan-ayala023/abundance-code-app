@@ -1,3 +1,5 @@
+import { getTranslations } from 'next-intl/server'
+
 import {
   anguloEnPantalla,
   distribuir,
@@ -13,8 +15,6 @@ import {
   ELEMENTO_SIGNO,
   GLIFO_CUERPO,
   GLIFO_SIGNO,
-  NOMBRE_CUERPO,
-  NOMBRE_SIGNO,
 } from './glifos'
 
 /**
@@ -41,7 +41,11 @@ const R_NUMERO_CASA = 250
 /** Separación mínima entre glifos de planeta, en grados. */
 const SEPARACION_GLIFOS = 9
 
-export function NatalChart({ carta, className }: { carta: Carta; className?: string }) {
+export async function NatalChart({ carta, className }: { carta: Carta; className?: string }) {
+  const t = await getTranslations('rueda')
+  const tCuerpos = await getTranslations('cuerpos')
+  const tSignos = await getTranslations('signos')
+
   const asc = carta.ascendente
   const parcial = carta.precision === 'partial'
 
@@ -63,13 +67,17 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
         role="img"
         aria-labelledby="carta-titulo carta-desc"
       >
-        <title id="carta-titulo">Carta natal</title>
+        {/*
+          Esto es lo único de la rueda que se lee en voz alta, y estaba solo en
+          español. Un comprador inglés con lector de pantalla recibía la app
+          entera traducida y el dibujo —que es el producto— descrito en un idioma
+          que no entiende.
+        */}
+        <title id="carta-titulo">{t('titulo')}</title>
         <desc id="carta-desc">
-          Rueda astrológica con los doce signos, {carta.planetas.length} planetas
           {parcial
-            ? ' y sin casas, porque no se conoce la hora de nacimiento'
-            : ', las doce casas, el Ascendente y el Medio Cielo'}
-          . Debajo hay una tabla con las mismas posiciones en texto.
+            ? t('descripcionParcial', { planetas: carta.planetas.length })
+            : t('descripcionExacta', { planetas: carta.planetas.length })}
         </desc>
 
         {/* Sectores de los signos, teñidos por elemento */}
@@ -125,7 +133,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
               fontSize={30}
               fill="var(--color-oro-hondo)"
             >
-              <title>{NOMBRE_SIGNO[signo]}</title>
+              <title>{tSignos(signo)}</title>
               {GLIFO_SIGNO[signo]}
             </text>
           )
@@ -225,9 +233,10 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
                   Cáncer».
                 */}
                 <title>
-                  {`${NOMBRE_CUERPO[planeta.cuerpo]} en ${NOMBRE_SIGNO[signoDe(planeta.longitud)]}${
-                    planeta.retrogrado ? ', retrógrado' : ''
-                  }`}
+                  {t(planeta.retrogrado ? 'enSignoRetrogrado' : 'enSigno', {
+                    cuerpo: tCuerpos(planeta.cuerpo),
+                    signo: tSignos(signoDe(planeta.longitud)),
+                  })}
                 </title>
                 {GLIFO_CUERPO[planeta.cuerpo]}
               </text>
@@ -249,9 +258,7 @@ export function NatalChart({ carta, className }: { carta: Carta; className?: str
 
       {parcial ? (
         <figcaption className="mt-4 rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm">
-          Esta carta se calculó sin hora de nacimiento. Las posiciones de los
-          planetas son correctas, pero <strong>no incluye casas, Ascendente ni
-          Medio Cielo</strong>: esos dependen de la hora exacta.
+          {t.rich('pieParcial', { b: (trozo) => <strong>{trozo}</strong> })}
         </figcaption>
       ) : null}
     </figure>

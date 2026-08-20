@@ -614,6 +614,32 @@ test('el botón de idioma cambia la interfaz y se mantiene', async ({ page }) =>
   await expect(page.getByText(/^[a-z_]+\.[a-zA-Z.]+$/)).toHaveCount(0)
 
   /*
+   * Y ninguna frase que se quedara escrita a mano en español.
+   *
+   * Esto es lo que faltaba comprobar, y por eso se coló. Las claves sin traducir
+   * saltan a la vista —salen en crudo, «portal.bienvenida»—, pero un texto
+   * castellano escrito directamente en el JSX se ve perfectamente bien: hace
+   * exactamente lo que dice y solo está mal en el otro idioma. La portada llevaba
+   * meses enseñando el titular en inglés sobre un párrafo en español, y nadie lo
+   * vio hasta que el cliente entró con la cookie en inglés.
+   *
+   * Se buscan palabras castellanas que no existen en inglés. `tu`, `de` o `no`
+   * no valdrían: aparecen en nombres propios y en la propia marca.
+   */
+  const SOLO_EN_ESPANOL =
+    /(carta natal|nacimiento|lectura|consulta|siguiente|guardando|calcularemos|posiciones)/i
+
+  for (const ruta of ['/', '/planes', '/portal', '/carta', '/lectura-base', '/onboarding', '/guia']) {
+    await page.goto(ruta)
+    const texto = (await page.locator('body').innerText()).replace(/Español/g, '')
+    expect(texto, `quedó español suelto en ${ruta}`).not.toMatch(SOLO_EN_ESPANOL)
+  }
+
+  // El recorrido de arriba dejó la navegación en otra pantalla; el resto de la
+  // prueba comprueba la vuelta al español desde `/generando`.
+  await page.goto('/generando')
+
+  /*
    * Y se puede volver. El botón reenvía a la ruta en la que se pulsa, así que
    * lo primero que tiene que cambiar es esta misma pantalla —no otra—, y
    * después se comprueba que la vuelta también sobrevive a navegar.

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
@@ -10,13 +11,14 @@ import type { Place } from '@/lib/geo/types'
 import { BuscadorCiudades } from './buscador-ciudades'
 
 export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string }) {
+  const t = useTranslations('onboarding')
   const [estado, accion] = useActionState(guardarDatosNacimiento, ESTADO_INICIAL)
   const [horaDesconocida, setHoraDesconocida] = useState(false)
   const [, setLugar] = useState<Place | null>(null)
 
   return (
     <form action={accion} className="flex flex-col gap-6">
-      <Campo id="fullName" etiqueta="Nombre completo" error={estado.campos.fullName}>
+      <Campo id="fullName" etiqueta={t('nombre')} error={estado.campos.fullName}>
         <input
           id="fullName"
           name="fullName"
@@ -28,7 +30,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         />
       </Campo>
 
-      <Campo id="birthDate" etiqueta="Fecha de nacimiento" error={estado.campos.birthDate}>
+      <Campo id="birthDate" etiqueta={t('fecha')} error={estado.campos.birthDate}>
         <input
           id="birthDate"
           name="birthDate"
@@ -39,7 +41,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         />
       </Campo>
 
-      <Campo id="birthTime" etiqueta="Hora de nacimiento" error={estado.campos.birthTime}>
+      <Campo id="birthTime" etiqueta={t('hora')} error={estado.campos.birthTime}>
         <input
           id="birthTime"
           name="birthTime"
@@ -55,15 +57,12 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
             checked={horaDesconocida}
             onChange={(event) => setHoraDesconocida(event.target.checked)}
           />
-          No sé mi hora de nacimiento
+          {t('horaDesconocida')}
         </label>
 
         {horaDesconocida ? (
           <p className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm">
-            Calcularemos tu carta con el mediodía local. Las posiciones de los
-            planetas serán correctas, pero <strong>no podremos incluir las casas,
-            el ascendente ni el medio cielo</strong>: esos dependen de la hora
-            exacta. Lo verás señalado en tu carta.
+            {t.rich('avisoSinHora', { b: (trozo) => <strong>{trozo}</strong> })}
           </p>
         ) : null}
       </Campo>
@@ -85,6 +84,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
 }
 
 function BotonGuardar() {
+  const t = useTranslations('onboarding')
   const { pending } = useFormStatus()
 
   return (
@@ -93,7 +93,7 @@ function BotonGuardar() {
       disabled={pending}
       className="rounded-xl bg-oro px-5 py-3 font-medium text-white transition-colors hover:bg-oro-hondo disabled:opacity-60"
     >
-      {pending ? 'Guardando…' : 'Continuar'}
+      {pending ? t('guardando') : t('continuar')}
     </button>
   )
 }

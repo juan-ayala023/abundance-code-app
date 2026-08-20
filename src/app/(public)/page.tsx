@@ -44,10 +44,14 @@ export default async function HomePage() {
             <h1 className="text-4xl font-light tracking-tight">
               {t('titulo')}
             </h1>
-            <p className="text-tinta-suave">
-              Tu carta natal calculada y una interpretación creada para ti, en
-              tu portal privado.
-            </p>
+            {/*
+              Esta frase estaba escrita a mano en español, con el titular de
+              encima traducido. El resultado era una portada mitad en inglés y
+              mitad en español: el titular obedecía la cookie de idioma y el
+              párrafo no. La clave `home.descripcion` ya existía con este mismo
+              texto; simplemente no se usaba.
+            */}
+            <p className="text-tinta-suave">{t('descripcion')}</p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-4 lg:justify-start">

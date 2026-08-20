@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useEffect, useId, useRef, useState } from 'react'
 
 import type { Place } from '@/lib/geo/types'
@@ -18,6 +20,7 @@ export function BuscadorCiudades({
   onSelect: (place: Place | null) => void
   error?: string
 }) {
+  const t = useTranslations('onboarding')
   const [texto, setTexto] = useState('')
   const [resultados, setResultados] = useState<Place[]>([])
   const [buscando, setBuscando] = useState(false)
@@ -84,7 +87,7 @@ export function BuscadorCiudades({
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor="ciudad" className="text-sm font-medium">
-        Ciudad de nacimiento
+        {t('ciudad')}
       </label>
 
       <input
@@ -97,7 +100,7 @@ export function BuscadorCiudades({
         aria-describedby={error ? 'ciudad-error' : undefined}
         value={texto}
         onChange={(event) => reiniciar(event.target.value)}
-        placeholder="Empieza a escribir y elige de la lista"
+        placeholder={t('ciudadPlaceholder')}
         className="rounded-xl border border-borde bg-superficie px-4 py-3"
       />
 

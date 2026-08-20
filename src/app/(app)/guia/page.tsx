@@ -89,9 +89,7 @@ export default async function GuiaPage({
       ) : (
         <Tarjeta className="flex flex-col gap-8">
           <p className="text-lg italic leading-relaxed text-tinta-suave">
-            A veces no necesitas más información. A veces, lo que necesitas es
-            claridad. Tu Código Personal tiene respuestas. Haz tu pregunta desde
-            la intención y recibe la guía que tu alma está lista para escuchar.
+            {t('intro')}
           </p>
 
           <FormularioConsulta

@@ -176,7 +176,8 @@
     "descripcion": "Consulta tu Código Personal cuando necesites claridad sobre una decisión, un bloqueo o una señal que estás viviendo.",
     "seccion": "La guía personalizada",
     "consultar": "Consultar mi guía",
-    "consultando": "Consultando tu Código Personal…"
+    "consultando": "Consultando tu Código Personal…",
+    "intro": "A veces no necesitas más información. A veces, lo que necesitas es claridad. Tu Código Personal tiene respuestas. Haz tu pregunta desde la intención y recibe la guía que tu alma está lista para escuchar."
   },
   "generando": {
     "pasos": {
@@ -235,7 +236,12 @@
     "sol": "Sol",
     "luna": "Luna",
     "ascendente": "Ascendente",
-    "sinHora": "Necesita tu hora exacta de nacimiento."
+    "sinHora": "Necesita tu hora exacta de nacimiento.",
+    "titulo": "Tu Carta Natal",
+    "sinHoraAviso": "Tu carta se calculó <b>sin hora de nacimiento</b>, así que muestra las posiciones de los planetas pero no las casas, el ascendente ni el medio cielo. Si algún día la averiguas, <enlace>puedes añadirla</enlace> y se recalcula.",
+    "noCalculada": "<b>No hemos podido calcular tu carta.</b> Suele deberse a que la fecha, la hora o el lugar de nacimiento no encajan entre sí. Revísalos y volvemos a intentarlo.",
+    "revisarDatos": "Revisar mis datos de nacimiento",
+    "tuCartaNatal": "Tu carta natal"
   },
   "signos": {
     "aries": "Aries",
@@ -319,5 +325,34 @@
     "tierra": "Tierra",
     "aire": "Aire",
     "agua": "Agua"
+  },
+  "tabla": {
+    "leyenda": "Posiciones planetarias de la carta natal",
+    "planeta": "Planeta",
+    "signo": "Signo",
+    "grado": "Grado",
+    "casa": "Casa",
+    "retrogrado": "retrógrado"
+  },
+  "rueda": {
+    "titulo": "Carta natal",
+    "descripcionExacta": "Rueda astrológica con los doce signos, {planetas} planetas, las doce casas, el Ascendente y el Medio Cielo. Debajo hay una tabla con las mismas posiciones en texto.",
+    "descripcionParcial": "Rueda astrológica con los doce signos y {planetas} planetas, sin casas, porque no se conoce la hora de nacimiento. Debajo hay una tabla con las mismas posiciones en texto.",
+    "pieParcial": "Esta carta se calculó sin hora de nacimiento. Las posiciones de los planetas son correctas, pero <b>no incluye casas, Ascendente ni Medio Cielo</b>: esos dependen de la hora exacta.",
+    "enSigno": "{cuerpo} en {signo}",
+    "enSignoRetrogrado": "{cuerpo} en {signo}, retrógrado"
+  },
+  "onboarding": {
+    "titulo": "Tus datos de nacimiento",
+    "descripcion": "Con esto calculamos tu carta natal. La hora y el lugar importan tanto como la fecha: determinan la posición exacta del cielo sobre ti.",
+    "nombre": "Nombre completo",
+    "fecha": "Fecha de nacimiento",
+    "hora": "Hora de nacimiento",
+    "horaDesconocida": "No sé mi hora de nacimiento",
+    "avisoSinHora": "Calcularemos tu carta con el mediodía local. Las posiciones de los planetas serán correctas, pero <b>no podremos incluir las casas, el ascendente ni el medio cielo</b>: esos dependen de la hora exacta. Lo verás señalado en tu carta.",
+    "ciudad": "Ciudad de nacimiento",
+    "ciudadPlaceholder": "Empieza a escribir y elige de la lista",
+    "guardando": "Guardando…",
+    "continuar": "Continuar"
   }
 }

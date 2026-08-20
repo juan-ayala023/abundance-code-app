@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CartaPage() {
+  const t = await getTranslations('carta')
   const supabase = await createClient()
 
   const { data: portal, error } = await supabase
@@ -90,7 +91,7 @@ export default async function CartaPage() {
     <Contenedor>
       <header className="flex flex-col gap-2">
         <h1 className="text-4xl font-light leading-tight tracking-tight lg:text-5xl">
-          Tu Carta Natal
+          {t('titulo')}
         </h1>
         <p className="text-sm opacity-70">
           {portal.birth_city} · {portal.birth_date}
@@ -207,19 +208,28 @@ async function RetratoPendiente() {
  * ascendente y el medio cielo. Decirlo aquí evita que se lea como una carta
  * completa a la que le sobra espacio.
  */
-function AvisoSinHora() {
+async function AvisoSinHora() {
+  const t = await getTranslations('carta')
+
   return (
     <p
       role="note"
       className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm"
     >
-      Tu carta se calculó <strong>sin hora de nacimiento</strong>, así que
-      muestra las posiciones de los planetas pero no las casas, el ascendente ni
-      el medio cielo. Si algún día la averiguas,{' '}
-      <Link href="/onboarding" className="underline underline-offset-4">
-        puedes añadirla
-      </Link>{' '}
-      y se recalcula.
+      {/*
+        `t.rich` y no una cadena partida en tres: el aviso lleva una negrita y un
+        enlace en medio de la frase, y en inglés no caen en el mismo sitio.
+        Trocear el texto por las etiquetas obligaría al traductor a respetar un
+        orden de palabras que su idioma no tiene.
+      */}
+      {t.rich('sinHoraAviso', {
+        b: (trozo) => <strong>{trozo}</strong>,
+        enlace: (trozo) => (
+          <Link href="/onboarding" className="underline underline-offset-4">
+            {trozo}
+          </Link>
+        ),
+      })}
     </p>
   )
 }
@@ -229,27 +239,25 @@ function AvisoSinHora() {
  * producto cuyo entregable es una interpretación personal, unas posiciones
  * inventadas pueden confundirse con las propias.
  */
-function NoSePudoCalcular() {
+async function NoSePudoCalcular() {
+  const t = await getTranslations('carta')
+  const tNav = await getTranslations('nav')
+
   return (
     <>
       <div
         role="status"
         className="rounded-2xl border border-oro-claro bg-oro-palido/60 px-4 py-3 text-sm"
       >
-        <strong>No hemos podido calcular tu carta.</strong> Suele deberse a que
-        la fecha, la hora o el lugar de nacimiento no encajan entre sí. Revísalos
-        y volvemos a intentarlo.
+        {t.rich('noCalculada', { b: (trozo) => <strong>{trozo}</strong> })}
       </div>
 
       <div className="flex flex-col gap-3">
-        <Link
-          href="/onboarding"
-          className="text-sm underline underline-offset-4"
-        >
-          Revisar mis datos de nacimiento
+        <Link href="/onboarding" className="text-sm underline underline-offset-4">
+          {t('revisarDatos')}
         </Link>
         <Link href="/portal" className="text-sm underline underline-offset-4">
-          Volver al portal
+          {tNav('volverAlPortal')}
         </Link>
       </div>
     </>

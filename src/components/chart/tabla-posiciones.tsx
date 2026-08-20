@@ -1,7 +1,9 @@
+import { getTranslations } from 'next-intl/server'
+
 import type { Carta } from '@/lib/astrology/types'
 import { gradoEnSigno, signoDe } from '@/lib/astrology/types'
 
-import { GLIFO_CUERPO, GLIFO_SIGNO, NOMBRE_CUERPO, NOMBRE_SIGNO } from './glifos'
+import { GLIFO_CUERPO, GLIFO_SIGNO } from './glifos'
 
 /**
  * Las mismas posiciones de la rueda, en texto.
@@ -20,7 +22,10 @@ import { GLIFO_CUERPO, GLIFO_SIGNO, NOMBRE_CUERPO, NOMBRE_SIGNO } from './glifos
  * Así pasó de 316 px de ancho mínimo a 252, que entra en cualquier teléfono
  * actual. Por debajo de 340 px vuelve a desplazarse, y ahí sí es lo correcto.
  */
-export function TablaPosiciones({ carta }: { carta: Carta }) {
+export async function TablaPosiciones({ carta }: { carta: Carta }) {
+  const t = await getTranslations('tabla')
+  const tCuerpos = await getTranslations('cuerpos')
+  const tSignos = await getTranslations('signos')
   const parcial = carta.precision === 'partial'
 
   return (
@@ -31,16 +36,14 @@ export function TablaPosiciones({ carta }: { carta: Carta }) {
         depende de si la carta tiene casas.
       */}
       <table className="w-full border-collapse text-sm [&_td:last-child]:pr-0 [&_th:last-child]:pr-0">
-        <caption className="sr-only">
-          Posiciones planetarias de la carta natal
-        </caption>
+        <caption className="sr-only">{t('leyenda')}</caption>
         <thead>
           <tr className="border-b border-borde-fuerte text-left">
-            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">Planeta</th>
-            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">Signo</th>
-            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">Grado</th>
+            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">{t('planeta')}</th>
+            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">{t('signo')}</th>
+            <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">{t('grado')}</th>
             {!parcial ? (
-              <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">Casa</th>
+              <th scope="col" className="py-2 pr-2 font-medium sm:pr-4">{t('casa')}</th>
             ) : null}
           </tr>
         </thead>
@@ -59,7 +62,7 @@ export function TablaPosiciones({ carta }: { carta: Carta }) {
               >
                 <th scope="row" className="py-2 pr-2 text-left font-normal sm:pr-4">
                   <span aria-hidden="true">{GLIFO_CUERPO[planeta.cuerpo]}</span>{' '}
-                  {NOMBRE_CUERPO[planeta.cuerpo]}
+                  {tCuerpos(planeta.cuerpo)}
                   {/*
                     El símbolo, no la palabra. «(retrógrado)» era la cadena más
                     larga e irrompible de la tabla y por sí sola fijaba el ancho
@@ -71,13 +74,13 @@ export function TablaPosiciones({ carta }: { carta: Carta }) {
                     <>
                       {' '}
                       <span aria-hidden="true" className="text-tinta-suave">℞</span>
-                      <span className="sr-only">, retrógrado</span>
+                      <span className="sr-only">, {t('retrogrado')}</span>
                     </>
                   ) : null}
                 </th>
                 <td className="py-2 pr-2 sm:pr-4">
                   <span aria-hidden="true">{GLIFO_SIGNO[signo]}</span>{' '}
-                  {NOMBRE_SIGNO[signo]}
+                  {tSignos(signo)}
                 </td>
                 {/*
                   `whitespace-nowrap`: «24° 39′» partido en dos líneas se lee
