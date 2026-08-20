@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
@@ -124,6 +125,30 @@ export default async function LecturaBasePage() {
           <AvisoPendiente>
             {t('noGenerada')}
           </AvisoPendiente>
+
+          {/*
+            La salida del callejón.
+
+            Esta pantalla anunciaba las secciones que tendría la lectura y no
+            ofrecía ninguna forma de escribirla. Si la generación falló —una
+            llamada al modelo que se cae, un minuto de mala suerte—, la persona
+            se quedaba aquí para siempre leyendo que su lectura estaba en camino,
+            sin nada que pulsar y sin que nada del portal enlazara de vuelta a
+            `/generando`. Le pasó a una clienta real durante cuatro días.
+
+            Solo se ofrece cuando ya hay carta: sin ella no hay nada que
+            interpretar, y `/generando` la devolvería aquí de inmediato.
+          */}
+          {carta ? (
+            <div className="flex justify-center">
+              <Link
+                href="/generando"
+                className="rounded-full bg-oro px-8 py-3.5 font-medium text-white transition-colors hover:bg-oro-hondo"
+              >
+                {t('generarAhora')}
+              </Link>
+            </div>
+          ) : null}
 
           <ul className="grid gap-3 md:grid-cols-2">
             {SECCIONES_LECTURA.map(({ clave }) => (

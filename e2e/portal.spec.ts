@@ -64,6 +64,20 @@ test('la lectura base enseña sus secciones aunque no esté generada', async ({ 
   await expect(page.getByText(/todavía no está escrita/i)).toBeVisible()
   await expect(page.getByText(/capa de interpretación/i)).toHaveCount(0)
   await expect(page.getByText('Tus patrones de abundancia')).toBeVisible()
+
+  /*
+   * Y sobre todo: hay salida.
+   *
+   * Esta pantalla anunciaba las secciones y no ofrecía forma de escribirlas. Si
+   * la generación fallaba —una llamada al modelo que se cae—, la persona se
+   * quedaba aquí para siempre viendo que su lectura estaba «en camino», sin nada
+   * que pulsar. Le pasó a una clienta real durante cuatro días, y no se detectó
+   * porque desde fuera la pantalla se ve perfectamente bien.
+   *
+   * El servidor de estas pruebas corre sin clave de IA, así que reproduce
+   * exactamente ese estado: carta sí, lectura no.
+   */
+  await expect(page.getByRole('link', { name: /escribir mi lectura ahora/i })).toBeVisible()
 })
 
 test('la activación anuncia sus partes sin inventarlas', async ({ page }) => {

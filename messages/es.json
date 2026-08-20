@@ -153,7 +153,8 @@
       "senalesPersonales": "Tus señales personales",
       "fortalezas": "Tus fortalezas",
       "recomendacionInicial": "Tu recomendación inicial"
-    }
+    },
+    "generarAhora": "Escribir mi lectura ahora"
   },
   "activacion": {
     "titulo": "Activación de Hoy",
@@ -211,7 +212,8 @@
     "cabecera1": "Estamos preparando tu",
     "cabecera2": "lectura personal",
     "cabeceraTexto": "Conectando los datos de tu nacimiento con los patrones que darán forma a tu guía personalizada.",
-    "completado": "Completado"
+    "completado": "Completado",
+    "reintentar": "Volver a intentarlo"
   },
   "guia_form": {
     "pregunta": "¿Qué necesitas entender hoy?",

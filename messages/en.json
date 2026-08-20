@@ -153,7 +153,8 @@
       "senalesPersonales": "Your personal signs",
       "fortalezas": "Your strengths",
       "recomendacionInicial": "Your first recommendation"
-    }
+    },
+    "generarAhora": "Write my reading now"
   },
   "activacion": {
     "titulo": "Today's Activation",
@@ -211,7 +212,8 @@
     "cabecera1": "We're preparing your",
     "cabecera2": "personal reading",
     "cabeceraTexto": "Connecting your birth details with the patterns that will shape your personal guidance.",
-    "completado": "Done"
+    "completado": "Done",
+    "reintentar": "Try again"
   },
   "guia_form": {
     "pregunta": "What do you need to understand today?",
