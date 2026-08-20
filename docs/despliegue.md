@@ -52,6 +52,20 @@ Decidido con el cliente (agosto de 2026): **Hostinger y Railway**.
 | Base de datos y autenticación | Supabase | `abundance-code-dev` |
 | Cobros | Stripe | La landing cobra; aquí solo se escucha el webhook |
 
+### Cuál es el proyecto de Railway
+
+Railway pone nombres autogenerados y no dice de qué es cada uno, así que
+identificarlo cuesta cada vez que hace falta tocar una variable. Queda escrito:
+
+| Proyecto | Servicio | Qué es |
+|---|---|---|
+| **`lucky-delight`** | `abundance-code-app` → `app.abundancecode.us` | **Esta app.** Es el que hay que tocar |
+| `shimmering-curiosity` | cuatro servicios, con Postgres y Redis | Backend de la landing. **De otro equipo: si se cae, nadie entra a la app** |
+
+Los tres viven bajo la cuenta de Railway `Jerónimo S b's Projects`, plan Hobby,
+que **no es la misma cuenta que la de Supabase** (§ el riesgo aceptado del
+`README`). Son dos accesos distintos que hay que conservar.
+
 **Esta app no se separa en «front» y «back», y no es una elección.** Es Next.js
 con App Router: las pantallas son componentes de **servidor** que consultan
 Supabase directamente, las acciones (`generarLectura`, `consultarGuia`,
