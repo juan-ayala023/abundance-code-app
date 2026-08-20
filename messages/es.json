@@ -117,7 +117,11 @@
     "guia": "Guía Personalizada",
     "guiaTexto": "Hazme una pregunta sobre tus decisiones, bloqueos o señales que estás recibiendo.",
     "hacerPregunta": "Hacer una pregunta",
-    "cierre": "✦ No se trata de cambiar quién eres, sino de recordar tu código y alinearte con él. ✦"
+    "cierre": "✦ No se trata de cambiar quién eres, sino de recordar tu código y alinearte con él. ✦",
+    "faltaLecturaSobre": "Falta lo principal",
+    "faltaLectura": "Tu lectura base no llegó a escribirse",
+    "faltaLecturaTexto": "Tu carta está calculada, pero la interpretación se quedó a medias. No se ha perdido nada: se escribe en un minuto y es tuya para siempre.",
+    "faltaLecturaAccion": "Escribirla ahora"
   },
   "areas": {
     "titulo": "Tus cinco áreas",

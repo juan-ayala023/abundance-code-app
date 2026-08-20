@@ -23,7 +23,8 @@
     "check:actions": "node scripts/check-server-actions.mjs",
     "check:produccion": "node scripts/check-produccion.mjs --produccion",
     "check:entorno": "node scripts/check-produccion.mjs",
-    "build:verify": "cross-env NEXT_DIST_DIR=.next-verify next build"
+    "build:verify": "cross-env NEXT_DIST_DIR=.next-verify next build",
+    "atascados": "node scripts/clientes-atascados.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.34",

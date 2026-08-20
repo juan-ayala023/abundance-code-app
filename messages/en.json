@@ -117,7 +117,11 @@
     "guia": "Personal Guidance",
     "guiaTexto": "Ask me about your decisions, blocks or the signs you're receiving.",
     "hacerPregunta": "Ask a question",
-    "cierre": "✦ It's not about changing who you are, but about remembering your code and aligning with it. ✦"
+    "cierre": "✦ It's not about changing who you are, but about remembering your code and aligning with it. ✦",
+    "faltaLecturaSobre": "The main thing is missing",
+    "faltaLectura": "Your base reading was never written",
+    "faltaLecturaTexto": "Your chart is calculated, but the interpretation did not finish. Nothing is lost: it takes a minute to write and it is yours for good.",
+    "faltaLecturaAccion": "Write it now"
   },
   "areas": {
     "titulo": "Your five areas",

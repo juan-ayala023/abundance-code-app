@@ -1,4 +1,4 @@
-import { Compass, MessageCircle, Sun } from 'lucide-react'
+import { Compass, MessageCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -13,6 +13,7 @@ import { IndicadorCiclo } from '@/components/layout/indicador-ciclo'
 import { Tarjeta, TarjetaAccion } from '@/components/layout/tarjeta'
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 
@@ -29,7 +30,7 @@ export default async function PortalPage() {
       .from('portals')
       // `COLUMNAS_CARTA` ya trae `birth_date` y `chart`: son las que necesita
       // `asegurarCarta` para no recalcular lo que ya está guardado.
-      .select(`${COLUMNAS_CARTA}, created_at`)
+      .select(`${COLUMNAS_CARTA}, base_reading, created_at`)
       .maybeSingle(),
   ])
 
@@ -47,6 +48,22 @@ export default async function PortalPage() {
    * calcular, que es justo el caso de quien todavía no ha hecho el onboarding.
    */
   const carta = portal ? await asegurarCarta(supabase, portal) : null
+
+  /*
+   * ¿Tiene datos pero no tiene lectura? Entonces la generación falló, y hay que
+   * decírselo AQUÍ.
+   *
+   * Le pasó a una clienta: su lectura falló al escribirse y estuvo cuatro días
+   * entrando a un portal que no le decía nada. La forma de reintentarlo está en
+   * Lectura Base, pero nadie entra ahí a buscar un botón que no sabe que existe.
+   * Esta pantalla es la primera que ve, así que es donde tiene que enterarse.
+   *
+   * `lecturaBaseSchema` y no `Boolean(base_reading)`: una lectura guardada a
+   * medias —que ha pasado— no debe contar como lectura, porque la pantalla que
+   * la pinta tampoco la aceptaría y la persona seguiría sin nada.
+   */
+  const faltaLectura =
+    tieneDatos && !lecturaBaseSchema.safeParse(portal?.base_reading).success
 
   const t = await getTranslations('portal')
 
@@ -77,6 +94,17 @@ export default async function PortalPage() {
           descripcion={t('completaDatosTexto')}
           href="/onboarding"
           accion={t('empezar')}
+        />
+      ) : null}
+
+      {faltaLectura ? (
+        <TarjetaAccion
+          Icono={Sparkles}
+          sobretitulo={t('faltaLecturaSobre')}
+          titulo={t('faltaLectura')}
+          descripcion={t('faltaLecturaTexto')}
+          href="/generando"
+          accion={t('faltaLecturaAccion')}
         />
       ) : null}
 

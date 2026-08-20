@@ -503,6 +503,28 @@ test('el portal enseña el cielo de hoy y el equilibrio de la carta', async ({ p
   ).toBeVisible()
 })
 
+/**
+ * Si la lectura no llegó a escribirse, el portal lo dice y ofrece la salida.
+ *
+ * Es la mitad del arreglo que mira el cliente. La otra —el botón en Lectura
+ * Base— solo la encuentra quien entra ahí a buscarlo, y nadie busca un botón que
+ * no sabe que existe. Una clienta estuvo cuatro días entrando a un portal que no
+ * le decía nada de que su lectura había fallado.
+ *
+ * El servidor de estas pruebas corre sin clave de IA, así que reproduce ese
+ * estado exacto: carta sí, lectura no.
+ */
+test('el portal avisa cuando la lectura no llegó a escribirse', async ({ page }) => {
+  await completarOnboarding(page)
+
+  await expect(
+    page.getByRole('heading', { name: /tu lectura base no llegó a escribirse/i }),
+  ).toBeVisible()
+
+  await page.getByRole('link', { name: /escribirla ahora/i }).click()
+  await expect(page).toHaveURL(/\/generando/)
+})
+
 test('el portal reúne las áreas y el cierre', async ({ page }) => {
   await completarOnboarding(page)
 
