@@ -135,7 +135,7 @@ export default async function PortalPage() {
       {carta ? (
         <Tarjeta
           className={cn(
-            'flex flex-col items-center gap-7',
+            'flex flex-col items-center gap-5 sm:gap-7',
             /*
               En el teléfono va a sangre, y esto no es un capricho de estilo.
               Con el margen del contenedor (`px-4`) más el relleno de la tarjeta
@@ -181,7 +181,7 @@ export default async function PortalPage() {
             que está bien para un dibujo pero deja el texto pegado al borde del
             cristal.
           */}
-          <div className="flex w-full flex-col gap-6 px-3 sm:px-0 lg:w-72">
+          <div className="flex w-full flex-col gap-5 px-3 sm:gap-6 sm:px-0 lg:w-72">
             <TrioPrincipal carta={carta} />
 
             {/*

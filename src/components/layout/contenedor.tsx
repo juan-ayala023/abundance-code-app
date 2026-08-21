@@ -17,6 +17,14 @@ import { cn } from '@/lib/utils'
  * mostrar nada, y eso se sumaba al relleno de cada tarjeta. Por debajo de `sm`
  * el margen baja a `px-4`, que sigue separando del borde sin comerse el
  * contenido.
+ *
+ * **Lo mismo vale para el alto, y ahí se notaba más.** El aire entre secciones
+ * era de 40 px y el de arriba y abajo de 48, medidas pensadas para una pantalla
+ * ancha. En un teléfono, donde las secciones van una debajo de otra en vez de
+ * repartidas en columnas, ese mismo aire se acumula: recorrer el portal de
+ * arriba abajo eran cientos de píxeles de nada entre cosas. Por debajo de `sm`
+ * baja a 24 y 32, que sigue separando las secciones sin que haya que arrastrar
+ * el dedo tres veces para pasar de una a la siguiente.
  */
 export function Contenedor({
   children,
@@ -28,7 +36,7 @@ export function Contenedor({
   return (
     <main
       className={cn(
-        'mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-12 sm:px-6 lg:px-12 xl:px-16',
+        'mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 sm:gap-10 sm:px-6 sm:py-12 lg:px-12 xl:px-16',
         className,
       )}
     >

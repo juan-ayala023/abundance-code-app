@@ -42,7 +42,7 @@ export async function TrioPrincipal({ carta }: { carta: Carta }) {
   return (
     <dl className="flex w-full flex-col divide-y divide-borde">
       {FILAS.map(({ clave, glifo, longitud }) => (
-        <div key={clave} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
+        <div key={clave} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0 sm:gap-4 sm:py-4">
           {/*
             Círculo perfilado y no relleno, como en «Áreas desbloqueadas»: en
             este portal el círculo lleno marca acciones que se pulsan, y esto no
@@ -52,8 +52,10 @@ export async function TrioPrincipal({ carta }: { carta: Carta }) {
           <span
             aria-hidden="true"
             className={cn(
-              'flex size-11 shrink-0 items-center justify-center rounded-full border border-oro-claro text-oro',
-              clave === 'ascendente' ? 'text-xs font-medium tracking-wide' : 'text-xl',
+              'flex size-9 shrink-0 items-center justify-center rounded-full border border-oro-claro text-oro sm:size-11',
+              clave === 'ascendente'
+                ? 'text-[0.6rem] font-medium tracking-wide sm:text-xs'
+                : 'text-base sm:text-xl',
             )}
           >
             {glifo}
@@ -63,7 +65,7 @@ export async function TrioPrincipal({ carta }: { carta: Carta }) {
             <dt className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
               {t(clave)}
             </dt>
-            <dd className="text-xl font-light">
+            <dd className="text-lg font-light sm:text-xl">
               {longitud === null ? (
                 <span className="text-sm text-tinta-suave">{t('sinHora')}</span>
               ) : (
