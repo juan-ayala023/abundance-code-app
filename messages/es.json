@@ -296,6 +296,38 @@
     "sobretitulo": "El cielo de hoy",
     "titulo": "Lo que hoy toca tu carta",
     "linea": "{planeta} en {signo} hace {aspecto} a tu {natal} natal.",
+    "explicacion": "{mueve} y {tuyo} {tono}.",
+    "mueve": {
+      "sol": "La energía del día",
+      "luna": "El ánimo del día",
+      "mercurio": "Lo que hoy se piensa y se habla",
+      "venus": "El gusto y el afecto de hoy",
+      "marte": "El empuje y la prisa de hoy",
+      "jupiter": "Las ganas de más",
+      "saturno": "El límite y la responsabilidad",
+      "urano": "Lo que se sale del guion",
+      "neptuno": "La sensibilidad y la niebla",
+      "pluton": "Lo que se remueve por debajo"
+    },
+    "tuyo": {
+      "sol": "tu identidad",
+      "luna": "tu mundo emocional",
+      "mercurio": "tu manera de pensar",
+      "venus": "tu manera de querer",
+      "marte": "tu manera de actuar",
+      "jupiter": "tu confianza",
+      "saturno": "tu estructura y tus miedos",
+      "urano": "tu necesidad de libertad",
+      "neptuno": "tu imaginación",
+      "pluton": "tu fondo más profundo"
+    },
+    "tono": {
+      "conjuncion": "se juntan: hoy ese tema ocupa el primer plano",
+      "sextil": "encuentran una puerta abierta: está ahí, pero hay que cruzarla",
+      "cuadratura": "rozan, y ese roce pide que hagas algo",
+      "trigono": "encajan: hoy eso sale sin esfuerzo",
+      "oposicion": "tiran cada uno hacia un lado: el día pide equilibrio"
+    },
     "sinAspectos": "Hoy ningún planeta se acerca a un punto de tu carta. Es un día de fondo tranquilo: lo que se mueva, se mueve desde dentro.",
     "pie": "Calculado con el cielo real de hoy sobre tu carta de nacimiento."
   },

@@ -19,10 +19,16 @@ import { signoDe, type Carta } from '@/lib/astrology/types'
  * para volver mañana, y es una razón astrológica —no una notificación—: mañana
  * la Luna estará en otro sitio y tocará otro punto de su carta.
  *
- * **No lo interpreta.** Dice el hecho: qué planeta, en qué signo, qué ángulo, a
- * qué punto suyo. Interpretarlo es el trabajo de la activación del día, que está
- * a un clic. Poner aquí una interpretación corta y gratuita competiría con la
- * que sí está escrita para esa persona.
+ * Cada tránsito lleva debajo una línea que traduce el tecnicismo: qué mueve ese
+ * planeta hoy, qué parte de ella toca y si el ángulo suma o roza. Sin eso, «la
+ * Luna hace trígono a tu Plutón natal» no le dice nada a quien no sabe leer una
+ * carta —que es casi todo el mundo—, y la tarjeta se queda en decoración.
+ *
+ * **La explicación es del mecanismo, no de su día.** Sale de dos tablas fijas
+ * —planeta y aspecto— y sería la misma para cualquier persona con ese tránsito:
+ * no cuesta una llamada al modelo ni pretende ser una lectura. Lo que sí está
+ * escrito para ella es la activación del día, que está a un clic; por eso esta
+ * línea explica el ángulo y se calla lo que significa para su vida.
  */
 
 /**
@@ -41,6 +47,9 @@ export async function CieloDeHoy({ carta }: { carta: Carta }) {
   const tCuerpos = await getTranslations('cuerpos')
   const tSignos = await getTranslations('signos')
   const tAspectos = await getTranslations('aspectos')
+  const tMueve = await getTranslations('cielo.mueve')
+  const tTuyo = await getTranslations('cielo.tuyo')
+  const tTono = await getTranslations('cielo.tono')
 
   const cielo = await cieloDeHoy()
   if (!cielo) return null
@@ -93,27 +102,44 @@ export async function CieloDeHoy({ carta }: { carta: Carta }) {
                   {GLIFO_CUERPO[transito.transitante]}
                 </span>
 
-                <p className="min-w-0 text-sm leading-relaxed">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="text-sm leading-relaxed">
+                    {/*
+                      «La Luna en Escorpio hace trígono a tu Venus.» Una frase
+                      entera y no una tabla: en un teléfono una tabla de cuatro
+                      columnas se parte, y además así lo entiende quien no sabe
+                      leer una carta todavía.
+                    */}
+                    <span className="text-tinta">
+                      {t('linea', {
+                        planeta: tCuerpos(transito.transitante),
+                        signo: signo ? tSignos(signo) : '',
+                        aspecto: tAspectos(transito.tipo),
+                        natal: tCuerpos(transito.natal),
+                      })}
+                    </span>{' '}
+                    {signo ? (
+                      <span aria-hidden="true" className="text-tinta-tenue">
+                        {GLIFO_SIGNO[signo]}
+                      </span>
+                    ) : null}
+                  </p>
+
                   {/*
-                    «La Luna en Escorpio hace trígono a tu Venus.» Una frase
-                    entera y no una tabla: en un teléfono una tabla de cuatro
-                    columnas se parte, y además así lo entiende quien no sabe leer
-                    una carta todavía.
+                    Y debajo, en gris y más pequeño, la misma frase sin jerga:
+                    «El ánimo del día y tu fondo más profundo encajan: hoy eso
+                    sale sin esfuerzo.» El tamaño dice lo que es —una nota al pie
+                    del hecho, no otro hecho— y deja que quien ya sabe leer la
+                    carta se salte la línea de un vistazo.
                   */}
-                  <span className="text-tinta">
-                    {t('linea', {
-                      planeta: tCuerpos(transito.transitante),
-                      signo: signo ? tSignos(signo) : '',
-                      aspecto: tAspectos(transito.tipo),
-                      natal: tCuerpos(transito.natal),
+                  <p className="text-xs leading-relaxed text-tinta-suave">
+                    {t('explicacion', {
+                      mueve: tMueve(transito.transitante),
+                      tuyo: tTuyo(transito.natal),
+                      tono: tTono(transito.tipo),
                     })}
-                  </span>{' '}
-                  {signo ? (
-                    <span aria-hidden="true" className="text-tinta-tenue">
-                      {GLIFO_SIGNO[signo]}
-                    </span>
-                  ) : null}
-                </p>
+                  </p>
+                </div>
               </li>
             )
           })}

@@ -296,6 +296,38 @@
     "sobretitulo": "Today's sky",
     "titulo": "What is touching your chart today",
     "linea": "{planeta} in {signo} is {aspecto} your natal {natal}.",
+    "explicacion": "{mueve} and {tuyo} {tono}.",
+    "mueve": {
+      "sol": "Today's energy",
+      "luna": "Today's mood",
+      "mercurio": "What gets thought and said today",
+      "venus": "Today's taste and affection",
+      "marte": "Today's drive and hurry",
+      "jupiter": "The urge for more",
+      "saturno": "Limits and responsibility",
+      "urano": "Whatever breaks the script",
+      "neptuno": "Sensitivity and fog",
+      "pluton": "What stirs underneath"
+    },
+    "tuyo": {
+      "sol": "your identity",
+      "luna": "your emotional world",
+      "mercurio": "the way you think",
+      "venus": "the way you love",
+      "marte": "the way you act",
+      "jupiter": "your confidence",
+      "saturno": "your structure and your fears",
+      "urano": "your need for freedom",
+      "neptuno": "your imagination",
+      "pluton": "your deepest ground"
+    },
+    "tono": {
+      "conjuncion": "merge: that theme takes the foreground today",
+      "sextil": "find an open door: it is there, but you have to walk through it",
+      "cuadratura": "rub against each other, and the friction asks you to do something",
+      "trigono": "fit together: today it comes easily",
+      "oposicion": "pull in opposite directions: the day asks for balance"
+    },
     "sinAspectos": "No planet comes close to a point in your chart today. A quiet backdrop: whatever moves, moves from within.",
     "pie": "Calculated from today's real sky against your birth chart."
   },

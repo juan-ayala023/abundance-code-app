@@ -4,6 +4,7 @@ import es from '../../messages/es.json'
 import en from '../../messages/en.json'
 import { esIdioma, IDIOMAS, NOMBRE_IDIOMA } from './idioma'
 import { INSTRUCCION_IDIOMA } from '@/lib/lectura/idioma-prompt'
+import { CUERPOS, TIPOS_ASPECTO } from '@/lib/astrology/types'
 
 /** Todas las claves de un diccionario, aplanadas: `nav.portal`, `home.titulo`… */
 function claves(objeto: unknown, prefijo = ''): string[] {
@@ -78,6 +79,28 @@ describe('diccionarios', () => {
           (en[ambito] as Record<string, unknown>)?.[clave],
           `falta en.${String(ambito)}.${clave}`,
         ).toBeDefined()
+      }
+    }
+  })
+
+  /*
+   * La tarjeta del cielo de hoy compone su explicación con tres tablas —lo que
+   * mueve el planeta que transita, la parte de ella que toca y el tono del
+   * ángulo—, y el planeta que sale depende del día. Un cuerpo sin entrada no
+   * falla el día que se traduce: falla el día que ese planeta entre en orbe, en
+   * la pantalla de alguien, con la clave en crudo.
+   */
+  it('sabe explicar cualquier tránsito, con cualquier cuerpo y cualquier ángulo', () => {
+    for (const [idioma, dic] of [
+      ['es', es],
+      ['en', en],
+    ] as const) {
+      for (const cuerpo of CUERPOS) {
+        expect(dic.cielo.mueve[cuerpo], `falta ${idioma}.cielo.mueve.${cuerpo}`).toBeTruthy()
+        expect(dic.cielo.tuyo[cuerpo], `falta ${idioma}.cielo.tuyo.${cuerpo}`).toBeTruthy()
+      }
+      for (const aspecto of TIPOS_ASPECTO) {
+        expect(dic.cielo.tono[aspecto], `falta ${idioma}.cielo.tono.${aspecto}`).toBeTruthy()
       }
     }
   })
