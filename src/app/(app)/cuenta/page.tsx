@@ -8,11 +8,11 @@ import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
 import { ESTADO_CORTESIA } from '@/lib/access/cortesia'
+import { urlDeCompra } from '@/lib/access/enlaces'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { DIAS_DE_PORTAL } from '@/lib/lectura/schemas'
-import { getPublicEnv } from '@/lib/env/public'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -47,7 +47,6 @@ export default async function CuentaPage({
   ])
 
   const entitlement = entitlementDe(acceso)
-  const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL
 
   // El mismo contador que ve el usuario en el portal: se deriva de la fecha de
   // creación, no de una columna que pudiera quedar desincronizada.
@@ -137,7 +136,7 @@ export default async function CuentaPage({
 
       <div className="flex flex-wrap gap-4">
         <a
-          href={landingUrl}
+          href={urlDeCompra()}
           className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           {tSus('continuar')}

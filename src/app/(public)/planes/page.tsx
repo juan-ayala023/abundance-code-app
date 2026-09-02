@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/layout/logo";
 import { PieLegal } from "@/components/layout/pie-legal";
-import { getPublicEnv } from "@/lib/env/public";
+import { urlDeCompra } from "@/lib/access/enlaces";
 
 export const metadata: Metadata = {
   title: "Planes · Abundance Code",
@@ -20,7 +20,6 @@ export const metadata: Metadata = {
  */
 export default async function PlanesPage() {
   const t = await getTranslations('planes')
-  const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL;
 
   return (
     <>
@@ -36,7 +35,7 @@ export default async function PlanesPage() {
 
         <div className="flex flex-wrap justify-center gap-4">
           <a
-            href={landingUrl}
+            href={urlDeCompra()}
             className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
           >
             {t('comprar')}

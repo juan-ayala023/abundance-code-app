@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { urlDeCompra } from "@/lib/access/enlaces";
 import { Logo } from "@/components/layout/logo";
 import { PieLegal } from "@/components/layout/pie-legal";
 
@@ -61,12 +62,18 @@ export default async function HomePage() {
             >
               {t('entrar')}
             </Link>
-            <Link
-              href="/planes"
+            {/*
+              Va a la pasarela, no a `/planes`. Esta portada ya ofrece las dos
+              salidas —«ya compré» al lado— así que la pantalla puente solo
+              añadía un clic entre querer comprar y ver el precio. `/planes`
+              sigue existiendo para quien llegue a esa URL desde fuera.
+            */}
+            <a
+              href={urlDeCompra()}
               className="rounded-xl border border-borde bg-superficie px-6 py-3 font-medium transition-colors hover:bg-fondo-hondo"
             >
               {t('planes')}
-            </Link>
+            </a>
           </div>
         </div>
       </main>

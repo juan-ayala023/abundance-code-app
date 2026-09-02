@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
 import { Tarjeta } from '@/components/layout/tarjeta'
-import { getPublicEnv } from '@/lib/env/public'
+import { urlDeCompra } from '@/lib/access/enlaces'
 
 /**
  * Lo que se ve cuando una sección exige suscripción.
@@ -13,7 +13,6 @@ import { getPublicEnv } from '@/lib/env/public'
  * una puerta cerrada.
  */
 export async function RequiereSuscripcion({ seccion }: { seccion: string }) {
-  const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL
   const t = await getTranslations('suscripcion')
 
   return (
@@ -27,7 +26,7 @@ export async function RequiereSuscripcion({ seccion }: { seccion: string }) {
 
       <div className="flex flex-wrap items-center gap-4">
         <a
-          href={landingUrl}
+          href={urlDeCompra()}
           className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           {t('continuar')}

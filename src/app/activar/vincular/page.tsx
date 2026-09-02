@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { getTranslations } from 'next-intl/server'
 
-import { getPublicEnv } from '@/lib/env/public'
+import { urlDeCompra } from '@/lib/access/enlaces'
 import { urlDeReenvio } from '@/lib/access/landing'
 
 import { cerrarSesion } from './actions'
@@ -30,7 +30,6 @@ export default async function VincularPage({
   if (access.kind === 'concedido') redirect('/portal')
 
   const params = await searchParams
-  const landingUrl = getPublicEnv().NEXT_PUBLIC_LANDING_URL
   const esInactivo = access.kind === 'inactivo' || params.estado === 'inactivo'
   /*
    * Llegó con un enlace de acceso caducado. No es lo mismo que «no encontramos
@@ -87,7 +86,7 @@ export default async function VincularPage({
           pagar dos veces por lo mismo.
         */}
         <a
-          href={esCaducado ? urlDeReenvio() : landingUrl}
+          href={esCaducado ? urlDeReenvio() : urlDeCompra()}
           className="w-full rounded-xl bg-oro px-5 py-3 text-center font-medium text-white transition-colors hover:bg-oro-hondo"
         >
           {esCaducado
