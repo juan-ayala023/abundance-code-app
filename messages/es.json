@@ -376,7 +376,9 @@
     "descripcionParcial": "Rueda astrológica con los doce signos y {planetas} planetas, sin casas, porque no se conoce la hora de nacimiento. Debajo hay una tabla con las mismas posiciones en texto.",
     "pieParcial": "Esta carta se calculó sin hora de nacimiento. Las posiciones de los planetas son correctas, pero <b>no incluye casas, Ascendente ni Medio Cielo</b>: esos dependen de la hora exacta.",
     "enSigno": "{cuerpo} en {signo}",
-    "enSignoRetrogrado": "{cuerpo} en {signo}, retrógrado"
+    "enSignoRetrogrado": "{cuerpo} en {signo}, retrógrado",
+    "ascendente": "Ascendente",
+    "medioCielo": "Medio Cielo"
   },
   "onboarding": {
     "titulo": "Tus datos de nacimiento",

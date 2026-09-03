@@ -11,7 +11,11 @@ import { SIGNOS, signoDe } from '@/lib/astrology/types'
 
 import {
   COLOR_ASPECTO,
-  COLOR_ELEMENTO,
+  COLOR_CUERPO,
+  COLOR_EJE,
+  COLOR_ELEMENTO_GLIFO,
+  COLOR_TRAZO_CASA,
+  COLOR_TRAZO_RUEDA,
   ELEMENTO_SIGNO,
   GLIFO_CUERPO,
   GLIFO_SIGNO,
@@ -26,17 +30,34 @@ import {
  *
  * Se renderiza en el servidor y no tiene estado: recibe la carta ya calculada
  * y la dibuja.
+ *
+ * El aspecto es el de la carta astrológica impresa de toda la vida —disco
+ * blanco, corona de signos dividida en doce, escala de grados colgando hacia
+ * dentro y glifos coloreados por elemento y por planeta— y no el de un gráfico
+ * de marca. Es lo que se reconoce de un vistazo como «una carta natal»: los
+ * sectores teñidos en pastel que había antes eran más bonitos de lejos, pero de
+ * cerca competían con lo único que hay que leer, que son los símbolos y las
+ * líneas.
  */
 
 const LADO = 800
 const C = LADO / 2
 
-const R_BORDE = 396
-const R_SIGNOS_INT = 336
-const R_PLANETAS = 292
-const R_MARCA_PLANETA = 322
-const R_CASAS_INT = 236
-const R_NUMERO_CASA = 250
+/*
+ * Radios, de fuera hacia dentro. Todo el dibujo se cuelga de estos nueve
+ * números: tocar uno recoloca su anillo entero y nada más.
+ */
+const R_DISCO = 398
+const R_BORDE = 390
+const R_SIGNOS_INT = 306
+const R_MARCA_PLANETA = 288
+const R_PLANETAS = 244
+const R_CASAS_EXT = 190
+const R_NUMERO_CASA = 168
+const R_CASAS_INT = 146
+
+/** Centro de la corona de signos: ahí va el glifo, dentro de su sector. */
+const R_GLIFO_SIGNO = (R_BORDE + R_SIGNOS_INT) / 2
 
 /** Separación mínima entre glifos de planeta, en grados. */
 const SEPARACION_GLIFOS = 9
@@ -59,6 +80,22 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
     SEPARACION_GLIFOS,
   )
 
+  /*
+   * Las marcas de grado van en tres trazados y no en 360 elementos `<line>`.
+   * Es una vuelta completa al círculo grado a grado: en nodos sueltos engorda
+   * el HTML del servidor decenas de kilobytes, y ese mismo SVG se vuelve a
+   * serializar entero al exportar el PNG.
+   */
+  const marcas = (paso: number, largo: number, saltar: number) =>
+    Array.from({ length: 360 / paso }, (_, i) => i * paso)
+      .filter((grado) => grado % saltar !== 0)
+      .map((grado) => {
+        const fuera = p(R_SIGNOS_INT, grado)
+        const dentro = p(R_SIGNOS_INT - largo, grado)
+        return `M ${r1(fuera.x)} ${r1(fuera.y)} L ${r1(dentro.x)} ${r1(dentro.y)}`
+      })
+      .join(' ')
+
   return (
     <figure className={className}>
       <svg
@@ -80,30 +117,42 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
             : t('descripcionExacta', { planetas: carta.planetas.length })}
         </desc>
 
-        {/* Sectores de los signos, teñidos por elemento */}
-        {SIGNOS.map((signo, indice) => (
-          <path
-            key={`sector-${signo}`}
-            d={sectorAnular(indice * 30, indice * 30 + 30, R_SIGNOS_INT, R_BORDE, anguloDe)}
-            fill={COLOR_ELEMENTO[ELEMENTO_SIGNO[signo]]}
-            fillOpacity={0.28}
-          />
-        ))}
+        {/*
+          Disco claro propio en vez de dejar ver el crema de la página. La carta
+          se lee como un instrumento apoyado encima, y los rojos y verdes de los
+          glifos mantienen el contraste con el que se eligieron.
+        */}
+        <circle cx={C} cy={C} r={R_DISCO} fill="var(--color-superficie)" />
+
+        {/*
+          Escala de grados colgando hacia dentro de la corona: cada 1°, más
+          largas cada 5 y cada 10.
+        */}
+        <g stroke={COLOR_TRAZO_RUEDA} fill="none">
+          <path d={marcas(1, 7, 5)} strokeWidth={0.8} strokeOpacity={0.7} />
+          <path d={marcas(5, 12, 10)} strokeWidth={0.9} strokeOpacity={0.85} />
+          <path d={marcas(10, 17, 30)} strokeWidth={1} />
+        </g>
 
         {/* Círculos guía */}
-        {[R_BORDE, R_SIGNOS_INT, R_CASAS_INT].map((radio) => (
+        {[
+          { radio: R_BORDE, ancho: 1.6 },
+          { radio: R_SIGNOS_INT, ancho: 1.6 },
+          { radio: R_CASAS_EXT, ancho: 1 },
+          { radio: R_CASAS_INT, ancho: 1 },
+        ].map(({ radio, ancho }) => (
           <circle
             key={`circulo-${radio}`}
             cx={C}
             cy={C}
             r={radio}
             fill="none"
-            stroke="var(--color-borde-fuerte)"
-            strokeWidth={1.5}
+            stroke={COLOR_TRAZO_RUEDA}
+            strokeWidth={ancho}
           />
         ))}
 
-        {/* Divisiones entre signos */}
+        {/* Divisiones entre signos: parten la corona en doce sectores */}
         {SIGNOS.map((signo, indice) => {
           const interior = p(R_SIGNOS_INT, indice * 30)
           const exterior = p(R_BORDE, indice * 30)
@@ -114,15 +163,15 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
               y1={interior.y}
               x2={exterior.x}
               y2={exterior.y}
-              stroke="var(--color-borde-fuerte)"
-              strokeWidth={1}
+              stroke={COLOR_TRAZO_RUEDA}
+              strokeWidth={1.2}
             />
           )
         })}
 
-        {/* Glifos de los signos */}
+        {/* Glifos de los signos, dentro de la corona y con el color de su elemento */}
         {SIGNOS.map((signo, indice) => {
-          const centro = p((R_SIGNOS_INT + R_BORDE) / 2, indice * 30 + 15)
+          const centro = p(R_GLIFO_SIGNO, indice * 30 + 15)
           return (
             <text
               key={`glifo-${signo}`}
@@ -130,8 +179,8 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
               y={centro.y}
               textAnchor="middle"
               dominantBaseline="central"
-              fontSize={30}
-              fill="var(--color-oro-hondo)"
+              fontSize={38}
+              fill={COLOR_ELEMENTO_GLIFO[ELEMENTO_SIGNO[signo]]}
             >
               <title>{tSignos(signo)}</title>
               {GLIFO_SIGNO[signo]}
@@ -139,28 +188,8 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
           )
         })}
 
-        {/* Marcas de grado: cada 5, más largas cada 10 */}
-        {Array.from({ length: 72 }, (_, i) => i * 5).map((grado) => {
-          const largo = grado % 10 === 0 ? 12 : 7
-          const desde = p(R_SIGNOS_INT, grado)
-          const hasta = p(R_SIGNOS_INT - largo, grado)
-          return (
-            <line
-              key={`tick-${grado}`}
-              x1={desde.x}
-              y1={desde.y}
-              x2={hasta.x}
-              y2={hasta.y}
-              stroke="var(--color-borde-fuerte)"
-              strokeWidth={1}
-            />
-          )
-        })}
-
         {/* Casas: solo si se conoce la hora */}
-        {!parcial && carta.cuspides.length === 12 ? (
-          <CasasYEjes carta={carta} anguloDe={anguloDe} p={p} />
-        ) : null}
+        {!parcial && carta.cuspides.length === 12 ? <Casas carta={carta} p={p} /> : null}
 
         {/* Aspectos, en el disco central */}
         <g>
@@ -180,13 +209,18 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
                 x2={hasta.x}
                 y2={hasta.y}
                 stroke={COLOR_ASPECTO[aspecto.tipo]}
-                strokeOpacity={0.75}
-                strokeWidth={aspecto.tipo === 'conjuncion' ? 1 : 1.6}
-                strokeDasharray={aspecto.tipo === 'sextil' ? '5 4' : undefined}
+                strokeOpacity={0.85}
+                strokeWidth={aspecto.tipo === 'conjuncion' ? 1 : 1.4}
               />
             )
           })}
         </g>
+
+        {/*
+          Ejes al final, encima de los aspectos: son la estructura de la carta,
+          no una línea más del enredo del centro.
+        */}
+        {!parcial ? <Ejes carta={carta} p={p} anguloDe={anguloDe} t={t} /> : null}
 
         {/* Planetas */}
         {carta.planetas.map((planeta, indice) => {
@@ -196,8 +230,10 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
           // La marca va en la longitud REAL: el glifo puede estar desplazado
           // para que se lea, pero la posición verdadera no se falsea.
           const marcaFuera = p(R_MARCA_PLANETA, planeta.longitud)
-          const marcaDentro = p(R_MARCA_PLANETA - 10, planeta.longitud)
-          const conector = p(R_PLANETAS + 16, longitudDibujo)
+          const marcaDentro = p(R_MARCA_PLANETA - 11, planeta.longitud)
+          const conector = p(R_PLANETAS + 17, longitudDibujo)
+
+          const color = COLOR_CUERPO[planeta.cuerpo]
 
           return (
             <g key={planeta.cuerpo}>
@@ -206,24 +242,25 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
                 y1={marcaFuera.y}
                 x2={marcaDentro.x}
                 y2={marcaDentro.y}
-                stroke="var(--color-tinta-suave)"
-                strokeWidth={1.5}
+                stroke={color}
+                strokeWidth={1.6}
               />
               <line
                 x1={marcaDentro.x}
                 y1={marcaDentro.y}
                 x2={conector.x}
                 y2={conector.y}
-                stroke="var(--color-borde-fuerte)"
-                strokeWidth={1}
+                stroke={color}
+                strokeWidth={0.8}
+                strokeOpacity={0.6}
               />
               <text
                 x={glifo.x}
                 y={glifo.y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fontSize={26}
-                fill="var(--color-tinta)"
+                fontSize={27}
+                fill={color}
               >
                 {/*
                   Una sola cadena, no varios nodos. Un `<title>` solo puede
@@ -242,11 +279,12 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
               </text>
               {planeta.retrogrado ? (
                 <text
-                  x={glifo.x + 15}
-                  y={glifo.y + 11}
+                  x={glifo.x + 16}
+                  y={glifo.y + 12}
                   textAnchor="middle"
                   fontSize={13}
-                  fill="var(--color-tinta-suave)"
+                  fill={color}
+                  fillOpacity={0.8}
                 >
                   ℞
                 </text>
@@ -265,116 +303,129 @@ export async function NatalChart({ carta, className }: { carta: Carta; className
   )
 }
 
-/** Cúspides, números de casa y los dos ejes principales. */
-function CasasYEjes({
+/** Cúspides y números de casa, en el anillo interior. */
+function Casas({
   carta,
-  anguloDe,
   p,
 }: {
   carta: Carta
-  anguloDe: (longitud: number) => number
   p: (radio: number, longitud: number) => { x: number; y: number }
 }) {
   return (
     <g>
       {carta.cuspides.map((cuspide, indice) => {
-        // Las cúspides 1, 4, 7 y 10 son los ejes: se marcan más.
-        const esEje = indice % 3 === 0
+        // Las cúspides 1, 4, 7 y 10 son los ejes: los dibuja `Ejes` enteros y
+        // en rojo, así que aquí se saltan para no repetir el trazo.
+        if (indice % 3 === 0) return null
+
         const desde = p(R_CASAS_INT, cuspide)
         const hasta = p(R_SIGNOS_INT, cuspide)
 
+        return (
+          <line
+            key={`cuspide-${indice}`}
+            x1={desde.x}
+            y1={desde.y}
+            x2={hasta.x}
+            y2={hasta.y}
+            stroke={COLOR_TRAZO_CASA}
+            strokeWidth={0.9}
+          />
+        )
+      })}
+
+      {carta.cuspides.map((cuspide, indice) => {
         const siguiente = carta.cuspides[(indice + 1) % 12]!
         const medio = normalizar(cuspide + normalizar(siguiente - cuspide) / 2)
         const numero = p(R_NUMERO_CASA, medio)
 
         return (
-          <g key={`casa-${indice}`}>
-            <line
-              x1={desde.x}
-              y1={desde.y}
-              x2={hasta.x}
-              y2={hasta.y}
-              stroke={esEje ? 'var(--color-oro)' : 'var(--color-borde-fuerte)'}
-              strokeWidth={esEje ? 2 : 1}
-              strokeDasharray={esEje ? undefined : '4 4'}
-            />
-            <text
-              x={numero.x}
-              y={numero.y}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize={14}
-              fill="var(--color-tinta-tenue)"
-            >
-              {indice + 1}
-            </text>
-          </g>
+          <text
+            key={`numero-casa-${indice}`}
+            x={numero.x}
+            y={numero.y}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize={14}
+            fill="var(--color-tinta-tenue)"
+          >
+            {indice + 1}
+          </text>
         )
       })}
-
-      {carta.ascendente !== null ? (
-        <EtiquetaEje longitud={carta.ascendente} texto="AC" p={p} anguloDe={anguloDe} />
-      ) : null}
-      {carta.medioCielo !== null ? (
-        <EtiquetaEje longitud={carta.medioCielo} texto="MC" p={p} anguloDe={anguloDe} />
-      ) : null}
     </g>
   )
 }
 
-function EtiquetaEje({
-  longitud,
-  texto,
+/**
+ * Ascendente–Descendente y Medio Cielo–Fondo del Cielo.
+ *
+ * Diámetros completos con punta de flecha en el Ascendente y en el Medio
+ * Cielo, que es la convención de la carta impresa: sin texto, la flecha basta
+ * para saber por dónde entra la carta. El nombre va en un `<title>`, para el
+ * lector de pantalla y para quien pase el ratón por encima.
+ */
+function Ejes({
+  carta,
   p,
+  anguloDe,
+  t,
 }: {
-  longitud: number
-  texto: string
+  carta: Carta
   p: (radio: number, longitud: number) => { x: number; y: number }
   anguloDe: (longitud: number) => number
+  t: (clave: string) => string
 }) {
-  const posicion = p(R_BORDE - 16, longitud)
+  const ejes = [
+    { longitud: carta.ascendente, nombre: t('ascendente') },
+    { longitud: carta.medioCielo, nombre: t('medioCielo') },
+  ].filter((eje): eje is { longitud: number; nombre: string } => eje.longitud !== null)
 
   return (
-    <text
-      x={posicion.x}
-      y={posicion.y}
-      textAnchor="middle"
-      dominantBaseline="central"
-      fontSize={16}
-      fontWeight={600}
-      fill="var(--color-oro-hondo)"
-    >
-      {texto}
-    </text>
+    <g>
+      {ejes.map(({ longitud, nombre }) => {
+        const punta = p(R_SIGNOS_INT, longitud)
+        const opuesto = p(R_SIGNOS_INT, longitud + 180)
+
+        return (
+          <g key={nombre}>
+            <title>{nombre}</title>
+            <line
+              x1={opuesto.x}
+              y1={opuesto.y}
+              x2={punta.x}
+              y2={punta.y}
+              stroke={COLOR_EJE}
+              strokeWidth={1.4}
+            />
+            <path d={flecha(R_SIGNOS_INT, anguloDe(longitud))} fill={COLOR_EJE} />
+          </g>
+        )
+      })}
+    </g>
   )
 }
 
-/**
- * Sector de corona circular entre dos longitudes.
- *
- * Se dibuja con dos arcos y dos radios. El indicador de barrido va a 0 porque
- * en pantalla el sentido es antihorario, al revés que las longitudes.
- */
-function sectorAnular(
-  desdeLongitud: number,
-  hastaLongitud: number,
-  radioInterior: number,
-  radioExterior: number,
-  anguloDe: (longitud: number) => number,
-): string {
-  const a1 = anguloDe(desdeLongitud)
-  const a2 = anguloDe(hastaLongitud)
+/** Punta de flecha apoyada en un radio, apuntando hacia fuera. */
+function flecha(radio: number, anguloGrados: number, largo = 17, ancho = 6): string {
+  const rad = (anguloGrados * Math.PI) / 180
 
-  const extIni = punto(C, C, radioExterior, a1)
-  const extFin = punto(C, C, radioExterior, a2)
-  const intFin = punto(C, C, radioInterior, a2)
-  const intIni = punto(C, C, radioInterior, a1)
+  const punta = punto(C, C, radio, anguloGrados)
+  const base = punto(C, C, radio - largo, anguloGrados)
+
+  // Perpendicular a la dirección del eje, para abrir la base del triángulo.
+  const px = -Math.sin(rad) * ancho
+  const py = Math.cos(rad) * ancho
 
   return [
-    `M ${extIni.x} ${extIni.y}`,
-    `A ${radioExterior} ${radioExterior} 0 0 0 ${extFin.x} ${extFin.y}`,
-    `L ${intFin.x} ${intFin.y}`,
-    `A ${radioInterior} ${radioInterior} 0 0 1 ${intIni.x} ${intIni.y}`,
+    `M ${r1(punta.x)} ${r1(punta.y)}`,
+    `L ${r1(base.x + px)} ${r1(base.y + py)}`,
+    `L ${r1(base.x - px)} ${r1(base.y - py)}`,
     'Z',
   ].join(' ')
+}
+
+/** Un decimal basta a este tamaño y deja el trazado mucho más corto. */
+function r1(n: number): number {
+  return Math.round(n * 10) / 10
 }

@@ -376,7 +376,9 @@
     "descripcionParcial": "Astrological wheel with the twelve signs and {planetas} planets, without houses, because the birth time is unknown. Below is a table with the same positions in text.",
     "pieParcial": "This chart was calculated without a birth time. The planet positions are correct, but <b>it does not include houses, Ascendant or Midheaven</b>: those depend on the exact time.",
     "enSigno": "{cuerpo} in {signo}",
-    "enSignoRetrogrado": "{cuerpo} in {signo}, retrograde"
+    "enSignoRetrogrado": "{cuerpo} in {signo}, retrograde",
+    "ascendente": "Ascendant",
+    "medioCielo": "Midheaven"
   },
   "onboarding": {
     "titulo": "Your birth details",
