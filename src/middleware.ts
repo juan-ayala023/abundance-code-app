@@ -33,9 +33,10 @@ export const config = {
   matcher: [
     /*
      * Todas las rutas excepto estáticos e imágenes.
-     * El webhook de Stripe se excluye a propósito: no tiene sesión de usuario
-     * y no debe pasar por el refresco de cookies.
+     * El webhook de Stripe y /api/admin se excluyen a propósito: son llamadas
+     * de servidor a servidor, sin sesión de usuario, y no deben pasar por el
+     * refresco de cookies.
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|api/admin|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
   ],
 }
