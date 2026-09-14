@@ -100,7 +100,12 @@ describe('diccionarios', () => {
         expect(dic.cielo.tuyo[cuerpo], `falta ${idioma}.cielo.tuyo.${cuerpo}`).toBeTruthy()
       }
       for (const aspecto of TIPOS_ASPECTO) {
-        expect(dic.cielo.tono[aspecto], `falta ${idioma}.cielo.tono.${aspecto}`).toBeTruthy()
+        // Una frase entera por aspecto, con los dos huecos dentro: sin ellos
+        // volverían los trozos pegados que la revisión pidió retirar.
+        const frase = dic.cielo.explicacion[aspecto]
+        expect(frase, `falta ${idioma}.cielo.explicacion.${aspecto}`).toBeTruthy()
+        expect(frase).toContain('{mueve}')
+        expect(frase).toContain('{tuyo}')
       }
     }
   })

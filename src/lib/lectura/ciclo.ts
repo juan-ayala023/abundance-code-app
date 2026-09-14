@@ -32,6 +32,17 @@ export function diaDelCiclo(creadoEn: string | null | undefined, ahora = new Dat
 
   return {
     dia: Math.min(transcurridos + 1, DIAS_DE_PORTAL),
+    /**
+     * El día sin saturar: 31, 32, 45… Es la clave de la activación diaria.
+     *
+     * Con `dia` —que se queda en 30— la activación de un suscriptor que sigue
+     * pagando era la misma cada día a partir del 31: `asegurarActivacion()`
+     * busca por `(portal_id, day_number)` y encontraba siempre la del día 30.
+     * Lo detectó la revisión de septiembre de 2026 al probar el cambio de día.
+     */
+    diaReal: transcurridos + 1,
+    /** La fecha de calendario (UTC) de hoy, `AAAA-MM-DD`. Es la que se enseña. */
+    fecha: new Date(diaHoy).toISOString().slice(0, 10),
     total: DIAS_DE_PORTAL,
     /** Porcentaje recorrido, 0–100. */
     progreso: Math.min(Math.round(((transcurridos + 1) / DIAS_DE_PORTAL) * 100), 100),

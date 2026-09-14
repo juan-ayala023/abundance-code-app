@@ -82,7 +82,7 @@
     "diaActual": "Current day",
     "completado": "{progreso}% complete",
     "primerosDias": "first {total} days",
-    "incluye": "Your portal includes {total} days of active guidance. After that, your base reading stays available; personal guidance and advanced features require an active subscription.",
+    "incluye": "Your subscription includes your base reading, your portrait, each day's activation and {consultas} guide questions a day. If it is ever cancelled, your base reading and your natal chart remain yours.",
     "gestionar": "Manage my subscription",
     "estados": {
       "active": "Active",
@@ -94,7 +94,18 @@
       "cortesia": "Complimentary"
     },
     "portalError": "We couldn't open your subscription settings right now. Please try again in a few minutes.",
-    "portalSinCompra": "We couldn't find a subscription linked to your account."
+    "portalSinCompra": "We couldn't find a subscription linked to your account.",
+    "planes": {
+      "ninguno": "No plan",
+      "cortesia": "Courtesy access",
+      "suscripcion": "Monthly subscription",
+      "inactivo": "Subscription not active"
+    },
+    "incluyeCortesia": "You have courtesy access: the same as a subscription —base reading, portrait, daily activation and {consultas} guide questions a day— with no payment or renewal to manage.",
+    "nacimiento": "Birth details",
+    "sinHora": "time unknown",
+    "corregirNacimiento": "Correct my details",
+    "nombreGuardado": "Your name has been saved. Since your birth details did not change, your chart and readings stay the same."
   },
   "portal": {
     "bienvenida": "Welcome to your Portal",
@@ -104,13 +115,9 @@
     "completaDatos": "Complete your birth details",
     "completaDatosTexto": "Without date, time and place we can't calculate your chart. It's the only thing we need from you.",
     "empezar": "Start",
-    "verCartaCompleta": "See my full chart",
-    "codigoNatal": "Your Natal Code",
-    "codigoNatalTexto": "Your unique energetic map reveals your essence, natural talents and life path.",
-    "verLectura": "Read the full reading",
+    "verCartaCompleta": "See my full natal chart",
     "trasDatos": "Available once you complete your birth details.",
     "trasDatosCorto": "Available once you complete your details.",
-    "activacionHoy": "Today's activation",
     "activacionTitulo": "Today's Activation",
     "activacionTexto": "A daily energetic activation to raise your frequency and align your actions.",
     "leerActivacion": "Read the full activation",
@@ -121,7 +128,10 @@
     "faltaLecturaSobre": "The main thing is missing",
     "faltaLectura": "Your base reading was never written",
     "faltaLecturaTexto": "Your chart is calculated, but the interpretation did not finish. Nothing is lost: it takes a minute to write and it is yours for good.",
-    "faltaLecturaAccion": "Write it now"
+    "faltaLecturaAccion": "Write it now",
+    "lecturaPersonal": "Your personal reading",
+    "lecturaPersonalTexto": "The interpretation written from your chart: your energy, your patterns, your blocks and a first step.",
+    "leerLectura": "Read my reading"
   },
   "areas": {
     "titulo": "Your five areas",
@@ -158,7 +168,9 @@
       "fortalezas": "Your strengths",
       "recomendacionInicial": "Your first recommendation"
     },
-    "generarAhora": "Write my reading now"
+    "generarAhora": "Write my reading now",
+    "verContexto": "See the astrological context",
+    "ocultarContexto": "Hide the astrological context"
   },
   "activacion": {
     "titulo": "Today's Activation",
@@ -173,7 +185,8 @@
     },
     "noPreparada": "We couldn't prepare today's activation. Try again in a few minutes. These are the parts it will have.",
     "sinCarta": "Your activation will arrive as soon as your chart is calculated. These are the parts it will have.",
-    "siguiente": "Your next activation unlocks tomorrow."
+    "siguiente": "Your next activation unlocks tomorrow.",
+    "reglaDia": "The day changes at midnight universal time (UTC), the same as the guide's daily question counter."
   },
   "guia": {
     "titulo": "Personal Guidance",
@@ -181,7 +194,13 @@
     "seccion": "Personal guidance",
     "consultar": "Ask my guidance",
     "consultando": "Consulting your Personal Code…",
-    "intro": "Sometimes you do not need more information. Sometimes what you need is clarity. Your Personal Code has answers. Ask from intention and receive the guidance your soul is ready to hear."
+    "intro": "Sometimes you do not need more information. Sometimes what you need is clarity. Your Personal Code has answers. Ask from intention and receive the guidance your soul is ready to hear.",
+    "historial": {
+      "titulo": "My questions",
+      "nota": "Everything you have asked and what your guide answered. Re-reading them does not use up a question.",
+      "vacio": "You have not asked anything yet. When you do, it will be kept here with its answer.",
+      "sinRespuesta": "This question was left without an answer."
+    }
   },
   "generando": {
     "pasos": {
@@ -224,8 +243,8 @@
     "pregunta": "What do you need to understand today?",
     "placeholder": "Write your question here…",
     "sugeridasTitulo": "— Suggested questions —",
-    "restantes": "You have <b>{n}</b> of {total} questions per day left, included during your active period.",
-    "agotadas": "You've used your {total} questions for today. They're available again tomorrow.",
+    "restantes": "You have <b>{n}</b> of {total} questions left today. The limit is daily and the same for every account, paid or not; re-reading a saved answer does not use one.",
+    "agotadas": "You have used your {total} questions for today. They come back tomorrow; meanwhile you can re-read the previous ones below.",
     "responde": "Your guidance answers",
     "aviso": "Personal Guidance is designed for personal reflection and inner clarity. It does not replace professional medical, legal, financial or psychological advice.",
     "sugeridas": {
@@ -273,7 +292,7 @@
       "ascendente": "How you come across",
       "mercurio": "How you think and speak",
       "venus": "How you love and what you value",
-      "marte": "How you act and how you fight",
+      "marte": "How you act and face conflict",
       "jupiter": "Where you expand",
       "saturno": "Your lesson and your limit",
       "habilidades": "Your abilities",
@@ -296,37 +315,36 @@
     "sobretitulo": "Today's sky",
     "titulo": "What is touching your chart today",
     "linea": "{planeta} in {signo} is {aspecto} your natal {natal}.",
-    "explicacion": "{mueve} and {tuyo} {tono}.",
+    "explicacion": {
+      "conjuncion": "Today {mueve} meets {tuyo}: that theme takes the front seat.",
+      "sextil": "Today {mueve} and {tuyo} find an open door: it is there, but you have to walk through it.",
+      "cuadratura": "Today you might feel tension between {mueve} and {tuyo}: something asks for an adjustment.",
+      "trigono": "Today {mueve} and {tuyo} fit together: that comes without effort.",
+      "oposicion": "Today {mueve} and {tuyo} pull in opposite directions: the day asks for balance."
+    },
     "mueve": {
-      "sol": "Today's energy",
-      "luna": "Today's mood",
-      "mercurio": "What gets thought and said today",
-      "venus": "Today's taste and affection",
-      "marte": "Today's drive and hurry",
-      "jupiter": "The urge for more",
-      "saturno": "Limits and responsibility",
-      "urano": "Whatever breaks the script",
-      "neptuno": "Sensitivity and fog",
-      "pluton": "What stirs underneath"
+      "sol": "the day's energy",
+      "luna": "the day's mood",
+      "mercurio": "what is being thought and said today",
+      "venus": "today's taste and affection",
+      "marte": "today's drive",
+      "jupiter": "the wish for more",
+      "saturno": "your responsibilities",
+      "urano": "what goes off script",
+      "neptuno": "the day's sensitivity",
+      "pluton": "what stirs underneath"
     },
     "tuyo": {
       "sol": "your identity",
       "luna": "your emotional world",
-      "mercurio": "the way you think",
-      "venus": "the way you love",
-      "marte": "the way you act",
+      "mercurio": "your way of thinking",
+      "venus": "your way of loving",
+      "marte": "your way of acting",
       "jupiter": "your confidence",
-      "saturno": "your structure and your fears",
+      "saturno": "your sense of limits",
       "urano": "your need for freedom",
-      "neptuno": "your imagination",
+      "neptuno": "what you imagine possible",
       "pluton": "your deepest ground"
-    },
-    "tono": {
-      "conjuncion": "merge: that theme takes the foreground today",
-      "sextil": "find an open door: it is there, but you have to walk through it",
-      "cuadratura": "rub against each other, and the friction asks you to do something",
-      "trigono": "fit together: today it comes easily",
-      "oposicion": "pull in opposite directions: the day asks for balance"
     },
     "sinAspectos": "No planet comes close to a point in your chart today. A quiet backdrop: whatever moves, moves from within.",
     "pie": "Calculated from today's real sky against your birth chart."
@@ -352,8 +370,18 @@
   },
   "equilibrio": {
     "titulo": "Your elemental balance",
-    "dominante": "Your chart leans toward {elemento}.",
-    "ausente": "No planet sits in {elemento}: what that element gives, you build rather than receive.",
+    "dominante": {
+      "fuego": "Fire predominates in your chart: drive, enthusiasm and the urge to begin weigh most in how you are.",
+      "tierra": "Earth predominates in your chart: the practical, the tangible and what lasts weigh most in how you are.",
+      "aire": "Air predominates in your chart: ideas, words and connection with others weigh most in how you are.",
+      "agua": "Water predominates in your chart: emotion, intuition and memory weigh most in how you are."
+    },
+    "ausente": {
+      "fuego": "There is no planet in fire: drive and enthusiasm are not given to you; you build them.",
+      "tierra": "There is no planet in earth: the practical and what lasts are not given to you; you build them.",
+      "aire": "There is no planet in air: the distance to think and the words are not given to you; you build them.",
+      "agua": "There is no planet in water: the connection with what you feel is not given to you; you build it."
+    },
     "repartido": "Your chart spreads its weight: no element rules the others."
   },
   "elementos": {
@@ -391,6 +419,32 @@
     "ciudad": "City of birth",
     "ciudadPlaceholder": "Start typing and pick from the list",
     "guardando": "Saving…",
-    "continuar": "Continue"
+    "continuar": "Continue",
+    "editar": {
+      "titulo": "Correct my birth details",
+      "descripcion": "Review and change what needs changing. What you see is what is saved right now.",
+      "aviso": "If you change the <b>date, time or place</b>, your chart is recalculated and your base reading and portrait are written again over the new chart. <b>The previous versions are not lost</b>: they are kept and you can re-read them in your reading and your chart. Your guide questions are preserved. If you only change the name, nothing is rewritten.",
+      "guardar": "Save changes",
+      "cancelar": "Back to My Account without changing anything"
+    }
+  },
+  "versiones": {
+    "titulo": {
+      "lectura": "Previous versions of your reading",
+      "retrato": "Previous versions of your portrait"
+    },
+    "nota": "They were set aside when you corrected your birth details. They are kept exactly as they were written.",
+    "retirada": "Set aside on {fecha}",
+    "escritaCon": "Written with these details: {nacimiento}",
+    "sinHora": "time unknown",
+    "resumen": "Summary",
+    "apertura": "Opening"
+  },
+  "descarga": {
+    "descargar": "Download image",
+    "preparando": "Preparing…",
+    "descargada": "Downloaded",
+    "confirmacion": "Your chart was saved as {archivo}. Look for it in your downloads folder.",
+    "error": "We could not generate the image. Please try again."
   }
 }

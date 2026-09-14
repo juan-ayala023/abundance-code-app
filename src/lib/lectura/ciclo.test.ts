@@ -29,6 +29,21 @@ describe('diaDelCiclo', () => {
     expect(r?.progreso).toBe(100)
   })
 
+  it('el día real sigue contando después del 30', () => {
+    // 1 de agosto → 1 de octubre son 61 días de calendario: día real 62.
+    // Es la clave de la activación: sin esto, a partir del 31 se repetía la
+    // misma activación cada día.
+    const r = diaDelCiclo(INICIO, new Date('2026-10-01T10:00:00.000Z'))
+    expect(r?.diaReal).toBe(62)
+    expect(diaDelCiclo(INICIO, new Date('2026-08-10T10:00:00.000Z'))?.diaReal).toBe(10)
+  })
+
+  it('expone la fecha de calendario UTC del día', () => {
+    // A las 23:30 UTC sigue siendo el 15; a las 00:30 UTC ya es el 16.
+    expect(diaDelCiclo(INICIO, new Date('2026-08-15T23:30:00.000Z'))?.fecha).toBe('2026-08-15')
+    expect(diaDelCiclo(INICIO, new Date('2026-08-16T00:30:00.000Z'))?.fecha).toBe('2026-08-16')
+  })
+
   it('no marca terminado dentro del ciclo', () => {
     expect(diaDelCiclo(INICIO, new Date('2026-08-30T10:00:00.000Z'))?.terminado).toBe(false)
   })

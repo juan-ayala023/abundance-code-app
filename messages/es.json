@@ -82,7 +82,7 @@
     "diaActual": "Día actual",
     "completado": "{progreso}% completado",
     "primerosDias": "primeros {total} días",
-    "incluye": "Tu portal incluye {total} días de guía activa. Después, tu lectura base seguirá disponible; la guía personalizada y las funciones avanzadas requieren una suscripción activa.",
+    "incluye": "Tu suscripción incluye tu lectura base, tu retrato, la activación de cada día y {consultas} consultas de guía al día. Si algún día se cancela, tu lectura base y tu carta natal siguen siendo tuyas.",
     "gestionar": "Gestionar mi suscripción",
     "estados": {
       "active": "Activo",
@@ -94,7 +94,18 @@
       "cortesia": "Cortesía"
     },
     "portalError": "No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.",
-    "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta."
+    "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta.",
+    "planes": {
+      "ninguno": "Sin plan",
+      "cortesia": "Acceso de cortesía",
+      "suscripcion": "Suscripción mensual",
+      "inactivo": "Suscripción no activa"
+    },
+    "incluyeCortesia": "Tienes acceso de cortesía: lo mismo que una suscripción —lectura base, retrato, activación diaria y {consultas} consultas de guía al día— sin pago ni renovación que gestionar.",
+    "nacimiento": "Datos de nacimiento",
+    "sinHora": "hora desconocida",
+    "corregirNacimiento": "Corregir mis datos",
+    "nombreGuardado": "Tu nombre quedó guardado. Como tu nacimiento no cambió, tu carta y tus lecturas siguen siendo las mismas."
   },
   "portal": {
     "bienvenida": "Bienvenido a tu Portal",
@@ -104,13 +115,9 @@
     "completaDatos": "Completa tus datos de nacimiento",
     "completaDatosTexto": "Sin fecha, hora y lugar no podemos calcular tu carta. Es lo único que necesitamos de ti.",
     "empezar": "Empezar",
-    "verCartaCompleta": "Ver mi carta completa",
-    "codigoNatal": "Tu Código Natal",
-    "codigoNatalTexto": "Tu mapa energético único revela tu esencia, talentos naturales y camino de vida.",
-    "verLectura": "Ver lectura completa",
+    "verCartaCompleta": "Ver mi carta natal completa",
     "trasDatos": "Disponible cuando completes tus datos de nacimiento.",
     "trasDatosCorto": "Disponible tras completar tus datos.",
-    "activacionHoy": "Activación de hoy",
     "activacionTitulo": "Activación de Hoy",
     "activacionTexto": "Una activación energética diaria para elevar tu frecuencia y alinear tus acciones.",
     "leerActivacion": "Leer activación completa",
@@ -121,7 +128,10 @@
     "faltaLecturaSobre": "Falta lo principal",
     "faltaLectura": "Tu lectura base no llegó a escribirse",
     "faltaLecturaTexto": "Tu carta está calculada, pero la interpretación se quedó a medias. No se ha perdido nada: se escribe en un minuto y es tuya para siempre.",
-    "faltaLecturaAccion": "Escribirla ahora"
+    "faltaLecturaAccion": "Escribirla ahora",
+    "lecturaPersonal": "Tu lectura personal",
+    "lecturaPersonalTexto": "La interpretación escrita desde tu carta: tu energía, tus patrones, tus bloqueos y un primer paso.",
+    "leerLectura": "Leer mi lectura"
   },
   "areas": {
     "titulo": "Tus cinco áreas",
@@ -158,7 +168,9 @@
       "fortalezas": "Tus fortalezas",
       "recomendacionInicial": "Tu recomendación inicial"
     },
-    "generarAhora": "Escribir mi lectura ahora"
+    "generarAhora": "Escribir mi lectura ahora",
+    "verContexto": "Ver el contexto astrológico",
+    "ocultarContexto": "Ocultar el contexto astrológico"
   },
   "activacion": {
     "titulo": "Activación de Hoy",
@@ -173,7 +185,8 @@
     },
     "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
     "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
-    "siguiente": "Tu próxima activación se desbloquea mañana."
+    "siguiente": "Tu próxima activación se desbloquea mañana.",
+    "reglaDia": "El día cambia a medianoche en hora universal (UTC), igual que el contador de consultas de la guía."
   },
   "guia": {
     "titulo": "Guía Personalizada",
@@ -181,7 +194,13 @@
     "seccion": "La guía personalizada",
     "consultar": "Consultar mi guía",
     "consultando": "Consultando tu Código Personal…",
-    "intro": "A veces no necesitas más información. A veces, lo que necesitas es claridad. Tu Código Personal tiene respuestas. Haz tu pregunta desde la intención y recibe la guía que tu alma está lista para escuchar."
+    "intro": "A veces no necesitas más información. A veces, lo que necesitas es claridad. Tu Código Personal tiene respuestas. Haz tu pregunta desde la intención y recibe la guía que tu alma está lista para escuchar.",
+    "historial": {
+      "titulo": "Mis consultas",
+      "nota": "Todo lo que has preguntado y lo que te respondió tu guía. Releerlas no gasta ninguna consulta.",
+      "vacio": "Todavía no has hecho ninguna consulta. Cuando la hagas, quedará guardada aquí con su respuesta.",
+      "sinRespuesta": "Esta consulta se quedó sin respuesta."
+    }
   },
   "generando": {
     "pasos": {
@@ -224,8 +243,8 @@
     "pregunta": "¿Qué necesitas entender hoy?",
     "placeholder": "Escribe tu pregunta aquí…",
     "sugeridasTitulo": "— Preguntas sugeridas —",
-    "restantes": "Te quedan <b>{n}</b> de {total} consultas por día, incluidas durante tu período activo.",
-    "agotadas": "Has usado tus {total} consultas de hoy. Vuelven a estar disponibles mañana.",
+    "restantes": "Te quedan <b>{n}</b> de {total} consultas hoy. El límite es diario y es el mismo para todas las cuentas, con o sin pago; releer una respuesta guardada no gasta ninguna.",
+    "agotadas": "Has usado tus {total} consultas de hoy. Vuelven a estar disponibles mañana; mientras tanto puedes releer las anteriores más abajo.",
     "responde": "Tu guía responde",
     "aviso": "La Guía Personalizada está diseñada para reflexión personal y claridad interna. No reemplaza asesoría médica, legal, financiera o psicológica profesional.",
     "sugeridas": {
@@ -273,7 +292,7 @@
       "ascendente": "Cómo te ven al llegar",
       "mercurio": "Cómo piensas y cómo hablas",
       "venus": "Cómo quieres y qué valoras",
-      "marte": "Cómo actúas y cómo peleas",
+      "marte": "Cómo actúas y afrontas los conflictos",
       "jupiter": "Dónde te expandes",
       "saturno": "Tu lección y tu límite",
       "habilidades": "Tus habilidades",
@@ -296,18 +315,24 @@
     "sobretitulo": "El cielo de hoy",
     "titulo": "Lo que hoy toca tu carta",
     "linea": "{planeta} en {signo} hace {aspecto} a tu {natal} natal.",
-    "explicacion": "{mueve} y {tuyo} {tono}.",
+    "explicacion": {
+      "conjuncion": "Hoy {mueve} se junta con {tuyo}: ese tema ocupa el primer plano.",
+      "sextil": "Hoy {mueve} y {tuyo} encuentran una puerta abierta: está ahí, pero hay que cruzarla.",
+      "cuadratura": "Hoy podrías sentir tensión entre {mueve} y {tuyo}: algo pide un ajuste.",
+      "trigono": "Hoy {mueve} y {tuyo} encajan: eso sale sin esfuerzo.",
+      "oposicion": "Hoy {mueve} y {tuyo} tiran cada uno hacia un lado: el día pide equilibrio."
+    },
     "mueve": {
-      "sol": "La energía del día",
-      "luna": "El ánimo del día",
-      "mercurio": "Lo que hoy se piensa y se habla",
-      "venus": "El gusto y el afecto de hoy",
-      "marte": "El empuje y la prisa de hoy",
-      "jupiter": "Las ganas de más",
-      "saturno": "El límite y la responsabilidad",
-      "urano": "Lo que se sale del guion",
-      "neptuno": "La sensibilidad y la niebla",
-      "pluton": "Lo que se remueve por debajo"
+      "sol": "la energía del día",
+      "luna": "el ánimo del día",
+      "mercurio": "lo que hoy se piensa y se habla",
+      "venus": "el gusto y el afecto de hoy",
+      "marte": "el empuje de hoy",
+      "jupiter": "las ganas de más",
+      "saturno": "tus responsabilidades",
+      "urano": "lo que se sale del guion",
+      "neptuno": "la sensibilidad del día",
+      "pluton": "lo que se remueve por debajo"
     },
     "tuyo": {
       "sol": "tu identidad",
@@ -316,17 +341,10 @@
       "venus": "tu manera de querer",
       "marte": "tu manera de actuar",
       "jupiter": "tu confianza",
-      "saturno": "tu estructura y tus miedos",
+      "saturno": "tu sentido del límite",
       "urano": "tu necesidad de libertad",
-      "neptuno": "tu imaginación",
+      "neptuno": "lo que imaginas posible",
       "pluton": "tu fondo más profundo"
-    },
-    "tono": {
-      "conjuncion": "se juntan: hoy ese tema ocupa el primer plano",
-      "sextil": "encuentran una puerta abierta: está ahí, pero hay que cruzarla",
-      "cuadratura": "rozan, y ese roce pide que hagas algo",
-      "trigono": "encajan: hoy eso sale sin esfuerzo",
-      "oposicion": "tiran cada uno hacia un lado: el día pide equilibrio"
     },
     "sinAspectos": "Hoy ningún planeta se acerca a un punto de tu carta. Es un día de fondo tranquilo: lo que se mueva, se mueve desde dentro.",
     "pie": "Calculado con el cielo real de hoy sobre tu carta de nacimiento."
@@ -352,8 +370,18 @@
   },
   "equilibrio": {
     "titulo": "Tu equilibrio elemental",
-    "dominante": "Tu carta pesa en {elemento}.",
-    "ausente": "No hay ningún planeta en {elemento}: lo que ese elemento da, lo construyes tú, no te viene dado.",
+    "dominante": {
+      "fuego": "El fuego predomina en tu carta: el impulso, el entusiasmo y las ganas de empezar pesan más en tu forma de estar.",
+      "tierra": "La tierra predomina en tu carta: lo práctico, lo tangible y lo que se sostiene en el tiempo pesan más en tu forma de estar.",
+      "aire": "El aire predomina en tu carta: las ideas, la palabra y el vínculo con los demás pesan más en tu forma de estar.",
+      "agua": "El agua predomina en tu carta: la emoción, la intuición y la memoria pesan más en tu forma de estar."
+    },
+    "ausente": {
+      "fuego": "No hay ningún planeta en fuego: el impulso y el entusiasmo no te vienen dados, los construyes tú.",
+      "tierra": "No hay ningún planeta en tierra: lo práctico y lo que se sostiene no te vienen dados, los construyes tú.",
+      "aire": "No hay ningún planeta en aire: la distancia para pensar y la palabra no te vienen dadas, las construyes tú.",
+      "agua": "No hay ningún planeta en agua: la conexión con lo que sientes no te viene dada, la construyes tú."
+    },
     "repartido": "Tu carta reparte sus fuerzas: ningún elemento manda sobre los demás."
   },
   "elementos": {
@@ -391,6 +419,32 @@
     "ciudad": "Ciudad de nacimiento",
     "ciudadPlaceholder": "Empieza a escribir y elige de la lista",
     "guardando": "Guardando…",
-    "continuar": "Continuar"
+    "continuar": "Continuar",
+    "editar": {
+      "titulo": "Corregir mis datos de nacimiento",
+      "descripcion": "Revisa y cambia lo que haga falta. Lo que ves es lo que hay guardado ahora.",
+      "aviso": "Si cambias la <b>fecha, la hora o el lugar</b>, tu carta se recalcula y tu lectura base y tu retrato se vuelven a escribir sobre la carta nueva. <b>Las versiones anteriores no se pierden</b>: quedan guardadas y las puedes releer en tu lectura y en tu carta. Tus consultas de guía se conservan. Si solo cambias el nombre, nada se vuelve a escribir.",
+      "guardar": "Guardar cambios",
+      "cancelar": "Volver a Mi Cuenta sin cambiar nada"
+    }
+  },
+  "versiones": {
+    "titulo": {
+      "lectura": "Versiones anteriores de tu lectura",
+      "retrato": "Versiones anteriores de tu retrato"
+    },
+    "nota": "Se retiraron al corregir tus datos de nacimiento. Se conservan tal como se escribieron.",
+    "retirada": "Retirada el {fecha}",
+    "escritaCon": "Escrita con los datos: {nacimiento}",
+    "sinHora": "hora desconocida",
+    "resumen": "Resumen",
+    "apertura": "Apertura"
+  },
+  "descarga": {
+    "descargar": "Descargar imagen",
+    "preparando": "Preparando…",
+    "descargada": "Descargada",
+    "confirmacion": "Tu carta se guardó como {archivo}. Búscala en la carpeta de descargas.",
+    "error": "No pudimos generar la imagen. Vuelve a intentarlo."
   }
 }

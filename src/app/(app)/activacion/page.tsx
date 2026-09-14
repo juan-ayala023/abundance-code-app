@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
+import { idiomaActual } from '@/i18n/idioma'
 import { ArcoDeLuz } from '@/components/layout/arco'
 import { Contenedor } from '@/components/layout/contenedor'
 import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
@@ -65,10 +66,39 @@ export default async function ActivacionPage() {
    * El nivel se comprueba ANTES de generar, no solo al pintar: generar una
    * activación que no se va a mostrar costaría dinero por nada.
    */
+  /*
+   * `ciclo.diaReal` y no `ciclo.dia`: el segundo se queda en 30 para siempre,
+   * y con él la activación de un suscriptor que sigue pagando era la misma cada
+   * día a partir del 31. Ver el comentario de `diaDelCiclo()`.
+   */
   const activacion =
     nivel === 'completo' && ciclo && carta.success
-      ? await asegurarActivacion(portal.id, carta.data, ciclo.dia, ciclo.total, portal.full_name)
+      ? await asegurarActivacion(
+          portal.id,
+          carta.data,
+          ciclo.diaReal,
+          ciclo.total,
+          ciclo.fecha,
+          portal.full_name,
+        )
       : null
+
+  /*
+   * La fecha a la que corresponde la activación, escrita para leerse. Y la
+   * regla, dicha: el día cambia a medianoche UTC, igual que el contador de
+   * consultas de la guía. Sin esto no había forma de saber si lo que se veía
+   * era «lo de hoy» ni cuándo cambiaría —que es lo que pidió la revisión.
+   */
+  const idioma = await idiomaActual()
+  const fechaLegible = ciclo
+    ? new Date(`${ciclo.fecha}T12:00:00Z`).toLocaleDateString(idioma, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
+    : null
 
   return (
     <Contenedor>
@@ -83,7 +113,7 @@ export default async function ActivacionPage() {
       */}
       <EncabezadoPagina
         titulo={t('titulo')}
-        descripcion={t('descripcion')}
+        descripcion={fechaLegible ? `${fechaLegible} · ${t('descripcion')}` : t('descripcion')}
         volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
 
@@ -119,9 +149,9 @@ export default async function ActivacionPage() {
             cliente; se conserva el aviso de cuándo llega la siguiente, que no
             dice ningún número y evita que la pantalla parezca un final.
           */}
-          <p className="flex items-center justify-center gap-2 text-sm text-tinta-tenue">
-            <Clock size={14} aria-hidden="true" />
-            {t('siguiente')}
+          <p className="flex items-center justify-center gap-2 text-center text-sm text-tinta-tenue">
+            <Clock size={14} aria-hidden="true" className="shrink-0" />
+            <span>{t('siguiente')} {t('reglaDia')}</span>
           </p>
         </>
       ) : (

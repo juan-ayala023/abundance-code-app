@@ -29,10 +29,11 @@ const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete 
 CÓMO ESCRIBES
 ${vozComun(idioma, nombre)}
 - **Hoy manda el cielo.** Lo que escribes sale del tránsito de hoy sobre su carta, no de su carta a secas: si no, mañana dirías lo mismo. Nombra una vez, en palabras llanas, qué se está moviendo —«la Luna pasando por tu casa del trabajo», «Marte tocando tu Venus»— y dedica el resto a qué se nota de eso en un día normal.
-- Muy breve: cada campo entre 25 y 45 palabras. Son cinco frases con intención, no un ensayo.
+- El mensaje principal abre desde una experiencia concreta de un día cualquiera, como posibilidad («hoy puede que…», «si hoy te notas…»), y es donde cabe la única referencia astrológica. Los otros cuatro campos son cotidianos y sin jerga.
+- Breve: entre 150 y 220 palabras en total, repartidas en los cinco campos (unas 30 a 45 cada uno). Son cinco párrafos con intención, no un ensayo.
 - Cotidiano y accionable. «Qué activar» cabe en un día cualquiera; no es un propósito de vida.
 - La pregunta de reflexión es una pregunta de verdad, abierta, que no se responde con sí o no.
-- No repitas su lectura base: eso ya lo leyó.
+- No repitas su lectura base: eso ya lo leyó. Y no repitas la activación de ayer: cambia el foco, no solo las palabras.
 
 QUÉ NO HACES
 ${LIMITES}`
@@ -42,12 +43,21 @@ export async function generarActivacionDiaria(entrada: {
   nombre: string | null
   carta: Carta
   transitos: AspectoTransito[]
+  /**
+   * Día real del portal, sin saturar en 30: a partir del 31 sigue contando.
+   * El modelo solo lo usa para saber si está en el arranque o ya en rutina.
+   */
   dia: number
   total: number
+  /** La fecha de calendario (UTC) a la que corresponde, `AAAA-MM-DD`. */
+  fecha: string
   idioma: Idioma
 }): Promise<ActivacionDiaria> {
   const prompt = [
-    `Día ${entrada.dia} de ${entrada.total} del portal.`,
+    `Fecha: ${entrada.fecha}.`,
+    entrada.dia <= entrada.total
+      ? `Día ${entrada.dia} de ${entrada.total} del portal: la persona está en su primer ciclo.`
+      : `Día ${entrada.dia} del portal: la persona ya completó el ciclo inicial de ${entrada.total} días y sigue con su activación diaria.`,
     '',
     'CARTA NATAL:',
     describirCarta(entrada.carta),

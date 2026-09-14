@@ -1,6 +1,7 @@
 'use client'
 
 import { ChevronDown } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { Tarjeta } from '@/components/layout/tarjeta'
@@ -13,6 +14,7 @@ import { Tarjeta } from '@/components/layout/tarjeta'
  * estilo por defecto del navegador.
  */
 export function AnalisisCompleto({ texto }: { texto: string }) {
+  const t = useTranslations('lectura')
   const [abierto, setAbierto] = useState(false)
 
   return (
@@ -24,7 +26,13 @@ export function AnalisisCompleto({ texto }: { texto: string }) {
         aria-controls="analisis-completo"
         className="inline-flex items-center gap-2 rounded-full bg-oro px-7 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
       >
-        {abierto ? 'Ocultar análisis completo' : 'Leer análisis completo'}
+        {/*
+          Antes: «Leer análisis completo». Ahora la lectura deja el detalle
+          astrológico aquí a propósito —una referencia por sección arriba, y el
+          recorrido completo de colocaciones y aspectos debajo—, así que el
+          botón dice lo que hay detrás.
+        */}
+        {abierto ? t('ocultarContexto') : t('verContexto')}
         <ChevronDown
           size={18}
           aria-hidden="true"

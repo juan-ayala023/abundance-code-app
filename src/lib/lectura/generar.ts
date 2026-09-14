@@ -24,14 +24,37 @@ import { lecturaGeneradaSchema, type LecturaBase } from './schemas'
 
 export class LecturaError extends Error {}
 
+/**
+ * Qué tiene que cubrir cada sección.
+ *
+ * Una línea por sección, y es lo que impide que ocho párrafos sobre la misma
+ * persona acaben repitiendo impulso, control y seguridad de principio a fin —que
+ * es lo que señaló la revisión de septiembre de 2026—. Cada sección tiene un
+ * encargo, y el encargo es distinto.
+ */
+const ENCARGOS = [
+  'resumen: cómo es esta persona por dentro y qué la mueve. Sin lista de rasgos: una imagen que se pueda recordar.',
+  'energiaPrincipal: de qué está hecha su fuerza de fondo, qué la enciende y qué la agota. Abre con una escena cotidiana en la que esa energía se nota.',
+  'patronesAbundancia: cómo se relaciona con recibir, pedir, gastar y merecer. Qué le sale natural y dónde se le repite algo que ya no le sirve.',
+  'bloqueosInternos: la tensión que más la frena, dicha con precisión y sin dramatizar. Y hacia dónde se abre cuando esa tensión se entiende.',
+  'formaDecidir: cómo decide de verdad —rápido o rumiando, con la cabeza o con el cuerpo, a solas o pidiendo permiso— y qué la paraliza.',
+  'senalesPersonales: qué señales suele pasar por alto y cuáles merecen su atención: cansancios, entusiasmos, repeticiones. Concreto y observable.',
+  'fortalezas: lo que sabe hacer bien, deducido de lo mejor situado en su carta. Utilizable, no una lista de adjetivos.',
+  'recomendacionInicial: un solo paso pequeño para esta semana, que salga de todo lo anterior. Una acción, no un propósito de vida.',
+]
+
 const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
 
 Escribes la Lectura Base: la interpretación que la persona recibe al abrir su portal. Es el entregable del producto y la leerá una sola persona, sobre su propia carta.
 
 CÓMO ESCRIBES
 ${vozComun(idioma, nombre)}
-- **Enseña la astrología mientras la usas.** Di de dónde sale lo que afirmas —«tu Luna en Piscis, en la casa de las búsquedas», «Saturno apretando a tu Sol»— y en la misma frase qué significa eso en su vida. Nombrarla sin explicarla es jerga; afirmar sin nombrarla es un horóscopo de revista. Este producto no es ninguna de las dos cosas, y esta es la línea que lo separa.
-- Cada sección, entre 60 y 110 palabras. El resumen, entre 50 y 80.
+- **Cada sección sigue este movimiento, con variaciones:** abre con una experiencia emocional o una pregunta concreta; introduce una referencia breve a su carta, en palabras llanas; explica el patrón posible sin convertirlo en certeza; y cierra con una reflexión o una acción pequeña. No repitas el mismo arranque en dos secciones.
+- Cada sección, entre 60 y 100 palabras. El resumen, entre 50 y 80.
+- **El detalle astrológico va en \`analisisCompleto\`, no en las secciones.** Ahí sí recorres las colocaciones, casas y aspectos que sostienen lo dicho arriba, explicando cada uno; la persona lo abre desde «Ver el contexto astrológico» cuando quiere saber de dónde sale todo. Las secciones se quedan con una referencia cada una.
+
+QUÉ CUBRE CADA SECCIÓN
+${ENCARGOS.map((encargo) => `- ${encargo}`).join('\n')}
 
 QUÉ NO HACES
 ${LIMITES}`
@@ -47,7 +70,7 @@ export async function generarLecturaBase(entrada: {
     'CARTA NATAL YA CALCULADA:',
     describirCarta(entrada.carta),
     '',
-    'Escribe la lectura completa. El campo `analisisCompleto` es un desarrollo largo (entre 300 y 450 palabras) que profundiza en cómo se relacionan entre sí las secciones anteriores; no repitas sus frases.',
+    'Escribe la lectura completa. El campo `analisisCompleto` es el contexto astrológico (entre 300 y 450 palabras): recorre las colocaciones y aspectos de los que salen las secciones anteriores, explica cada uno en palabras corrientes y muestra cómo se relacionan entre sí. No repitas frases de las secciones.',
   ].join('\n')
 
   try {

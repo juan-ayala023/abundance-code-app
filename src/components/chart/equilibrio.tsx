@@ -78,10 +78,14 @@ export async function Equilibrio({ carta }: { carta: Carta }) {
       */}
       {balance.elementoDominante ? (
         <p className="text-sm leading-relaxed text-tinta-suave">
-          {t('dominante', { elemento: tElementos(balance.elementoDominante) })}
-          {balance.elementoAusente ? (
-            <> {t('ausente', { elemento: tElementos(balance.elementoAusente) })}</>
-          ) : null}
+          {/*
+            Una frase por elemento, no una plantilla con hueco: «El agua
+            predomina en tu carta» necesita artículo y una explicación
+            distinta para cada uno. «Tu carta pesa en Agua» era la versión
+            que la revisión pidió retirar.
+          */}
+          {t(`dominante.${balance.elementoDominante}`)}
+          {balance.elementoAusente ? <> {t(`ausente.${balance.elementoAusente}`)}</> : null}
         </p>
       ) : (
         <p className="text-sm leading-relaxed text-tinta-suave">{t('repartido')}</p>
