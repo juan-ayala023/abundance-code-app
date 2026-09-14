@@ -49,7 +49,7 @@ export async function CieloDeHoy({ carta }: { carta: Carta }) {
   const tAspectos = await getTranslations('aspectos')
   const tMueve = await getTranslations('cielo.mueve')
   const tTuyo = await getTranslations('cielo.tuyo')
-  const tTono = await getTranslations('cielo.tono')
+  const tExplicacion = await getTranslations('cielo.explicacion')
 
   const cielo = await cieloDeHoy()
   if (!cielo) return null
@@ -133,10 +133,17 @@ export async function CieloDeHoy({ carta }: { carta: Carta }) {
                     carta se salte la línea de un vistazo.
                   */}
                   <p className="text-xs leading-relaxed text-tinta-suave">
-                    {t('explicacion', {
+                    {/*
+                      Una frase entera por tipo de aspecto, con los dos huecos
+                      dentro. Antes era «{mueve} y {tuyo} {tono}», y con Saturno
+                      sobre Neptuno salía «El límite y la responsabilidad y tu
+                      imaginación rozan…»: tres trozos pegados que no forman
+                      una frase. La revisión lo señaló, y la solución no era
+                      retocar los trozos sino dejar de pegarlos.
+                    */}
+                    {tExplicacion(transito.tipo, {
                       mueve: tMueve(transito.transitante),
                       tuyo: tTuyo(transito.natal),
-                      tono: tTono(transito.tipo),
                     })}
                   </p>
                 </div>

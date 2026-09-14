@@ -8,6 +8,7 @@ import type { Database } from '@/lib/supabase/database.types'
 
 import { generarLecturaBase } from './generar'
 import { lecturaBaseSchema, type LecturaBase } from './schemas'
+import { nombreDePila } from './voz'
 
 /**
  * La lectura base del portal, generándola si todavía no existe.
@@ -48,7 +49,7 @@ export async function asegurarLecturaBase(
   try {
     lectura = await generarLecturaBase({
       idioma: await idiomaActual(),
-      nombre: portal.full_name,
+      nombre: nombreDePila(portal.full_name),
       carta: carta.data,
     })
   } catch (error) {

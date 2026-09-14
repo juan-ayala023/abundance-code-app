@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { FormularioConsulta } from '@/components/guia/formulario-consulta'
+import { HistorialConsultas } from '@/components/guia/historial-consultas'
 import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
@@ -76,6 +77,19 @@ export default async function GuiaPage({
   const usadas = count ?? 0
   const restantes = Math.max(CONSULTAS_GUIA_POR_DIA - usadas, 0)
 
+  /*
+   * El historial. Las últimas cincuenta bastan: son 3 al día, así que cubren
+   * más de dos semanas, y quien quiera ir más atrás tiene el buscador del
+   * navegador. Se piden aunque la guía esté cerrada por falta de suscripción:
+   * lo que ya se respondió es suyo y se puede releer.
+   */
+  const { data: consultas } = await supabase
+    .from('guidance_queries')
+    .select('id, question, answer, created_at')
+    .eq('portal_id', portal.id)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
   return (
     <Contenedor className="max-w-5xl">
       <EncabezadoPagina
@@ -100,6 +114,8 @@ export default async function GuiaPage({
           />
         </Tarjeta>
       )}
+
+      <HistorialConsultas consultas={consultas ?? []} />
 
       {/*
         El aviso legal viene del producto anterior y no es decorativo: coincide

@@ -8,6 +8,7 @@ import type { Database } from '@/lib/supabase/database.types'
 
 import { generarRetrato } from './generar-retrato'
 import { retratoSchema, type Retrato } from './schemas'
+import { nombreDePila } from './voz'
 
 /**
  * El retrato de la carta, generándolo si todavía no existe.
@@ -46,7 +47,7 @@ export async function asegurarRetrato(
   try {
     retrato = await generarRetrato({
       idioma: await idiomaActual(),
-      nombre: portal.full_name,
+      nombre: nombreDePila(portal.full_name),
       carta: carta.data,
     })
   } catch (error) {

@@ -10,14 +10,33 @@ import type { Place } from '@/lib/geo/types'
 
 import { BuscadorCiudades } from './buscador-ciudades'
 
-export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string }) {
+/** Lo que hay guardado, para el modo de corrección. Ver `onboarding/page.tsx`. */
+export type ValoresIniciales = {
+  birthDate: string
+  birthTime: string
+  timeUnknown: boolean
+  lugar: Place | null
+}
+
+export function FormularioNacimiento({
+  nombreInicial,
+  editando = false,
+  valoresIniciales,
+}: {
+  nombreInicial: string
+  /** Modo corrección: cambia el texto del botón. La acción es la misma. */
+  editando?: boolean
+  valoresIniciales?: ValoresIniciales
+}) {
   const t = useTranslations('onboarding')
   const [estado, accion] = useActionState(guardarDatosNacimiento, ESTADO_INICIAL)
-  const [horaDesconocida, setHoraDesconocida] = useState(false)
-  const [, setLugar] = useState<Place | null>(null)
+  const [horaDesconocida, setHoraDesconocida] = useState(valoresIniciales?.timeUnknown ?? false)
+  const [, setLugar] = useState<Place | null>(valoresIniciales?.lugar ?? null)
 
   return (
     <form action={accion} className="flex flex-col gap-6">
+      {/* La acción distingue corregir de estrenar: solo en el primer caso archiva lecturas. */}
+      {editando ? <input type="hidden" name="editando" value="1" /> : null}
       <Campo id="fullName" etiqueta={t('nombre')} error={estado.campos.fullName}>
         <input
           id="fullName"
@@ -36,6 +55,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
           name="birthDate"
           type="date"
           required
+          defaultValue={valoresIniciales?.birthDate}
           max={new Date().toISOString().slice(0, 10)}
           className="rounded-xl border border-borde bg-superficie px-4 py-3"
         />
@@ -46,6 +66,7 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
           id="birthTime"
           name="birthTime"
           type="time"
+          defaultValue={valoresIniciales?.birthTime}
           disabled={horaDesconocida}
           className="rounded-xl border border-borde bg-superficie px-4 py-3 disabled:opacity-50"
         />
@@ -67,7 +88,11 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         ) : null}
       </Campo>
 
-      <BuscadorCiudades onSelect={setLugar} error={estado.campos.place} />
+      <BuscadorCiudades
+        onSelect={setLugar}
+        inicial={valoresIniciales?.lugar ?? null}
+        error={estado.campos.place}
+      />
 
       {estado.error ? (
         <p
@@ -78,12 +103,12 @@ export function FormularioNacimiento({ nombreInicial }: { nombreInicial: string 
         </p>
       ) : null}
 
-      <BotonGuardar />
+      <BotonGuardar editando={editando} />
     </form>
   )
 }
 
-function BotonGuardar() {
+function BotonGuardar({ editando }: { editando: boolean }) {
   const t = useTranslations('onboarding')
   const { pending } = useFormStatus()
 
@@ -93,7 +118,7 @@ function BotonGuardar() {
       disabled={pending}
       className="rounded-xl bg-oro px-5 py-3 font-medium text-white transition-colors hover:bg-oro-hondo disabled:opacity-60"
     >
-      {pending ? t('guardando') : t('continuar')}
+      {pending ? t('guardando') : editando ? t('editar.guardar') : t('continuar')}
     </button>
   )
 }

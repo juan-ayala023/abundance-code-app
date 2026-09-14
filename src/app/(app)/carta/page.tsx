@@ -4,12 +4,15 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 
+import { idiomaActual } from '@/i18n/idioma'
+
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
 import { Contenedor } from '@/components/layout/contenedor'
 import { AvisoPendiente } from '@/components/layout/encabezado-pagina'
 import { Tarjeta } from '@/components/layout/tarjeta'
 import { RetratoDeCarta } from '@/components/lectura/retrato'
+import { VersionesAnteriores } from '@/components/lectura/versiones-anteriores'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
@@ -21,6 +24,7 @@ import {
 } from '@/lib/lectura/retrato'
 import { retratoSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
+import { fechaDeCalendario } from '@/lib/time/formato'
 
 /**
  * El retrato se escribe durante el render la primera vez que alguien abre su
@@ -40,6 +44,7 @@ export const metadata: Metadata = {
 
 export default async function CartaPage() {
   const t = await getTranslations('carta')
+  const idioma = await idiomaActual()
   const supabase = await createClient()
 
   const { data: portal, error } = await supabase
@@ -87,6 +92,14 @@ export default async function CartaPage() {
   // hace falta un límite de suspensión. Ver el comentario de abajo.
   const retratoGuardado = retratoSchema.safeParse(portal.chart_reading)
 
+  // Retratos retirados al corregir el nacimiento. Casi siempre ninguno.
+  const { data: versiones } = await supabase
+    .from('reading_versions')
+    .select('*')
+    .eq('portal_id', portal.id)
+    .eq('kind', 'retrato')
+    .order('archived_at', { ascending: false })
+
   return (
     <Contenedor>
       <header className="flex flex-col gap-2">
@@ -94,7 +107,7 @@ export default async function CartaPage() {
           {t('titulo')}
         </h1>
         <p className="text-sm opacity-70">
-          {portal.birth_city} · {portal.birth_date}
+          {portal.birth_city} · {fechaDeCalendario(portal.birth_date, idioma)}
         </p>
       </header>
 
@@ -131,6 +144,8 @@ export default async function CartaPage() {
               <SeccionRetrato portal={portal} carta={carta} />
             </Suspense>
           )}
+
+          <VersionesAnteriores versiones={versiones ?? []} kind="retrato" />
         </>
       ) : (
         <NoSePudoCalcular />
@@ -225,7 +240,7 @@ async function AvisoSinHora() {
       {t.rich('sinHoraAviso', {
         b: (trozo) => <strong>{trozo}</strong>,
         enlace: (trozo) => (
-          <Link href="/onboarding" className="underline underline-offset-4">
+          <Link href="/onboarding?editar=1" className="underline underline-offset-4">
             {trozo}
           </Link>
         ),
@@ -253,7 +268,7 @@ async function NoSePudoCalcular() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <Link href="/onboarding" className="text-sm underline underline-offset-4">
+        <Link href="/onboarding?editar=1" className="text-sm underline underline-offset-4">
           {t('revisarDatos')}
         </Link>
         <Link href="/portal" className="text-sm underline underline-offset-4">

@@ -15,17 +15,20 @@ import type { Place } from '@/lib/geo/types'
  */
 export function BuscadorCiudades({
   onSelect,
+  inicial = null,
   error,
 }: {
   onSelect: (place: Place | null) => void
+  /** El lugar ya guardado, en el modo de corrección: aparece elegido y se puede cambiar. */
+  inicial?: Place | null
   error?: string
 }) {
   const t = useTranslations('onboarding')
-  const [texto, setTexto] = useState('')
+  const [texto, setTexto] = useState(inicial ? etiqueta(inicial) : '')
   const [resultados, setResultados] = useState<Place[]>([])
   const [buscando, setBuscando] = useState(false)
   const [fallo, setFallo] = useState<string | null>(null)
-  const [elegido, setElegido] = useState<Place | null>(null)
+  const [elegido, setElegido] = useState<Place | null>(inicial)
 
   const listaId = useId()
   const peticion = useRef(0)

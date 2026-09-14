@@ -14,6 +14,7 @@ import { Tarjeta, TarjetaAccion } from '@/components/layout/tarjeta'
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { lecturaBaseSchema } from '@/lib/lectura/schemas'
+import { nombreDePila } from '@/lib/lectura/voz'
 import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +35,8 @@ export default async function PortalPage() {
       .maybeSingle(),
   ])
 
-  const nombre = (perfil?.full_name ?? '').split(' ')[0] ?? ''
+  // Solo si parece un nombre de pila: «Bienvenido, Inversiones» ya pasó.
+  const nombre = nombreDePila(perfil?.full_name) ?? ''
   const tieneDatos = Boolean(portal?.birth_date)
   const ciclo = diaDelCiclo(portal?.created_at)
 
@@ -211,12 +213,21 @@ export default async function PortalPage() {
         algo que no cargó y no como una decisión.
       */}
       <div className="grid gap-5 lg:grid-cols-3">
+        {/*
+          Esta tarjeta decía «Tu Código Natal · Ver lectura completa» y abría
+          `/carta`, la rueda. La lectura escrita está en `/lectura-base`, que
+          solo se alcanzaba desde el menú. La revisión de septiembre de 2026
+          lo señaló: dos cosas distintas —tu carta natal y tu lectura
+          personal— con nombres que se confundían y destinos cruzados. Ahora
+          la tarjeta es la lectura y la carta se abre desde «Ver mi carta
+          completa», justo debajo de la rueda.
+        */}
         <TarjetaAccion
           Icono={Compass}
-          titulo={t('codigoNatal')}
-          descripcion={t('codigoNatalTexto')}
-          href={tieneDatos ? '/carta' : undefined}
-          accion={tieneDatos ? t('verLectura') : undefined}
+          titulo={t('lecturaPersonal')}
+          descripcion={t('lecturaPersonalTexto')}
+          href={tieneDatos ? '/lectura-base' : undefined}
+          accion={tieneDatos ? t('leerLectura') : undefined}
           pendiente={
             tieneDatos ? undefined : t('trasDatos')
           }
@@ -228,7 +239,6 @@ export default async function PortalPage() {
         */}
         <TarjetaAccion
           Icono={Sun}
-          sobretitulo={t('activacionHoy')}
           titulo={t('activacionTitulo')}
           descripcion={t('activacionTexto')}
           href={tieneDatos ? '/activacion' : undefined}

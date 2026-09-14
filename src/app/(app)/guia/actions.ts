@@ -10,6 +10,7 @@ import { cartaSchema } from '@/lib/astrology/schema'
 import { aspectosDeTransito } from '@/lib/astrology/transitos'
 import { lecturaBaseSchema, CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { generarRespuestaGuia } from '@/lib/lectura/generar-guia'
+import { nombreDePila } from '@/lib/lectura/voz'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 
 import type { EstadoConsulta } from './estado'
@@ -93,7 +94,7 @@ export async function consultarGuia(
   let resultado
   try {
     resultado = await generarRespuestaGuia({
-      nombre: portal.full_name,
+      nombre: nombreDePila(portal.full_name),
       idioma: await idiomaActual(),
     carta: carta.data,
       transitos,

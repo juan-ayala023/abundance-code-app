@@ -235,6 +235,59 @@ export type Database = {
         }
         Relationships: []
       }
+      reading_versions: {
+        Row: {
+          archived_at: string
+          birth_city: string | null
+          birth_country: string | null
+          birth_date: string | null
+          birth_time: string | null
+          content: Json
+          generated_at: string | null
+          id: string
+          kind: string
+          portal_id: string
+          reason: string
+          time_unknown: boolean
+        }
+        Insert: {
+          archived_at?: string
+          birth_city?: string | null
+          birth_country?: string | null
+          birth_date?: string | null
+          birth_time?: string | null
+          content: Json
+          generated_at?: string | null
+          id?: string
+          kind: string
+          portal_id: string
+          reason?: string
+          time_unknown?: boolean
+        }
+        Update: {
+          archived_at?: string
+          birth_city?: string | null
+          birth_country?: string | null
+          birth_date?: string | null
+          birth_time?: string | null
+          content?: Json
+          generated_at?: string | null
+          id?: string
+          kind?: string
+          portal_id?: string
+          reason?: string
+          time_unknown?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_versions_portal_id_fkey"
+            columns: ["portal_id"]
+            isOneToOne: false
+            referencedRelation: "portals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

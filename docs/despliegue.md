@@ -57,14 +57,42 @@ Decidido con el cliente (agosto de 2026): **Hostinger y Railway**.
 Railway pone nombres autogenerados y no dice de qué es cada uno, así que
 identificarlo cuesta cada vez que hace falta tocar una variable. Queda escrito:
 
-| Proyecto | Servicio | Qué es |
-|---|---|---|
-| **`lucky-delight`** | `abundance-code-app` → `app.abundancecode.us` | **Esta app.** Es el que hay que tocar |
-| `shimmering-curiosity` | cuatro servicios, con Postgres y Redis | Backend de la landing. **De otro equipo: si se cae, nadie entra a la app** |
+| Proyecto | Cuenta de Railway | Servicio | Qué es |
+|---|---|---|---|
+| **`grand-comfort`** | `thefounders45@gmail.com`, plan Hobby | `abundance-code-app` → `app.abundancecode.us` | **Esta app.** Es el que hay que tocar |
+| `shimmering-curiosity` | `Jerónimo S b's Projects` (la cuenta antigua) | cuatro servicios, con Postgres y Redis | Backend de la landing (`api.abundacecode.com`). **De otro equipo: si se cae, nadie entra a la app** |
 
-Los tres viven bajo la cuenta de Railway `Jerónimo S b's Projects`, plan Hobby,
-que **no es la misma cuenta que la de Supabase** (§ el riesgo aceptado del
-`README`). Son dos accesos distintos que hay que conservar.
+**La app se migró de cuenta el 8 de septiembre de 2026.** Antes vivía en el
+proyecto `lucky-delight` de la cuenta antigua, que quedó con la suscripción
+impagada; ese proyecto se borró. Lo que hay que saber de la migración:
+
+- **DNS en Hostinger:** el CNAME `app` apunta a `q409nm4f.up.railway.app`
+  (antes `s6i03t3t.up.railway.app`) y el TXT `_railway-verify.app` lleva el
+  valor de verificación del proyecto nuevo. Cada proyecto de Railway tiene los
+  suyos: si se vuelve a migrar, cambian los dos.
+- **Las variables se copiaron tal cual.** Son las 10 de la tabla del §10; las
+  cuatro que faltan respecto a `.env.local` no hacen falta: `ANTHROPIC_API_KEY`
+  y `ACCESS_SHARED_SECRET` no las lee ningún código, y `STRIPE_SECRET_KEY` y
+  `STRIPE_WEBHOOK_SECRET` solo las usa `/api/stripe/webhook`, un camino que ya
+  no llama nadie (ver abajo).
+- **El backend de la landing sigue en la cuenta antigua, la de la deuda.** La
+  app depende de él para canjear tokens y revalidar accesos (`LANDING_API_URL`).
+  Si esa cuenta se suspende por impago, esta app sigue en pie pero nadie nuevo
+  puede entrar. No es de este equipo; sí es de este equipo avisar.
+
+**Cómo entra una compra, para no volver a buscar claves de Stripe.** Cobra la
+landing; su backend (`api.abundacecode.com`) tiene el webhook de Stripe y sus
+claves. Al terminar el pago, Stripe devuelve al comprador a esta app en
+`/activar?token=…`, la app canjea el token contra `/api/access/redeem` con
+`APP_SHARED_SECRET`, y con la respuesta escribe la fila de `entitlements` vía
+`apply_landing_entitlement` ([src/app/activar/actions.ts](../src/app/activar/actions.ts)).
+El `/api/stripe/webhook` de esta app es de cuando cobraba ella directamente:
+responde 500 por falta de claves y **no lo llama nadie**, porque el endpoint
+configurado en Stripe apunta al backend. Se perdió una hora en la migración
+creyendo que era un fallo; no lo es.
+
+La cuenta de Railway **no es la misma que la de Supabase** (§ el riesgo
+aceptado del `README`). Son accesos distintos que hay que conservar.
 
 **Esta app no se separa en «front» y «back», y no es una elección.** Es Next.js
 con App Router: las pantallas son componentes de **servidor** que consultan

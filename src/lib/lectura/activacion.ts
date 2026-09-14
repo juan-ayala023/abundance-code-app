@@ -7,6 +7,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 
 import { generarActivacionDiaria } from './generar-activacion'
 import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
+import { nombreDePila } from './voz'
 
 /**
  * La activación de un día, generándola si todavía no existe.
@@ -35,9 +36,12 @@ export type ActivacionGuardada = {
 export async function asegurarActivacion(
   portalId: string,
   carta: Carta,
+  /** El día REAL del portal (`ciclo.diaReal`), sin saturar en 30: es la clave de la fila. */
   dia: number,
   total: number,
-  /** Nombre de pila de quien la recibe. Se le pasa al modelo para que le hable a alguien. */
+  /** La fecha de calendario a la que corresponde, `AAAA-MM-DD` (`ciclo.fecha`). */
+  fecha: string,
+  /** `full_name` tal cual; aquí se reduce al nombre de pila antes de dárselo al modelo. */
   nombre: string | null,
 ): Promise<ActivacionGuardada | null> {
   const admin = createAdminClient()
@@ -64,11 +68,12 @@ export async function asegurarActivacion(
   let contenido: ActivacionDiaria
   try {
     contenido = await generarActivacionDiaria({
-      nombre,
+      nombre: nombreDePila(nombre),
       carta,
       transitos,
       dia,
       total,
+      fecha,
       idioma: await idiomaActual(),
     })
   } catch (error) {

@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
+import { idiomaActual, type Idioma } from '@/i18n/idioma'
+
 import { CartaDescargable } from '@/components/chart/boton-descargar'
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
@@ -11,9 +13,11 @@ import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado
 import { Estrella } from '@/components/layout/estrella'
 import { Tarjeta } from '@/components/layout/tarjeta'
 import { AnalisisCompleto } from '@/components/lectura/analisis-completo'
+import { VersionesAnteriores } from '@/components/lectura/versiones-anteriores'
 import type { Carta } from '@/lib/astrology/types'
 import { SECCIONES_LECTURA, lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
+import { fechaDeCalendario, horaDeReloj } from '@/lib/time/formato'
 
 export const metadata: Metadata = {
   title: 'Tu lectura base · Abundance Code',
@@ -24,10 +28,18 @@ export default async function LecturaBasePage() {
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('full_name, birth_date, birth_time, birth_city, chart, base_reading')
+    .select('id, full_name, birth_date, birth_time, birth_city, chart, base_reading')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
+
+  // Lecturas retiradas al corregir el nacimiento. Casi siempre ninguna.
+  const { data: versiones } = await supabase
+    .from('reading_versions')
+    .select('*')
+    .eq('portal_id', portal.id)
+    .eq('kind', 'lectura')
+    .order('archived_at', { ascending: false })
 
   const carta = portal.chart as Carta | null
 
@@ -37,6 +49,7 @@ export default async function LecturaBasePage() {
   const t = await getTranslations('lectura')
   const tNav = await getTranslations('nav')
   const tCarta = await getTranslations('carta')
+  const idioma = await idiomaActual()
 
   return (
     <Contenedor>
@@ -56,7 +69,9 @@ export default async function LecturaBasePage() {
           */
           <CartaDescargable
             nombreArchivo={`carta-natal-${portal.birth_date}`}
-            cabecera={<DatosDeNacimiento portal={portal} etiqueta={tCarta('tuCartaNatal')} />}
+            cabecera={
+              <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
+            }
           >
             <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
               <NatalChart carta={carta} />
@@ -65,7 +80,7 @@ export default async function LecturaBasePage() {
           </CartaDescargable>
         ) : (
           <>
-            <DatosDeNacimiento portal={portal} etiqueta={tCarta('tuCartaNatal')} />
+            <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
             <AvisoPendiente>
               {t('cartaPendiente')}
             </AvisoPendiente>
@@ -120,6 +135,8 @@ export default async function LecturaBasePage() {
           {lectura.data.analisisCompleto ? (
             <AnalisisCompleto texto={lectura.data.analisisCompleto} />
           ) : null}
+
+          <VersionesAnteriores versiones={versiones ?? []} kind="lectura" />
         </>
       ) : (
         <>
@@ -171,10 +188,12 @@ export default async function LecturaBasePage() {
 /** Nombre, fecha, hora y lugar: la cabecera de la tarjeta de la carta. */
 function DatosDeNacimiento({
   portal,
+  idioma,
   etiqueta,
 }: {
   /** Ya traducida por la página: este componente no es asíncrono. */
   etiqueta: string
+  idioma: Idioma
   portal: { full_name: string | null; birth_date: string | null; birth_time: string | null; birth_city: string | null }
 }) {
   return (
@@ -184,9 +203,8 @@ function DatosDeNacimiento({
       </p>
       <h2 className="text-2xl font-light">{portal.full_name}</h2>
       <p className="text-sm text-tinta-suave">
-        {portal.birth_date}
-        {portal.birth_time ? ` · ${String(portal.birth_time).slice(0, 5)}` : ''} ·{' '}
-        {portal.birth_city}
+        {fechaDeCalendario(portal.birth_date, idioma)}
+        {portal.birth_time ? ` · ${horaDeReloj(portal.birth_time)}` : ''} · {portal.birth_city}
       </p>
     </div>
   )

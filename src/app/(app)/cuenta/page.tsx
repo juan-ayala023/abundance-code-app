@@ -1,6 +1,9 @@
-import { Activity, CalendarDays, Mail, Sparkles, Sun, User } from 'lucide-react'
+import { Activity, CalendarDays, Mail, PencilLine, Sparkles, Sun, User } from 'lucide-react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+
+import { idiomaActual } from '@/i18n/idioma'
 
 import { cerrarSesion } from '@/app/actions'
 import { abrirPortalDeFacturacion } from './actions'
@@ -12,8 +15,9 @@ import { urlDeCompra } from '@/lib/access/enlaces'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
-import { DIAS_DE_PORTAL } from '@/lib/lectura/schemas'
+import { CONSULTAS_GUIA_POR_DIA, DIAS_DE_PORTAL } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
+import { fechaDeCalendario, fechaDeInstante, horaDeReloj } from '@/lib/time/formato'
 
 export const metadata: Metadata = {
   title: 'Mi cuenta · Abundance Code',
@@ -29,6 +33,7 @@ export default async function CuentaPage({
   const t = await getTranslations('cuenta')
   const tNav = await getTranslations('nav')
   const tSus = await getTranslations('suscripcion')
+  const idioma = await idiomaActual()
 
   /** Lo que pudo salir mal al abrir el portal de facturación. */
   const avisoPortal =
@@ -36,14 +41,21 @@ export default async function CuentaPage({
       ? t('portalError')
       : params.portal === 'sin-compra'
         ? t('portalSinCompra')
-        : undefined
+        : params.datos === 'nombre'
+          ? t('nombreGuardado')
+          : undefined
 
   const supabase = await createClient()
   const acceso = await resolveAccess()
 
   const [{ data: perfil }, { data: portal }] = await Promise.all([
     supabase.from('profiles').select('full_name, email, created_at').maybeSingle(),
-    supabase.from('portals').select('created_at').maybeSingle(),
+    supabase
+      .from('portals')
+      .select(
+        'created_at, full_name, birth_date, birth_time, time_unknown, birth_city, birth_country',
+      )
+      .maybeSingle(),
   ])
 
   const entitlement = entitlementDe(acceso)
@@ -52,6 +64,23 @@ export default async function CuentaPage({
   // creación, no de una columna que pudiera quedar desincronizada.
   const ciclo = diaDelCiclo(portal?.created_at)
   const nivel = nivelDeAcceso(entitlement)
+  const esCortesia = entitlement?.status === ESTADO_CORTESIA
+
+  /*
+   * El plan, dicho con palabras. Antes se pintaba `entitlement.plan` a secas,
+   * que en una cortesía es `null` y salía como un guion: la revisión lo
+   * señaló. Ahora cada situación tiene su frase, y el nombre del plan que
+   * manda la landing —si lo manda— se enseña tal cual.
+   */
+  const plan = !entitlement
+    ? t('planes.ninguno')
+    : esCortesia
+      ? t('planes.cortesia')
+      : entitlement.plan
+        ? entitlement.plan
+        : nivel === 'completo'
+          ? t('planes.suscripcion')
+          : t('planes.inactivo')
 
   return (
     <Contenedor>
@@ -61,17 +90,22 @@ export default async function CuentaPage({
       />
 
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        <Dato Icono={User} etiqueta={t('nombre')} valor={perfil?.full_name ?? '—'} />
-        <Dato Icono={Mail} etiqueta={t('email')} valor={perfil?.email ?? '—'} />
+        {/*
+          El nombre que la persona escribió al dar sus datos manda sobre el que
+          trajo Google: es el que se corrige desde esta pantalla y el que usan
+          las lecturas. Si no hay portal todavía, el de Google.
+        */}
         <Dato
-          Icono={Sparkles}
-          etiqueta={t('plan')}
-          valor={entitlement?.plan ?? '—'}
+          Icono={User}
+          etiqueta={t('nombre')}
+          valor={portal?.full_name ?? perfil?.full_name ?? '—'}
         />
+        <Dato Icono={Mail} etiqueta={t('email')} valor={perfil?.email ?? '—'} />
+        <Dato Icono={Sparkles} etiqueta={t('plan')} valor={plan} />
         <Dato
           Icono={CalendarDays}
           etiqueta={t('fechaActivacion')}
-          valor={formatearFecha(portal?.created_at ?? perfil?.created_at)}
+          valor={fechaDeInstante(portal?.created_at ?? perfil?.created_at, idioma)}
         />
         {/*
           El original matiza el estado: «Activo · primeros 30 días». Distingue
@@ -122,8 +156,48 @@ export default async function CuentaPage({
       <Tarjeta className="bg-oro-palido/40 text-sm leading-relaxed text-tinta-suave">
         {nivel === 'solo-lectura'
           ? tSus('mensaje')
-          : t('incluye', { total: DIAS_DE_PORTAL })}
+          : esCortesia
+            ? t('incluyeCortesia', { consultas: CONSULTAS_GUIA_POR_DIA })
+            : t('incluye', { total: DIAS_DE_PORTAL, consultas: CONSULTAS_GUIA_POR_DIA })}
       </Tarjeta>
+
+      {/*
+        Los datos de nacimiento, y la puerta para corregirlos.
+
+        No existía: `/onboarding` redirige a `/portal` en cuanto hay datos, así
+        que el enlace «revisar mis datos» de la carta llevaba a una pantalla que
+        devolvía al portal. La revisión de septiembre de 2026 pidió cumplir la
+        promesa de poder corregirlos. Lo que pasa con las lecturas al cambiarlos
+        se explica en la propia pantalla de edición.
+      */}
+      {portal?.birth_date ? (
+        <Tarjeta className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <Insignia Icono={PencilLine} />
+            <div className="min-w-0">
+              <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
+                {t('nacimiento')}
+              </p>
+              <p className="wrap-anywhere text-lg font-light">
+                {fechaDeCalendario(portal.birth_date, idioma)}
+                {portal.time_unknown
+                  ? ` · ${t('sinHora')}`
+                  : portal.birth_time
+                    ? ` · ${horaDeReloj(portal.birth_time)}`
+                    : ''}
+                {portal.birth_city ? ` · ${portal.birth_city}` : ''}
+                {portal.birth_country ? `, ${portal.birth_country}` : ''}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/onboarding?editar=1"
+            className="rounded-xl border border-borde bg-superficie px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fondo-hondo"
+          >
+            {t('corregirNacimiento')}
+          </Link>
+        </Tarjeta>
+      ) : null}
 
       {avisoPortal ? (
         <p
@@ -135,12 +209,22 @@ export default async function CuentaPage({
       ) : null}
 
       <div className="flex flex-wrap gap-4">
-        <a
-          href={urlDeCompra()}
-          className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
-        >
-          {tSus('continuar')}
-        </a>
+        {/*
+          «Continuar con suscripción» lleva a la página de precios de la
+          landing, que abre la oferta de entrada (49 $). Eso solo tiene sentido
+          para quien NO tiene acceso vigente. A un suscriptor activo le
+          proponía volver a comprar lo que ya paga, y a una cortesía le ofrecía
+          entrar por la puerta de pago. La revisión lo señaló; ahora solo lo ve
+          quien lo necesita. Quien está activo gestiona desde Stripe, abajo.
+        */}
+        {nivel === 'solo-lectura' && !esCortesia ? (
+          <a
+            href={urlDeCompra()}
+            className="rounded-xl bg-oro px-6 py-3 font-medium text-white transition-colors hover:bg-oro-hondo"
+          >
+            {tSus('continuar')}
+          </a>
+        ) : null}
 
         {/*
           Cancelar, cambiar la tarjeta y ver facturas los sirve Stripe. No hay
@@ -154,7 +238,7 @@ export default async function CuentaPage({
           puede crear, y el único resultado visible sería un aviso de error en la
           pantalla que existe para dar confianza.
         */}
-        {entitlement && entitlement.status !== ESTADO_CORTESIA ? (
+        {entitlement && !esCortesia ? (
           <form action={abrirPortalDeFacturacion}>
             <button
               type="submit"
@@ -246,17 +330,4 @@ function Dato({
       </div>
     </Tarjeta>
   )
-}
-
-function formatearFecha(valor: string | null | undefined): string {
-  if (!valor) return '—'
-
-  const fecha = new Date(valor)
-  if (Number.isNaN(fecha.getTime())) return '—'
-
-  return fecha.toLocaleDateString('es', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
 }

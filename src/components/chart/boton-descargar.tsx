@@ -1,7 +1,8 @@
 'use client'
 
-import { Download } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { Check, Download } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * Descarga la carta como PNG.
@@ -27,8 +28,16 @@ export function CartaDescargable({
    */
   cabecera?: React.ReactNode
 }) {
+  const t = useTranslations('descarga')
   const contenedor = useRef<HTMLDivElement>(null)
-  const [estado, setEstado] = useState<'listo' | 'trabajando' | 'error'>('listo')
+  const [estado, setEstado] = useState<'listo' | 'trabajando' | 'descargado' | 'error'>('listo')
+
+  // La confirmación se queda unos segundos y vuelve al estado normal.
+  useEffect(() => {
+    if (estado !== 'descargado') return
+    const temporizador = setTimeout(() => setEstado('listo'), 4000)
+    return () => clearTimeout(temporizador)
+  }, [estado])
 
   async function descargar() {
     // `role="img"` es la rueda. Buscar un `svg` cualquiera podría encontrar el
@@ -42,13 +51,28 @@ export function CartaDescargable({
       const blob = await svgAPng(svg)
       const url = URL.createObjectURL(blob)
 
+      /*
+       * Dos detalles que hacían que el clic «no hiciera nada» en algunos
+       * navegadores, y que la revisión de septiembre de 2026 no pudo
+       * confirmar como descarga:
+       *
+       * 1. El enlace se inserta en el documento antes de pulsarlo. Firefox y
+       *    Safari ignoran el `click()` de un `<a download>` que no está en el
+       *    DOM.
+       * 2. La URL del blob se revoca DESPUÉS, no en la misma vuelta: revocarla
+       *    en seguida podía cancelar la descarga antes de que arrancara.
+       */
       const enlace = document.createElement('a')
       enlace.href = url
       enlace.download = `${nombreArchivo}.png`
+      enlace.rel = 'noopener'
+      enlace.style.display = 'none'
+      document.body.append(enlace)
       enlace.click()
+      enlace.remove()
 
-      URL.revokeObjectURL(url)
-      setEstado('listo')
+      setTimeout(() => URL.revokeObjectURL(url), 10_000)
+      setEstado('descargado')
     } catch (error) {
       console.error('[carta] no se pudo exportar la imagen', error)
       setEstado('error')
@@ -65,14 +89,28 @@ export function CartaDescargable({
           disabled={estado === 'trabajando'}
           className="inline-flex items-center gap-2 rounded-xl border border-borde bg-superficie px-4 py-2.5 text-sm font-medium transition-colors hover:bg-fondo-hondo disabled:opacity-60"
         >
-          <Download size={16} aria-hidden="true" />
-          {estado === 'trabajando' ? 'Preparando…' : 'Descargar imagen'}
+          {estado === 'descargado' ? (
+            <Check size={16} aria-hidden="true" />
+          ) : (
+            <Download size={16} aria-hidden="true" />
+          )}
+          {estado === 'trabajando'
+            ? t('preparando')
+            : estado === 'descargado'
+              ? t('descargada')
+              : t('descargar')}
         </button>
       </div>
 
+      {estado === 'descargado' ? (
+        <p role="status" className="text-right text-sm text-tinta-suave">
+          {t('confirmacion', { archivo: `${nombreArchivo}.png` })}
+        </p>
+      ) : null}
+
       {estado === 'error' ? (
         <p role="alert" className="text-right text-sm text-[#a8503c]">
-          No pudimos generar la imagen. Vuelve a intentarlo.
+          {t('error')}
         </p>
       ) : null}
 
