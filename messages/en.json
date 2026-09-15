@@ -58,7 +58,7 @@
     "pedirEnlace": "Request a new link",
     "renovar": "Renew my access",
     "comprar": "Buy my access",
-    "soporte": "Bought and still seeing this? Write to us with the email you paid with and we'll link it by hand."
+    "soporte": "Bought and still seeing this? Write to us at <enlace>{correo}</enlace> with the email you paid with and we'll link it by hand."
   },
   "suscripcion": {
     "necesita": "{seccion} requires a subscription",

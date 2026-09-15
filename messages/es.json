@@ -58,7 +58,7 @@
     "pedirEnlace": "Pedir un enlace nuevo",
     "renovar": "Renovar mi acceso",
     "comprar": "Comprar mi acceso",
-    "soporte": "¿Compraste y sigues viendo esto? Escríbenos con el correo que usaste al pagar y lo vinculamos a mano."
+    "soporte": "¿Compraste y sigues viendo esto? Escríbenos a <enlace>{correo}</enlace> con el correo que usaste al pagar y lo vinculamos a mano."
   },
   "suscripcion": {
     "necesita": "{seccion} necesita suscripción",

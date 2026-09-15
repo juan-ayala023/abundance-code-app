@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 
 import { urlDeCompra } from '@/lib/access/enlaces'
 import { urlDeReenvio } from '@/lib/access/landing'
+import { CORREO_SOPORTE } from '@/lib/soporte'
 
 import { cerrarSesion } from './actions'
 
@@ -98,7 +99,14 @@ export default async function VincularPage({
       </section>
 
       <p className="text-sm opacity-70">
-        {t('soporte')}
+        {t.rich('soporte', {
+          correo: CORREO_SOPORTE,
+          enlace: (trozo) => (
+            <a href={`mailto:${CORREO_SOPORTE}`} className="underline underline-offset-4">
+              {trozo}
+            </a>
+          ),
+        })}
       </p>
     </main>
   )
