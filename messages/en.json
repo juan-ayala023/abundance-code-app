@@ -43,6 +43,12 @@
       "cancelado": "You cancelled the sign-in. You can try again whenever you like.",
       "sin_codigo": "That access link is no longer valid. Sign in with Google from here.",
       "sesion": "We couldn't complete your session. Please try again."
+    },
+    "confirmar": {
+      "titulo": "Link the purchase to this account?",
+      "texto": "You are signed in as {correo}. If you link the purchase here, this will be your portal.",
+      "si": "Yes, link to this account",
+      "no": "No, sign in with another account"
     }
   },
   "vincular": {

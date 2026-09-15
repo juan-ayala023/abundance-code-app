@@ -43,6 +43,12 @@
       "cancelado": "Cancelaste el inicio de sesión. Puedes volver a intentarlo cuando quieras.",
       "sin_codigo": "Ese enlace de acceso ya no es válido. Entra con Google desde aquí.",
       "sesion": "No pudimos completar tu sesión. Vuelve a intentarlo."
+    },
+    "confirmar": {
+      "titulo": "¿Vincular la compra a esta cuenta?",
+      "texto": "Tienes la sesión abierta como {correo}. Si vinculas la compra aquí, este será tu portal.",
+      "si": "Sí, vincular a esta cuenta",
+      "no": "No, entrar con otra cuenta"
     }
   },
   "vincular": {

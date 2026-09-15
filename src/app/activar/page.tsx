@@ -8,17 +8,14 @@ import { createClient } from '@/lib/supabase/server'
 import { safeNextPath } from '@/lib/validation/schemas'
 
 import { canjearYVincular } from './actions'
+import { cambiarDeCuenta } from './vincular/actions'
 
 export const metadata: Metadata = {
   title: 'Activar tu acceso · Abundance Code',
 }
 
-/** Mensajes accionables. El detalle técnico queda en el log del servidor. */
-const MENSAJES_DE_ERROR: Record<string, string> = {
-  cancelado: 'Cancelaste el inicio de sesión. Puedes volver a intentarlo cuando quieras.',
-  sin_codigo: 'Ese enlace de acceso ya no es válido. Entra con Google desde aquí.',
-  sesion: 'No pudimos completar tu sesión. Vuelve a intentarlo.',
-}
+/** Códigos de error que traen las redirecciones. El texto está en `messages/`. */
+const ERRORES_CONOCIDOS = ['cancelado', 'sin_codigo', 'sesion'] as const
 
 export default async function ActivarPage({
   searchParams,
@@ -29,6 +26,14 @@ export default async function ActivarPage({
   const next = safeNextPath(typeof params.next === 'string' ? params.next : null)
   const t = await getTranslations('activar')
   const token = typeof params.token === 'string' && params.token.trim() ? params.token : null
+
+  /*
+   * `reciente=1` lo pone esta misma página en el destino tras Google: marca
+   * que la sesión se acaba de crear para este token. Sin esa marca, una sesión
+   * con token es una sesión que ya estaba abierta antes de llegar aquí — y
+   * entonces no se canjea sin preguntar (ver más abajo).
+   */
+  const sesionRecienCreada = params.reciente === '1'
 
   const access = await resolveAccess()
 
@@ -43,6 +48,49 @@ export default async function ActivarPage({
    */
   if (token && access.kind !== 'anonimo') {
     const { data } = await (await createClient()).auth.getUser()
+
+    /*
+     * Sesión abierta de antes + token nuevo: se pregunta antes de vincular.
+     *
+     * Vincular «a la cuenta con la que entre, sea cual sea» es lo correcto
+     * cuando la persona acaba de entrar para esto. Pero si el navegador ya
+     * tenía otra sesión —la de la oficina, la de un familiar—, la compra se
+     * ataba a esa cuenta en silencio y quien pagó ni se enteraba. Pasó con la
+     * primera compra real: quedó en la cuenta que estaba abierta, no en la de
+     * la compradora. Aquí se muestra a qué cuenta va a ir y se deja elegir.
+     */
+    if (data.user && !sesionRecienCreada) {
+      const tc = await getTranslations('activar.confirmar')
+      const correo = data.user.email ?? ''
+      const seguir = new URLSearchParams({ token, reciente: '1' })
+      if (next !== '/portal') seguir.set('next', next)
+
+      return (
+        <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-8 px-6">
+          <header className="flex flex-col gap-3">
+            <h1 className="text-3xl font-semibold tracking-tight">{tc('titulo')}</h1>
+            <p className="opacity-80">{tc('texto', { correo })}</p>
+          </header>
+
+          <div className="flex flex-col gap-3">
+            <a
+              href={`/activar?${seguir.toString()}`}
+              className="w-full rounded-xl bg-oro px-5 py-3 text-center font-medium text-white transition-colors hover:bg-oro-hondo"
+            >
+              {tc('si')}
+            </a>
+            <form action={cambiarDeCuenta.bind(null, token, next)}>
+              <button
+                type="submit"
+                className="w-full rounded-xl border border-oro-claro px-5 py-3 text-center font-medium transition-colors hover:bg-oro-palido/60"
+              >
+                {tc('no')}
+              </button>
+            </form>
+          </div>
+        </main>
+      )
+    }
 
     if (data.user) {
       const resultado = await canjearYVincular(token, data.user.id)
@@ -64,7 +112,11 @@ export default async function ActivarPage({
   if (access.kind === 'sin-compra') redirect('/activar/vincular')
   if (access.kind === 'inactivo') redirect('/activar/vincular?estado=inactivo')
 
-  const error = typeof params.error === 'string' ? MENSAJES_DE_ERROR[params.error] : undefined
+  const codigoError = typeof params.error === 'string' ? params.error : null
+  const error =
+    codigoError && (ERRORES_CONOCIDOS as readonly string[]).includes(codigoError)
+      ? t(`errores.${codigoError as (typeof ERRORES_CONOCIDOS)[number]}`)
+      : undefined
 
   /*
    * Sin sesión y con token: al volver de Google hay que aterrizar aquí otra vez,
@@ -72,7 +124,7 @@ export default async function ActivarPage({
    * caería en el emparejado por correo — que es justo lo que el token evita.
    */
   const destinoTrasLogin = token
-    ? `/activar?token=${encodeURIComponent(token)}${next !== '/portal' ? `&next=${encodeURIComponent(next)}` : ''}`
+    ? `/activar?token=${encodeURIComponent(token)}&reciente=1${next !== '/portal' ? `&next=${encodeURIComponent(next)}` : ''}`
     : next
 
   return (
@@ -98,11 +150,7 @@ export default async function ActivarPage({
         la compra se vincula a la cuenta con la que entre, sea cual sea. Decirlo
         evita que alguien abandone creyendo que se equivocó de cuenta.
       */}
-      <p className="text-sm opacity-70">
-        {token
-          ? 'Puedes entrar con cualquier cuenta de Google: tu enlace ya lleva la compra dentro y la vinculamos sola.'
-          : 'Si compraste con un correo distinto al de tu cuenta de Google, entra igualmente: te ayudamos a vincular la compra en el siguiente paso.'}
-      </p>
+      <p className="text-sm opacity-70">{token ? t('conToken') : t('sinToken')}</p>
     </main>
   )
 }
