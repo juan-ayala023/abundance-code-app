@@ -1,10 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { createClient } from '@/lib/supabase/client'
 
 export function GoogleSignInButton({ next }: { next: string }) {
+  const t = useTranslations('activar')
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -17,12 +19,22 @@ export function GoogleSignInButton({ next }: { next: string }) {
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo },
+      options: {
+        redirectTo,
+        /*
+         * Sin esto, Google entra con la última cuenta usada sin preguntar. Y
+         * esta pantalla existe precisamente para elegir cuenta: quien acaba de
+         * cerrar la sesión de otra persona para entrar con la suya volvía a
+         * caer en la misma sin poder evitarlo. Pasó el 15 de septiembre de 2026
+         * con la primera compra real.
+         */
+        queryParams: { prompt: 'select_account' },
+      },
     })
 
     if (oauthError) {
       console.error('[activar] no se pudo iniciar el flujo de Google', oauthError)
-      setError('No pudimos conectar con Google. Revisa tu conexión y vuelve a intentarlo.')
+      setError(t('errorGoogle'))
       setCargando(false)
     }
     // Si no hay error, el navegador ya está navegando a Google: no se quita el
@@ -38,7 +50,7 @@ export function GoogleSignInButton({ next }: { next: string }) {
         className="inline-flex items-center justify-center gap-3 rounded-xl border border-borde bg-superficie px-5 py-3 font-medium transition-colors hover:bg-fondo-hondo disabled:cursor-not-allowed disabled:opacity-60"
       >
         <GoogleLogo />
-        {cargando ? 'Conectando…' : 'Entrar con Google'}
+        {cargando ? t('conectando') : t('google')}
       </button>
 
       {error ? (
