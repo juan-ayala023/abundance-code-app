@@ -60,7 +60,8 @@ identificarlo cuesta cada vez que hace falta tocar una variable. Queda escrito:
 | Proyecto | Cuenta de Railway | Servicio | Qué es |
 |---|---|---|---|
 | **`grand-comfort`** | `thefounders45@gmail.com`, plan Hobby | `abundance-code-app` → `app.abundancecode.us` | **Esta app.** Es el que hay que tocar |
-| `shimmering-curiosity` | `Jerónimo S b's Projects` (la cuenta antigua) | cuatro servicios, con Postgres y Redis | Backend de la landing (`api.abundacecode.com`). **De otro equipo: si se cae, nadie entra a la app** |
+| `charismatic-vitality` | la cuenta pagada | backend de la landing → `api.abundacecode.com` | **De otro equipo.** Es a quien esta app le pregunta quién ha pagado: si se cae, nadie nuevo entra |
+| `shimmering-curiosity`, `faithful-perception` | `Jerónimo S b's Projects` (la cuenta antigua, impagada) | restos: un proyecto anterior con Postgres y Redis, y el servicio viejo del backend | **Nada de esta app depende de ellos** (confirmado por el equipo de la landing el 14 de septiembre). Que el dueño mire qué contienen y los borre |
 
 **La app se migró de cuenta el 8 de septiembre de 2026.** Antes vivía en el
 proyecto `lucky-delight` de la cuenta antigua, que quedó con la suscripción
@@ -75,10 +76,11 @@ impagada; ese proyecto se borró. Lo que hay que saber de la migración:
   y `ACCESS_SHARED_SECRET` no las lee ningún código, y `STRIPE_SECRET_KEY` y
   `STRIPE_WEBHOOK_SECRET` solo las usa `/api/stripe/webhook`, un camino que ya
   no llama nadie (ver abajo).
-- **El backend de la landing sigue en la cuenta antigua, la de la deuda.** La
-  app depende de él para canjear tokens y revalidar accesos (`LANDING_API_URL`).
-  Si esa cuenta se suspende por impago, esta app sigue en pie pero nadie nuevo
-  puede entrar. No es de este equipo; sí es de este equipo avisar.
+- **El backend de la landing también se migró el 8 de septiembre**, a
+  `charismatic-vitality` en la cuenta pagada. Durante unos días esta
+  documentación dijo que seguía en la cuenta impagada y que `shimmering-curiosity`
+  era ese backend; no era cierto, lo aclaró el equipo de la landing
+  ([respuesta del 14 de septiembre](respuesta-landing-2026-09-14.md), §6).
 
 **Cómo entra una compra, para no volver a buscar claves de Stripe.** Cobra la
 landing; su backend (`api.abundacecode.com`) tiene el webhook de Stripe y sus

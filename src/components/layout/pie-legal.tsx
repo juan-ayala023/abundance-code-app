@@ -1,7 +1,7 @@
-import { getTranslations } from 'next-intl/server'
+import { getTranslations } from "next-intl/server";
 
-import { SelectorIdioma } from '@/components/layout/selector-idioma'
-import { getPublicEnv } from '@/lib/env/public'
+import { SelectorIdioma } from "@/components/layout/selector-idioma";
+import { getPublicEnv } from "@/lib/env/public";
 
 /**
  * Enlaces a los documentos legales.
@@ -21,31 +21,33 @@ import { getPublicEnv } from '@/lib/env/public'
  */
 
 /*
- * Nombres tal como están subidos hoy: en `/img/`, en inglés y con espacios.
- * No es donde uno los pondría, pero es donde están y se comprobó que responden
- * con `application/pdf`. Si algún día se mueven, este es el único sitio a
- * cambiar.
+ * Las páginas HTML de la landing, no los PDF de `/img/`. Hasta septiembre de
+ * 2026 se enlazaban los PDF; el equipo de la landing los comparó con las
+ * páginas y no dicen lo mismo: los PDF nombran otra jurisdicción y otra
+ * sociedad, y llevan «[email de soporte]» sin rellenar. Las páginas son las que
+ * mantienen. Si algún día cambian de ruta, este es el único sitio a tocar.
  */
 const DOCUMENTOS = [
-  ['privacidad', 'Privacy-Policy Abundance-Code.pdf'],
-  ['terminos', 'Terms-and-Disclaimer Abundance-Code.pdf'],
-  ['reembolsos', 'Refund-Cancellation-Policy Abundance-Code.pdf'],
-] as const
+  ["privacidad", "privacy"],
+  ["terminos", "terms"],
+  ["reembolsos", "refund"],
+  ["aviso", "disclaimer"],
+] as const;
 
 export async function PieLegal({ className }: { className?: string }) {
-  const landing = getPublicEnv().NEXT_PUBLIC_LANDING_URL.replace(/\/$/, '')
-  const t = await getTranslations('legal')
+  const landing = getPublicEnv().NEXT_PUBLIC_LANDING_URL.replace(/\/$/, "");
+  const t = await getTranslations("legal");
 
   return (
     <footer
-      className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4 py-8 text-xs text-tinta-tenue ${className ?? ''}`}
+      className={`flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4 py-8 text-xs text-tinta-tenue ${className ?? ""}`}
     >
       <SelectorIdioma />
 
-      {DOCUMENTOS.map(([clave, archivo]) => (
+      {DOCUMENTOS.map(([clave, ruta]) => (
         <a
-          key={archivo}
-          href={`${landing}/img/${encodeURIComponent(archivo)}`}
+          key={ruta}
+          href={`${landing}/${ruta}`}
           target="_blank"
           rel="noopener noreferrer"
           className="underline-offset-4 transition-colors hover:text-tinta-suave hover:underline"
@@ -56,5 +58,5 @@ export async function PieLegal({ className }: { className?: string }) {
 
       <span>© {new Date().getFullYear()} Abundance Code</span>
     </footer>
-  )
+  );
 }

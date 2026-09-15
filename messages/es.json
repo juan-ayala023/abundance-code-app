@@ -69,7 +69,8 @@
   "legal": {
     "privacidad": "Privacidad",
     "terminos": "Términos",
-    "reembolsos": "Reembolsos"
+    "reembolsos": "Reembolsos",
+    "aviso": "Aviso legal"
   },
   "cuenta": {
     "titulo": "Mi Cuenta",
@@ -95,10 +96,13 @@
     },
     "portalError": "No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.",
     "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta.",
+    "portalSinStripe": "Tu acceso no está asociado a una suscripción de Stripe, así que no hay nada que gestionar desde aquí. Si crees que es un error, escríbenos.",
+    "pagoPendiente": "Tu último pago no se completó. Sigues teniendo acceso mientras se resuelve: actualiza tu tarjeta desde «Gestionar mi suscripción», no desde la página de precios, o se te cobraría una entrada nueva.",
     "planes": {
       "ninguno": "Sin plan",
       "cortesia": "Acceso de cortesía",
       "suscripcion": "Suscripción mensual",
+      "monthly": "Suscripción mensual",
       "inactivo": "Suscripción no activa"
     },
     "incluyeCortesia": "Tienes acceso de cortesía: lo mismo que una suscripción —lectura base, retrato, activación diaria y {consultas} consultas de guía al día— sin pago ni renovación que gestionar.",

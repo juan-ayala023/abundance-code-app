@@ -1,8 +1,8 @@
-import 'server-only'
+import "server-only";
 
-import { z } from 'zod'
+import { z } from "zod";
 
-import { getServerEnv, requireServerEnv } from '@/lib/env/server'
+import { getServerEnv, requireServerEnv } from "@/lib/env/server";
 
 /**
  * Cliente del backend de la landing.
@@ -34,8 +34,8 @@ const accesoSchema = z.object({
    * acceso lo decide `hasAccess`, que es lo que manda.
    */
   status: z
-    .enum(['active', 'trialing', 'past_due', 'canceled', 'incomplete', 'none'])
-    .catch('none'),
+    .enum(["active", "trialing", "past_due", "canceled", "incomplete", "none"])
+    .catch("none"),
   source: z.string().nullable().optional(),
   currentPeriodEnd: z.string().nullable().optional(),
   /*
@@ -49,16 +49,16 @@ const accesoSchema = z.object({
    */
   hasAccess: z.boolean(),
   utmCampaign: z.string().nullable().optional(),
-})
+});
 
-export type AccesoLanding = z.infer<typeof accesoSchema>
+export type AccesoLanding = z.infer<typeof accesoSchema>;
 
 const canjeSchema = accesoSchema.extend({
   alreadyRedeemed: z.boolean().optional(),
   redeemedAt: z.string().nullable().optional(),
-})
+});
 
-export type CanjeLanding = z.infer<typeof canjeSchema>
+export type CanjeLanding = z.infer<typeof canjeSchema>;
 
 /**
  * Motivos por los que un canje no sale adelante.
@@ -69,14 +69,13 @@ export type CanjeLanding = z.infer<typeof canjeSchema>
  * «pide otro enlace» y un callejón sin salida.
  */
 export type FalloCanje =
-  | { motivo: 'no-encontrado' }
-  | { motivo: 'caducado'; email: string | null }
-  | { motivo: 'sin-configurar' }
-  | { motivo: 'error' }
+  | { motivo: "no-encontrado" }
+  | { motivo: "caducado"; email: string | null }
+  | { motivo: "sin-configurar" }
+  | { motivo: "error" };
 
 export type ResultadoCanje =
-  | { ok: true; acceso: CanjeLanding }
-  | { ok: false; fallo: FalloCanje }
+  { ok: true; acceso: CanjeLanding } | { ok: false; fallo: FalloCanje };
 
 /**
  * Página de la landing que reenvía un enlace de acceso caducado.
@@ -87,8 +86,8 @@ export type ResultadoCanje =
  * mostrado justo a quien ya no puede entrar de otra forma.
  */
 export function urlDeReenvio(): string {
-  const landing = process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, '') ?? ''
-  return `${landing}/activar-acceso`
+  const landing = process.env.NEXT_PUBLIC_LANDING_URL?.replace(/\/$/, "") ?? "";
+  return `${landing}/activar-acceso`;
 }
 
 /*
@@ -96,7 +95,7 @@ export function urlDeReenvio(): string {
  * asume que la app sobrevive a sus caídas, y sin plazo la petición se quedaría
  * esperando hasta que la corte el servidor.
  */
-const TIEMPO_MAXIMO_MS = 8_000
+const TIEMPO_MAXIMO_MS = 8_000;
 
 /**
  * ¿Está acordada ya la integración con la landing?
@@ -111,25 +110,25 @@ const TIEMPO_MAXIMO_MS = 8_000
  * está disponible.
  */
 export function integracionConfigurada(): boolean {
-  const env = getServerEnv()
-  return Boolean(env.LANDING_API_URL && env.APP_SHARED_SECRET)
+  const env = getServerEnv();
+  return Boolean(env.LANDING_API_URL && env.APP_SHARED_SECRET);
 }
 
 function baseUrl(): string {
   return requireServerEnv(
-    'LANDING_API_URL',
-    'preguntar al backend de la landing quién ha pagado',
-  ).replace(/\/$/, '')
+    "LANDING_API_URL",
+    "preguntar al backend de la landing quién ha pagado",
+  ).replace(/\/$/, "");
 }
 
 function cabeceras(): HeadersInit {
   return {
     Authorization: `Bearer ${requireServerEnv(
-      'APP_SHARED_SECRET',
-      'autenticar esta app contra el backend de la landing',
+      "APP_SHARED_SECRET",
+      "autenticar esta app contra el backend de la landing",
     )}`,
-    'Content-Type': 'application/json',
-  }
+    "Content-Type": "application/json",
+  };
 }
 
 async function pedir(ruta: string, init: RequestInit): Promise<Response> {
@@ -138,8 +137,8 @@ async function pedir(ruta: string, init: RequestInit): Promise<Response> {
     headers: { ...cabeceras(), ...init.headers },
     signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
     // Nunca cachear: es estado de pago, y servirlo viejo es dar o quitar acceso.
-    cache: 'no-store',
-  })
+    cache: "no-store",
+  });
 }
 
 /**
@@ -157,37 +156,47 @@ export async function canjearToken(
   token: string,
   appUserId: string,
 ): Promise<ResultadoCanje> {
-  let respuesta: Response
+  let respuesta: Response;
 
   try {
-    respuesta = await pedir('/api/access/redeem', {
-      method: 'POST',
+    respuesta = await pedir("/api/access/redeem", {
+      method: "POST",
       body: JSON.stringify({ token, appUserId }),
-    })
+    });
   } catch (error) {
     // Incluye la falta de configuración: sin URL ni secreto no hay a quién preguntar.
-    console.error('[landing] no se pudo canjear el token', error)
-    return { ok: false, fallo: { motivo: 'sin-configurar' } }
+    console.error("[landing] no se pudo canjear el token", error);
+    return { ok: false, fallo: { motivo: "sin-configurar" } };
   }
 
   if (respuesta.ok) {
-    const datos = canjeSchema.safeParse(await respuesta.json())
+    const datos = canjeSchema.safeParse(await respuesta.json());
 
     if (!datos.success) {
-      console.error('[landing] respuesta de canje inesperada', datos.error.issues)
-      return { ok: false, fallo: { motivo: 'error' } }
+      console.error(
+        "[landing] respuesta de canje inesperada",
+        datos.error.issues,
+      );
+      return { ok: false, fallo: { motivo: "error" } };
     }
 
-    return { ok: true, acceso: datos.data }
+    return { ok: true, acceso: datos.data };
   }
 
-  if (respuesta.status === 404) return { ok: false, fallo: { motivo: 'no-encontrado' } }
+  if (respuesta.status === 404)
+    return { ok: false, fallo: { motivo: "no-encontrado" } };
 
   if (respuesta.status === 410) {
     // El correo viene en el 410 para poder prerrellenar la página de reenvío.
-    const cuerpo = await respuesta.json().catch(() => null)
-    const email = z.object({ email: z.string() }).safeParse(cuerpo)
-    return { ok: false, fallo: { motivo: 'caducado', email: email.success ? email.data.email : null } }
+    const cuerpo = await respuesta.json().catch(() => null);
+    const email = z.object({ email: z.string() }).safeParse(cuerpo);
+    return {
+      ok: false,
+      fallo: {
+        motivo: "caducado",
+        email: email.success ? email.data.email : null,
+      },
+    };
   }
 
   /*
@@ -196,15 +205,20 @@ export async function canjearToken(
    * registran con detalle porque desde fuera se ven idénticos a un fallo
    * cualquiera, y se tratan como «no configurado».
    */
-  console.error('[landing] canje rechazado', {
+  console.error("[landing] canje rechazado", {
     status: respuesta.status,
-    cuerpo: await respuesta.text().catch(() => ''),
-  })
+    cuerpo: await respuesta.text().catch(() => ""),
+  });
 
   return {
     ok: false,
-    fallo: { motivo: respuesta.status === 401 || respuesta.status === 503 ? 'sin-configurar' : 'error' },
-  }
+    fallo: {
+      motivo:
+        respuesta.status === 401 || respuesta.status === 503
+          ? "sin-configurar"
+          : "error",
+    },
+  };
 }
 
 /**
@@ -214,29 +228,34 @@ export async function canjearToken(
  * eso como «no tiene acceso»: el contrato pide que una caída de su backend no
  * eche de la app a quien ya estaba validado.
  */
-export async function consultarEstado(email: string): Promise<AccesoLanding | null> {
+export async function consultarEstado(
+  email: string,
+): Promise<AccesoLanding | null> {
   try {
     const respuesta = await pedir(
       `/api/access/status?email=${encodeURIComponent(email)}`,
-      { method: 'GET' },
-    )
+      { method: "GET" },
+    );
 
     if (!respuesta.ok) {
-      console.error('[landing] consulta de estado rechazada', respuesta.status)
-      return null
+      console.error("[landing] consulta de estado rechazada", respuesta.status);
+      return null;
     }
 
-    const datos = accesoSchema.safeParse(await respuesta.json())
+    const datos = accesoSchema.safeParse(await respuesta.json());
 
     if (!datos.success) {
-      console.error('[landing] respuesta de estado inesperada', datos.error.issues)
-      return null
+      console.error(
+        "[landing] respuesta de estado inesperada",
+        datos.error.issues,
+      );
+      return null;
     }
 
-    return datos.data
+    return datos.data;
   } catch (error) {
-    console.error('[landing] no se pudo consultar el estado', error)
-    return null
+    console.error("[landing] no se pudo consultar el estado", error);
+    return null;
   }
 }
 
@@ -249,25 +268,39 @@ export async function consultarEstado(email: string): Promise<AccesoLanding | nu
  *
  * Este endpoint es público en su lado y no lleva el secreto compartido.
  */
-export async function urlDelPortalDeFacturacion(email: string): Promise<string | null> {
+export type ResultadoPortal =
+  { ok: true; url: string } | { ok: false; motivo: "no-encontrado" | "error" };
+
+export async function urlDelPortalDeFacturacion(
+  email: string,
+): Promise<ResultadoPortal> {
   try {
     const respuesta = await fetch(`${baseUrl()}/api/stripe/portal`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
       signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
-      cache: 'no-store',
-    })
+      cache: "no-store",
+    });
+
+    /*
+     * 404 es «no hay suscripción de Stripe con ese correo»: pasa con los
+     * accesos que no nacieron en Stripe (filas creadas a mano, `legacy_sphere`).
+     * No es un fallo temporal y no hay que decirle que vuelva a intentarlo.
+     */
+    if (respuesta.status === 404) return { ok: false, motivo: "no-encontrado" };
 
     if (!respuesta.ok) {
-      console.error('[landing] no se pudo abrir el portal', respuesta.status)
-      return null
+      console.error("[landing] no se pudo abrir el portal", respuesta.status);
+      return { ok: false, motivo: "error" };
     }
 
-    const datos = z.object({ url: z.url() }).safeParse(await respuesta.json())
-    return datos.success ? datos.data.url : null
+    const datos = z.object({ url: z.url() }).safeParse(await respuesta.json());
+    return datos.success
+      ? { ok: true, url: datos.data.url }
+      : { ok: false, motivo: "error" };
   } catch (error) {
-    console.error('[landing] no se pudo abrir el portal', error)
-    return null
+    console.error("[landing] no se pudo abrir el portal", error);
+    return { ok: false, motivo: "error" };
   }
 }

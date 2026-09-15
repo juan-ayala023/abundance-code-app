@@ -1,9 +1,9 @@
-'use server'
+"use server";
 
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
-import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
-import { urlDelPortalDeFacturacion } from '@/lib/access/landing'
+import { entitlementDe, resolveAccess } from "@/lib/access/entitlement";
+import { urlDelPortalDeFacturacion } from "@/lib/access/landing";
 
 /**
  * Lleva al portal de facturación de Stripe.
@@ -18,15 +18,21 @@ import { urlDelPortalDeFacturacion } from '@/lib/access/landing'
  * —y cancelando— una suscripción ajena.
  */
 export async function abrirPortalDeFacturacion() {
-  const acceso = await resolveAccess()
-  const entitlement = entitlementDe(acceso)
+  const acceso = await resolveAccess();
+  const entitlement = entitlementDe(acceso);
 
-  if (!entitlement) redirect('/cuenta?portal=sin-compra')
+  if (!entitlement) redirect("/cuenta?portal=sin-compra");
 
-  const url = await urlDelPortalDeFacturacion(entitlement.email)
+  const portal = await urlDelPortalDeFacturacion(entitlement.email);
 
-  // Sin URL no se inventa nada: se vuelve diciendo que no se pudo.
-  if (!url) redirect('/cuenta?portal=error')
+  // Sin URL no se inventa nada: se vuelve diciendo qué pasó.
+  if (!portal.ok) {
+    redirect(
+      portal.motivo === "no-encontrado"
+        ? "/cuenta?portal=sin-stripe"
+        : "/cuenta?portal=error",
+    );
+  }
 
-  redirect(url)
+  redirect(portal.url);
 }

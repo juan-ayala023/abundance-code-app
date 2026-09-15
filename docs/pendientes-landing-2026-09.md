@@ -1,5 +1,13 @@
 # Pendientes para el equipo de la landing · revisión del 13 de septiembre de 2026
 
+> **Respondido el 14 de septiembre:** [respuesta-landing-2026-09-14.md](respuesta-landing-2026-09-14.md).
+> En corto: el checkout fallaba por CORS con `www` (corregido); no hay modo de
+> pruebas de Stripe, así que la compra real y el portal quedan sin ejecutar;
+> renovación a 14,99 $/mes sin URL aparte; los PDF legales no eran los vigentes
+> (la app enlaza ahora las páginas HTML); el backend ya no está en la cuenta
+> impagada. Lo que cambió en la app a raíz de la respuesta está en
+> [entrega-qa-2026-09.md](entrega-qa-2026-09.md), §4.
+
 La app (`app.abundancecode.us`) no cobra ni conoce Stripe: canjea el token que
 la landing le pasa en `/activar?token=…`, pregunta a su backend quién tiene
 acceso y abre el portal de facturación que ese backend le devuelve. Todo lo de

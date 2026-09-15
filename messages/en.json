@@ -69,7 +69,8 @@
   "legal": {
     "privacidad": "Privacy",
     "terminos": "Terms",
-    "reembolsos": "Refunds"
+    "reembolsos": "Refunds",
+    "aviso": "Disclaimer"
   },
   "cuenta": {
     "titulo": "My Account",
@@ -95,10 +96,13 @@
     },
     "portalError": "We couldn't open your subscription settings right now. Please try again in a few minutes.",
     "portalSinCompra": "We couldn't find a subscription linked to your account.",
+    "portalSinStripe": "Your access isn't linked to a Stripe subscription, so there's nothing to manage here. If you think that's a mistake, write to us.",
+    "pagoPendiente": "Your last payment didn't go through. You keep your access while it's sorted out: update your card from “Manage my subscription”, not from the pricing page, or you'd be charged a new entry fee.",
     "planes": {
       "ninguno": "No plan",
       "cortesia": "Courtesy access",
       "suscripcion": "Monthly subscription",
+      "monthly": "Monthly subscription",
       "inactivo": "Subscription not active"
     },
     "incluyeCortesia": "You have courtesy access: the same as a subscription —base reading, portrait, daily activation and {consultas} guide questions a day— with no payment or renewal to manage.",
