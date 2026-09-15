@@ -1,5 +1,7 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
+
 import { idiomaActual } from '@/i18n/idioma'
 import { z } from 'zod'
 
@@ -7,6 +9,7 @@ import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { createLocalChartProvider } from '@/lib/astrology/local'
 import { cartaSchema } from '@/lib/astrology/schema'
+import { inicioDelDia } from '@/lib/time/dia'
 import { aspectosDeTransito } from '@/lib/astrology/transitos'
 import { lecturaBaseSchema, CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { generarRespuestaGuia } from '@/lib/lectura/generar-guia'
@@ -38,7 +41,7 @@ export async function consultarGuia(
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, chart, base_reading, created_at')
+    .select('id, full_name, chart, base_reading, created_at, tz')
     .maybeSingle()
 
   if (!portal) {
@@ -70,15 +73,14 @@ export async function consultarGuia(
     }
   }
 
-  // El día se corta a medianoche UTC, igual que el contador del ciclo.
-  const inicioDelDia = new Date()
-  inicioDelDia.setUTCHours(0, 0, 0, 0)
+  // El día se corta a la misma hora que el ciclo: ver `@/lib/time/dia`.
+  const desde = inicioDelDia(portal.tz)
 
   const { count } = await supabase
     .from('guidance_queries')
     .select('id', { count: 'exact', head: true })
     .eq('portal_id', portal.id)
-    .gte('created_at', inicioDelDia.toISOString())
+    .gte('created_at', desde.toISOString())
 
   if ((count ?? 0) >= CONSULTAS_GUIA_POR_DIA) {
     return {
@@ -96,7 +98,7 @@ export async function consultarGuia(
     resultado = await generarRespuestaGuia({
       nombre: nombreDePila(portal.full_name),
       idioma: await idiomaActual(),
-    carta: carta.data,
+      carta: carta.data,
       transitos,
       resumen: lectura.success ? lectura.data.resumen : null,
       pregunta: pregunta.data,
@@ -128,6 +130,13 @@ export async function consultarGuia(
     // pierde es el registro, y eso es un problema nuestro, no suyo.
     console.error('[guia] no se pudo registrar la consulta', error)
   }
+
+  /*
+   * Para que «Mis consultas» y el contador se refresquen con la nueva sin
+   * recargar. Sin esto la respuesta aparecía arriba y la lista, debajo, seguía
+   * diciendo «todavía no has hecho ninguna consulta».
+   */
+  revalidatePath('/guia')
 
   return { error: null, respuesta: resultado.respuesta, pregunta: pregunta.data }
 }

@@ -213,7 +213,7 @@ export async function guardarDatosNacimiento(
         console.error('[onboarding] no se pudieron retirar las lecturas', errorVaciado)
       }
 
-      const ciclo = diaDelCiclo(anterior.created_at)
+      const ciclo = diaDelCiclo(anterior.created_at, anterior.tz)
       if (ciclo) {
         const { error: errorActivacion } = await admin
           .from('daily_activations')

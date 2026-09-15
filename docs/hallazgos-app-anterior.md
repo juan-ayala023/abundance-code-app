@@ -32,7 +32,8 @@ Es decir, **tres estados de acceso**, no dos:
 tercer estado —pasados los 30 días, lectura sí y guía no— está pendiente.
 
 El **contador** de días sí está resuelto: `diaDelCiclo()` lo deriva de
-`portals.created_at`, comparando días de calendario en UTC. No hace falta una
+`portals.created_at`, comparando días de calendario en la zona del lugar de
+nacimiento (`portals.tz`; ver `src/lib/time/dia.ts`). No hace falta una
 columna nueva ni un contador guardado, que podría desincronizarse.
 
 ### `activation_codes` es real y visible para el usuario

@@ -53,7 +53,7 @@ export default async function CuentaPage({
     supabase
       .from('portals')
       .select(
-        'created_at, full_name, birth_date, birth_time, time_unknown, birth_city, birth_country',
+        'created_at, tz, full_name, birth_date, birth_time, time_unknown, birth_city, birth_country',
       )
       .maybeSingle(),
   ])
@@ -62,7 +62,7 @@ export default async function CuentaPage({
 
   // El mismo contador que ve el usuario en el portal: se deriva de la fecha de
   // creación, no de una columna que pudiera quedar desincronizada.
-  const ciclo = diaDelCiclo(portal?.created_at)
+  const ciclo = diaDelCiclo(portal?.created_at, portal?.tz)
   const nivel = nivelDeAcceso(entitlement)
   const esCortesia = entitlement?.status === ESTADO_CORTESIA
 

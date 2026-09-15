@@ -13,6 +13,7 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { AREAS } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
+import { inicioDelDia } from '@/lib/time/dia'
 
 /**
  * La acción `consultarGuia()` corre dentro de esta ruta: unos 6 s medidos, que
@@ -47,7 +48,7 @@ export default async function GuiaPage({
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, birth_date, created_at')
+    .select('id, birth_date, birth_city, created_at, tz')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
@@ -61,18 +62,18 @@ export default async function GuiaPage({
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
   /*
-   * Consultas gastadas hoy. El día se corta a medianoche UTC, igual que el
-   * contador del ciclo: si cada uno usara un huso distinto, habría momentos en
-   * que el portal dice «día 5» y la guía todavía cuenta las consultas del 4.
+   * Consultas gastadas hoy. El día se corta a la misma hora que el ciclo —
+   * medianoche en la zona del lugar de nacimiento—: si cada uno usara un huso
+   * distinto, habría momentos en que el portal dice «día 5» y la guía todavía
+   * cuenta las consultas del 4.
    */
-  const inicioDelDia = new Date()
-  inicioDelDia.setUTCHours(0, 0, 0, 0)
+  const desde = inicioDelDia(portal.tz)
 
   const { count } = await supabase
     .from('guidance_queries')
     .select('id', { count: 'exact', head: true })
     .eq('portal_id', portal.id)
-    .gte('created_at', inicioDelDia.toISOString())
+    .gte('created_at', desde.toISOString())
 
   const usadas = count ?? 0
   const restantes = Math.max(CONSULTAS_GUIA_POR_DIA - usadas, 0)

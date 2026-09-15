@@ -186,7 +186,7 @@
     "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
     "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
     "siguiente": "Tu próxima activación se desbloquea mañana.",
-    "reglaDia": "El día cambia a medianoche en hora universal (UTC), igual que el contador de consultas de la guía."
+    "reglaDia": "El día cambia a medianoche en la hora de {ciudad}, tu lugar de nacimiento; el contador de consultas de la guía cambia a la misma hora."
   },
   "guia": {
     "titulo": "Guía Personalizada",

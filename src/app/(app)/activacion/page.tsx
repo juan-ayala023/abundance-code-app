@@ -41,7 +41,7 @@ export default async function ActivacionPage() {
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, birth_date, created_at, chart')
+    .select('id, full_name, birth_date, birth_city, created_at, tz, chart')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
@@ -51,7 +51,7 @@ export default async function ActivacionPage() {
    * «la más reciente» un portal en el día 5 vería la del 4 si la del 5 aún no
    * se hubiera generado, y parecería la de hoy.
    */
-  const ciclo = diaDelCiclo(portal.created_at)
+  const ciclo = diaDelCiclo(portal.created_at, portal.tz)
   const carta = cartaSchema.safeParse(portal.chart)
 
   const t = await getTranslations('activacion')
@@ -85,9 +85,10 @@ export default async function ActivacionPage() {
 
   /*
    * La fecha a la que corresponde la activación, escrita para leerse. Y la
-   * regla, dicha: el día cambia a medianoche UTC, igual que el contador de
-   * consultas de la guía. Sin esto no había forma de saber si lo que se veía
-   * era «lo de hoy» ni cuándo cambiaría —que es lo que pidió la revisión.
+   * regla, dicha: el día cambia a medianoche en la hora del lugar de
+   * nacimiento, igual que el contador de consultas de la guía. Sin esto no
+   * había forma de saber si lo que se veía era «lo de hoy» ni cuándo
+   * cambiaría —que es lo que pidió la revisión.
    */
   const idioma = await idiomaActual()
   const fechaLegible = ciclo
@@ -151,7 +152,7 @@ export default async function ActivacionPage() {
           */}
           <p className="flex items-center justify-center gap-2 text-center text-sm text-tinta-tenue">
             <Clock size={14} aria-hidden="true" className="shrink-0" />
-            <span>{t('siguiente')} {t('reglaDia')}</span>
+            <span>{t('siguiente')} {t('reglaDia', { ciudad: portal.birth_city ?? 'UTC' })}</span>
           </p>
         </>
       ) : (

@@ -1,3 +1,5 @@
+import { diasDeCalendarioEntre, fechaDeHoy } from '@/lib/time/dia'
+
 import { DIAS_DE_PORTAL } from './schemas'
 
 /**
@@ -7,27 +9,26 @@ import { DIAS_DE_PORTAL } from './schemas'
  * guardado: un contador puede desincronizarse, una fecha no. El día 1 es el
  * de la creación, y se satura en 30 en vez de seguir subiendo.
  *
+ * Los días son de calendario en la zona horaria del portal (`tz`, la del
+ * lugar de nacimiento): ver `@/lib/time/dia`. Antes eran UTC, y en Colombia
+ * el día cambiaba a las siete de la tarde.
+ *
  * Devuelve null si no hay fecha, y entonces la UI no muestra nada — mejor eso
  * que un «Día 1 de 30» que no significa nada.
  */
-export function diaDelCiclo(creadoEn: string | null | undefined, ahora = new Date()) {
+export function diaDelCiclo(
+  creadoEn: string | null | undefined,
+  tz: string | null | undefined,
+  ahora = new Date(),
+) {
   if (!creadoEn) return null
 
   const inicio = new Date(creadoEn)
   if (Number.isNaN(inicio.getTime())) return null
 
-  const MS_POR_DIA = 24 * 60 * 60 * 1000
-
-  // Se comparan días de calendario en UTC: contar por milisegundos haría que
-  // «día 2» empezara a la hora exacta de la compra y no al día siguiente.
-  const diaInicio = Date.UTC(
-    inicio.getUTCFullYear(),
-    inicio.getUTCMonth(),
-    inicio.getUTCDate(),
-  )
-  const diaHoy = Date.UTC(ahora.getUTCFullYear(), ahora.getUTCMonth(), ahora.getUTCDate())
-
-  const transcurridos = Math.floor((diaHoy - diaInicio) / MS_POR_DIA)
+  // Días de calendario, no periodos de 24 horas: contar por milisegundos haría
+  // que «día 2» empezara a la hora exacta de la compra y no al día siguiente.
+  const transcurridos = diasDeCalendarioEntre(inicio, ahora, tz)
   if (transcurridos < 0) return null
 
   return {
@@ -41,8 +42,8 @@ export function diaDelCiclo(creadoEn: string | null | undefined, ahora = new Dat
      * Lo detectó la revisión de septiembre de 2026 al probar el cambio de día.
      */
     diaReal: transcurridos + 1,
-    /** La fecha de calendario (UTC) de hoy, `AAAA-MM-DD`. Es la que se enseña. */
-    fecha: new Date(diaHoy).toISOString().slice(0, 10),
+    /** La fecha de calendario de hoy en la zona del portal, `AAAA-MM-DD`. */
+    fecha: fechaDeHoy(tz, ahora),
     total: DIAS_DE_PORTAL,
     /** Porcentaje recorrido, 0–100. */
     progreso: Math.min(Math.round(((transcurridos + 1) / DIAS_DE_PORTAL) * 100), 100),

@@ -38,7 +38,7 @@ export default async function PortalPage() {
   // Solo si parece un nombre de pila: «Bienvenido, Inversiones» ya pasó.
   const nombre = nombreDePila(perfil?.full_name) ?? ''
   const tieneDatos = Boolean(portal?.birth_date)
-  const ciclo = diaDelCiclo(portal?.created_at)
+  const ciclo = diaDelCiclo(portal?.created_at, portal?.tz)
 
   /*
    * La misma llamada que usa `/carta`, y por la misma razón: lee la carta

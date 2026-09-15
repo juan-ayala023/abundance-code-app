@@ -22,7 +22,7 @@ con el modelo real y sin retocar, están en [ejemplos-narrativa.md](ejemplos-nar
 | El campo Plan mostraba un guion en cortesía | Ahora dice **«Acceso de cortesía»**, «Suscripción mensual», «Suscripción no activa» o «Sin plan», según el caso. |
 | «Continuar con suscripción» llevaba a la oferta de 49 $ | Ese botón abre la página de precios de la landing, así que solo tiene sentido para quien **no** tiene acceso vigente. Ahora solo lo ve esa persona. Un suscriptor activo gestiona desde «Gestionar mi suscripción» (Stripe); una cortesía no ve ninguno de los dos. Ver decisiones pendientes. |
 | «Descargar imagen» no se pudo confirmar | Dos fallos reales: el enlace de descarga no se insertaba en la página (Firefox y Safari lo ignoran) y la dirección temporal se anulaba antes de que la descarga arrancara. Corregidos, y ahora el botón confirma **«Descargada»** con el nombre del archivo. |
-| Fecha visible y regla de huso en la activación | La activación muestra su **fecha** («lunes, 14 de septiembre de 2026») y dice la regla: **el día cambia a medianoche en hora universal (UTC)**, la misma que usa el contador de consultas. |
+| Fecha visible y regla de huso en la activación | La activación muestra su **fecha** («lunes, 14 de septiembre de 2026») y dice la regla: **el día cambia a medianoche en la hora del lugar de nacimiento** («la hora de Bogotá»), y el contador de consultas cambia a la misma hora. Antes era medianoche UTC —las siete de la tarde en Colombia— y al probarlo en producción se vio la activación del 15 siendo el 14. |
 | Cambio de día | Al probarlo apareció un fallo más grave que no estaba en el informe: **a partir del día 31 se repetía la misma activación cada día**, porque el contador se detenía en 30. Un suscriptor que sigue pagando veía siempre la del día 30. Corregido. |
 | Enlaces legales y contenido en móvil | Los tres documentos (privacidad, términos, reembolsos) responden con PDF desde la landing; verificado. El portal ya estaba maquetado para móvil; no se tocó. |
 
@@ -89,6 +89,6 @@ Corregido.
 ## 5 · Decisiones que necesitan respuesta
 
 1. **¿Se regeneran las lecturas existentes con el tono nuevo?** Y si sí, ¿de oficio o a petición de cada persona? (§4, último punto.)
-2. **La regla del cambio de día es medianoche UTC**, visible ahora en pantalla. Para alguien en Colombia eso son las 19:00; en Australia, las 10:00. Cambiarla a la hora local del lugar de nacimiento es posible, pero afecta a la vez a la activación, al contador de consultas y al «Día N de 30». No se cambió sin preguntar.
+2. ~~La regla del cambio de día~~ **Decidido en la prueba del 14 de septiembre:** el día cambia a medianoche en la hora del lugar de nacimiento, para la activación, el contador de consultas y el «Día N de 30» a la vez. Quien nació en Bogotá y vive en Sídney verá cambiar el día a las 14:00 de Sídney; si eso importa, la alternativa es la zona del navegador, que exige una cookie y cambia al viajar.
 3. **«Continuar con suscripción» ya no aparece a quien tiene acceso.** Si se quería que un suscriptor activo pudiera «recomprar» desde ahí, hay que decirlo; el comportamiento anterior le ofrecía la oferta de entrada de 49 $.
 4. **Ninguna condición de pago ni límite se cambió**, como pedía el informe: siguen siendo 3 consultas al día para todas las cuentas y 30 días de ciclo inicial.

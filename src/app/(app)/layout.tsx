@@ -53,10 +53,10 @@ export default async function AppLayout({
   const supabase = await createClient()
   const { data: portal } = await supabase
     .from('portals')
-    .select('created_at')
+    .select('created_at, tz')
     .maybeSingle()
 
-  const ciclo = diaDelCiclo(portal?.created_at)
+  const ciclo = diaDelCiclo(portal?.created_at, portal?.tz)
 
   return (
     <div className="flex min-h-dvh flex-col lg:flex-row">
