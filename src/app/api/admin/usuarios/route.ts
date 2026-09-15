@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
-import { correosDeCortesia } from '@/lib/access/cortesia'
+import { correosDeCortesia, esCortesia } from '@/lib/access/cortesia'
 import { tieneAcceso } from '@/lib/access/entitlement'
 import { autorizaLlamadaDeLanding } from '@/lib/access/secretoEntrante'
 import { createAdminClient } from '@/lib/supabase/server'
@@ -30,6 +31,8 @@ const MAXIMO = 500
 export type AccesoDeUsuario = 'cortesia' | 'comprado' | 'inactivo' | 'sin-compra'
 
 export type UsuarioPortal = {
+  /** `null` para las cortesías que todavía no han entrado: no hay cuenta que borrar. */
+  id: string | null
   email: string
   nombre: string | null
   /** `null` cuando está en la lista de cortesía pero todavía no ha entrado. */
@@ -99,6 +102,7 @@ export async function GET(request: Request) {
         : 'sin-compra'
 
     return {
+      id: perfil.id,
       email: perfil.email,
       nombre: perfil.full_name,
       registradoEn: perfil.created_at,
@@ -119,6 +123,7 @@ export async function GET(request: Request) {
     if (registrados.has(email)) continue
 
     usuarios.push({
+      id: null,
       email,
       nombre: null,
       registradoEn: null,
@@ -145,5 +150,57 @@ export async function GET(request: Request) {
          se está usando, distinta de cuántos pueden entrar. */
       conPortal: usuarios.filter((usuario) => usuario.tienePortal).length,
     },
+  })
+}
+
+/**
+ * Borra la cuenta de un usuario de la app — para el panel de administración.
+ *
+ * Es un borrado de verdad: `auth.users` con cascada a perfil, portal, carta,
+ * lecturas y consultas. Lo que NO borra es el registro de compra en la landing
+ * ni, si lo hubiera, nada en Stripe: quien tenga una suscripción activa debe
+ * cancelarse en Stripe antes, y eso lo comprueba la landing, que es quien
+ * conoce las suscripciones, antes de llamar aquí.
+ *
+ * Si el correo está en la lista de cortesía, se borra igual pero se avisa: al
+ * volver a entrar con Google tendría acceso otra vez, porque la cortesía no
+ * vive en la base sino en ACCESOS_CORTESIA. Quitarlo de ahí es cosa de Railway.
+ */
+const borradoSchema = z.object({ id: z.string().uuid() })
+
+export async function DELETE(request: Request) {
+  const permiso = autorizaLlamadaDeLanding(request)
+
+  if (!permiso.ok) {
+    console.error('[api/admin/usuarios] DELETE', permiso.motivo)
+    return NextResponse.json({ message: 'No autorizado' }, { status: permiso.estado })
+  }
+
+  const cuerpo = borradoSchema.safeParse(await request.json().catch(() => null))
+  if (!cuerpo.success) {
+    return NextResponse.json({ message: 'Falta el id del usuario' }, { status: 400 })
+  }
+
+  const db = createAdminClient()
+  const { id } = cuerpo.data
+
+  const { data: perfil } = await db.from('profiles').select('email').eq('id', id).maybeSingle()
+  if (!perfil) {
+    return NextResponse.json({ message: 'Usuario no encontrado' }, { status: 404 })
+  }
+
+  const { error } = await db.auth.admin.deleteUser(id)
+  if (error) {
+    console.error('[api/admin/usuarios] no se pudo borrar', { id, error })
+    return NextResponse.json({ message: 'No se pudo borrar el usuario' }, { status: 500 })
+  }
+
+  console.log(`[api/admin/usuarios] borrado ${perfil.email} (${id}) por el panel`)
+
+  return NextResponse.json({
+    ok: true,
+    email: perfil.email,
+    /* Para que el panel avise: seguirá entrando mientras esté en la lista. */
+    cortesia: esCortesia(perfil.email),
   })
 }
