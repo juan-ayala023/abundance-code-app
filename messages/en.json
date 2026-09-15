@@ -49,7 +49,16 @@
       "texto": "You are signed in as {correo}. If you link the purchase here, this will be your portal.",
       "si": "Yes, link to this account",
       "no": "No, sign in with another account"
-    }
+    },
+    "correo": {
+      "etiqueta": "Not using Google? Sign in with your email",
+      "placeholder": "you@example.com",
+      "boton": "Send me a sign-in link",
+      "enviando": "Sending…",
+      "enviado": "We sent a link to {correo}. Open it in this same browser to sign in.",
+      "error": "We could not send the link. Check the email and try again."
+    },
+    "o": "or"
   },
   "vincular": {
     "tituloCaducado": "Your access link expired",

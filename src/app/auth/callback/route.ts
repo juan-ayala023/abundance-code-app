@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { destinoTrasEntrar } from '@/lib/access/destino'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { createClient } from '@/lib/supabase/server'
 import { safeNextPath } from '@/lib/validation/schemas'
 
 /**
- * Retorno del login con Google.
+ * Retorno del login, sea con Google o con el enlace por correo.
  *
  * Supabase redirige aquí con un `code` que hay que canjear por una sesión.
  * Tras canjearlo se resuelve el acceso y se decide el destino: nunca se deja
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
 
   switch (access.kind) {
     case 'concedido':
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`${origin}${await destinoTrasEntrar(supabase, next)}`)
     case 'sin-compra':
       return NextResponse.redirect(`${origin}/activar/vincular`)
     case 'inactivo':

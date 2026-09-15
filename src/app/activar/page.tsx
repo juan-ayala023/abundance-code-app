@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
+import { EmailSignInForm } from '@/components/auth/email-sign-in-form'
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button'
+import { destinoTrasEntrar } from '@/lib/access/destino'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { createClient } from '@/lib/supabase/server'
 import { safeNextPath } from '@/lib/validation/schemas'
@@ -95,8 +97,9 @@ export default async function ActivarPage({
     if (data.user) {
       const resultado = await canjearYVincular(token, data.user.id)
 
-      // Con la compra ya vinculada, el acceso vuelve a resolverse desde cero.
-      if (resultado.ok) redirect(next)
+      // Con la compra ya vinculada, el comprador nuevo va al formulario de
+      // nacimiento; quien ya tiene carta, a su portal.
+      if (resultado.ok) redirect(await destinoTrasEntrar(await createClient(), next))
 
       if (resultado.fallo.motivo === 'caducado') {
         redirect(`/activar/vincular?estado=caducado`)
@@ -144,6 +147,15 @@ export default async function ActivarPage({
       ) : null}
 
       <GoogleSignInButton next={destinoTrasLogin} />
+
+      <div className="flex items-center gap-4 text-xs uppercase tracking-widest opacity-50">
+        <span className="h-px flex-1 bg-borde" />
+        {t('o')}
+        <span className="h-px flex-1 bg-borde" />
+      </div>
+
+      {/* Para quien no tiene Google. Mismo destino, mismo callback. */}
+      <EmailSignInForm next={destinoTrasLogin} />
 
       {/*
         Con token, el correo deja de importar: el enlace ya demuestra el pago y

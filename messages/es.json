@@ -49,7 +49,16 @@
       "texto": "Tienes la sesión abierta como {correo}. Si vinculas la compra aquí, este será tu portal.",
       "si": "Sí, vincular a esta cuenta",
       "no": "No, entrar con otra cuenta"
-    }
+    },
+    "correo": {
+      "etiqueta": "¿No usas Google? Entra con tu correo",
+      "placeholder": "tucorreo@ejemplo.com",
+      "boton": "Enviarme un enlace de acceso",
+      "enviando": "Enviando…",
+      "enviado": "Te enviamos un enlace a {correo}. Ábrelo desde este mismo navegador para entrar.",
+      "error": "No pudimos enviar el enlace. Revisa el correo y vuelve a intentarlo."
+    },
+    "o": "o"
   },
   "vincular": {
     "tituloCaducado": "Tu enlace de acceso caducó",
