@@ -20,3 +20,8 @@ export function urlDeCompra(): string {
   const landing = getPublicEnv().NEXT_PUBLIC_LANDING_URL.replace(/\/$/, '')
   return `${landing}/pricing`
 }
+
+/** Portada de la web, para quien llega a la app sin saber qué es. */
+export function urlDeLanding(): string {
+  return getPublicEnv().NEXT_PUBLIC_LANDING_URL.replace(/\/$/, '')
+}

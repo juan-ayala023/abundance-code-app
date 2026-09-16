@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-import { urlDeCompra } from "@/lib/access/enlaces";
+import { urlDeLanding } from "@/lib/access/enlaces";
 import { Logo } from "@/components/layout/logo";
 import { PieLegal } from "@/components/layout/pie-legal";
 
@@ -69,7 +69,7 @@ export default async function HomePage() {
               sigue existiendo para quien llegue a esa URL desde fuera.
             */}
             <a
-              href={urlDeCompra()}
+              href={urlDeLanding()}
               className="rounded-xl border border-borde bg-superficie px-6 py-3 font-medium transition-colors hover:bg-fondo-hondo"
             >
               {t('planes')}
