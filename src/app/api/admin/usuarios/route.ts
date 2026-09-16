@@ -39,6 +39,8 @@ export type UsuarioPortal = {
   registradoEn: string | null
   /** Completó el onboarding: tiene carta natal generada. */
   tienePortal: boolean
+  /** Última vez que inició sesión. `null` si nunca (cortesía sin entrar). */
+  ultimoAccesoEn: string | null
   acceso: AccesoDeUsuario
   plan: string | null
   /** `status` del entitlement, cuando existe una compra. */
@@ -62,7 +64,7 @@ export async function GET(request: Request) {
 
   /* Las tres lecturas son independientes: en serie multiplicarían por tres la
      latencia de una pantalla que solo muestra una tabla. */
-  const [perfiles, entitlements, portales] = await Promise.all([
+  const [perfiles, entitlements, portales, cuentas] = await Promise.all([
     db
       .from('profiles')
       .select('id, email, full_name, created_at')
@@ -70,9 +72,12 @@ export async function GET(request: Request) {
       .limit(MAXIMO),
     db.from('entitlements').select('email, status, plan, source, has_access').limit(MAXIMO),
     db.from('portals').select('user_id').limit(MAXIMO),
+    /* La última entrada vive en auth, no en profiles. Es el dato que permite
+       ver quién lleva semanas sin volver, que es lo que decide una baja. */
+    db.auth.admin.listUsers({ perPage: MAXIMO }),
   ])
 
-  const fallo = perfiles.error ?? entitlements.error ?? portales.error
+  const fallo = perfiles.error ?? entitlements.error ?? portales.error ?? cuentas.error
 
   if (fallo) {
     console.error('[api/admin/usuarios] error leyendo la base', fallo)
@@ -81,6 +86,9 @@ export async function GET(request: Request) {
 
   const cortesias = new Set(correosDeCortesia())
   const conPortal = new Set((portales.data ?? []).map((fila) => fila.user_id))
+  const ultimoAcceso = new Map(
+    (cuentas.data?.users ?? []).map((u) => [u.id, u.last_sign_in_at ?? null]),
+  )
 
   const porEmail = new Map(
     (entitlements.data ?? []).map((fila) => [normaliza(fila.email), fila]),
@@ -107,6 +115,7 @@ export async function GET(request: Request) {
       nombre: perfil.full_name,
       registradoEn: perfil.created_at,
       tienePortal: conPortal.has(perfil.id),
+      ultimoAccesoEn: ultimoAcceso.get(perfil.id) ?? null,
       acceso,
       plan: compra?.plan ?? null,
       estado: compra?.status ?? null,
@@ -128,6 +137,7 @@ export async function GET(request: Request) {
       nombre: null,
       registradoEn: null,
       tienePortal: false,
+      ultimoAccesoEn: null,
       acceso: 'cortesia',
       plan: null,
       estado: null,
