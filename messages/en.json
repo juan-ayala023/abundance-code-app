@@ -27,7 +27,7 @@
   },
   "planes": {
     "titulo": "Plans",
-    "descripcion": "Purchases are made on our main site. When you're done, come back here and sign in with the Google account for the email you used.",
+    "descripcion": "Purchases are made on our main site. When you're done, come back here and sign in with the email you used to buy (you'll receive a link) or with Google if it is that same email.",
     "comprar": "Go to checkout →",
     "yaCompre": "I already bought"
   },
@@ -41,7 +41,7 @@
     "errorGoogle": "We couldn't reach Google. Check your connection and try again.",
     "errores": {
       "cancelado": "You cancelled the sign-in. You can try again whenever you like.",
-      "sin_codigo": "That access link is no longer valid. Sign in with Google from here.",
+      "sin_codigo": "That access link is no longer valid. Sign in from here with your email or with Google.",
       "sesion": "We couldn't complete your session. Please try again."
     },
     "confirmar": {
@@ -69,7 +69,7 @@
     "textoInactivo": "We found your purchase, but the subscription isn't active right now.",
     "textoSinCompra": "There's no purchase registered with this email:",
     "quePuedesHacer": "What you can do",
-    "otroCorreo": "If you bought with a different email, sign in with the Google account for that email.",
+    "otroCorreo": "If you bought with a different email, sign in with that email: enter it and you'll receive a link, or use Google if it is the same one.",
     "otraCuenta": "Try another account",
     "pedirEnlace": "Request a new link",
     "renovar": "Renew my access",

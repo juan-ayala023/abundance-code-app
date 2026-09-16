@@ -27,7 +27,7 @@
   },
   "planes": {
     "titulo": "Planes",
-    "descripcion": "La compra se realiza en nuestra web principal. Al terminar, vuelve aquí y entra con la cuenta de Google del correo que hayas usado.",
+    "descripcion": "La compra se realiza en nuestra web principal. Al terminar, vuelve aquí y entra con el correo que hayas usado al comprar (recibirás un enlace) o con Google si es ese mismo correo.",
     "comprar": "Ir a comprar →",
     "yaCompre": "Ya compré"
   },
@@ -41,7 +41,7 @@
     "errorGoogle": "No pudimos conectar con Google. Revisa tu conexión y vuelve a intentarlo.",
     "errores": {
       "cancelado": "Cancelaste el inicio de sesión. Puedes volver a intentarlo cuando quieras.",
-      "sin_codigo": "Ese enlace de acceso ya no es válido. Entra con Google desde aquí.",
+      "sin_codigo": "Ese enlace de acceso ya no es válido. Entra desde aquí con tu correo o con Google.",
       "sesion": "No pudimos completar tu sesión. Vuelve a intentarlo."
     },
     "confirmar": {
@@ -69,7 +69,7 @@
     "textoInactivo": "Encontramos tu compra, pero la suscripción no está activa ahora mismo.",
     "textoSinCompra": "No hay ninguna compra registrada con este correo:",
     "quePuedesHacer": "Qué puedes hacer",
-    "otroCorreo": "Si compraste con otro correo, entra con la cuenta de Google que corresponda a ese correo.",
+    "otroCorreo": "Si compraste con otro correo, entra con ese correo: escríbelo y recibirás un enlace, o usa Google si es el mismo.",
     "otraCuenta": "Probar con otra cuenta",
     "pedirEnlace": "Pedir un enlace nuevo",
     "renovar": "Renovar mi acceso",
