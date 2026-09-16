@@ -29,7 +29,8 @@ import { resolveBirthInstant } from '@/lib/time/birth-instant'
  * Con `EJEMPLOS_REUSAR=1` reutiliza la lectura y la activación de la última
  * ejecución (guardadas en el directorio temporal) y solo vuelve a pedir las
  * respuestas de guía, que son las baratas: sirve para iterar el prompt de la
- * guía sin pagar la lectura completa cada vez.
+ * guía sin pagar la lectura completa cada vez. Con `EJEMPLOS_REUSAR=lectura`
+ * reutiliza solo la lectura y regenera la activación: para iterar ese prompt.
  *
  * Cuesta dinero real (unas cuatro llamadas al modelo, una de ellas con
  * razonamiento medio). Escribe en `docs/ejemplos-narrativa.md`.
@@ -74,13 +75,15 @@ it('genera los ejemplos de la narrativa nueva', async () => {
   ]
 
   const cache = join(tmpdir(), 'abundance-ejemplos-cache.json')
-  const reusar = process.env.EJEMPLOS_REUSAR === '1' && existsSync(cache)
+  const modoReuso = process.env.EJEMPLOS_REUSAR
+  const reusar = (modoReuso === '1' || modoReuso === 'lectura') && existsSync(cache)
   const guardado = reusar
     ? (JSON.parse(readFileSync(cache, 'utf8')) as {
         lectura: Awaited<ReturnType<typeof generarLecturaBase>>
         activacion: Awaited<ReturnType<typeof generarActivacionDiaria>>
       })
     : null
+  if (guardado && modoReuso === 'lectura') guardado.activacion = undefined as never
 
   // 1. Lectura personal, con nombre de pila.
   const lectura =

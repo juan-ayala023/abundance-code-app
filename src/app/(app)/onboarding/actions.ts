@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
-import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { COLUMNAS_PARA_RETIRAR, retirarLecturas } from '@/lib/lectura/retirar'
 import { resolveBirthInstant, BirthInstantError } from '@/lib/time/birth-instant'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 import { datosNacimientoSchema } from '@/lib/validation/schemas'
@@ -82,9 +82,7 @@ export async function guardarDatosNacimiento(
    */
   const { data: anterior } = await supabase
     .from('portals')
-    .select(
-      'id, created_at, birth_date, birth_time, time_unknown, lat, lng, tz, birth_city, birth_country, base_reading, base_reading_at, chart_reading, chart_reading_at',
-    )
+    .select(`${COLUMNAS_PARA_RETIRAR}, lat, lng`)
     .maybeSingle()
 
   const nacimientoCambio =
@@ -104,7 +102,10 @@ export async function guardarDatosNacimiento(
 
     if (error) {
       console.error('[onboarding] no se pudo actualizar el nombre', error)
-      return { error: 'No pudimos guardar tus datos. Inténtalo de nuevo.', campos: {} }
+      return {
+        error: 'No pudimos guardar tus datos. Inténtalo de nuevo.',
+        campos: {},
+      }
     }
 
     redirect('/cuenta?datos=nombre')
@@ -139,92 +140,22 @@ export async function guardarDatosNacimiento(
 
   if (error) {
     console.error('[onboarding] no se pudo guardar el portal', error)
-    return { error: 'No pudimos guardar tus datos. Inténtalo de nuevo.', campos: {} }
+    return {
+      error: 'No pudimos guardar tus datos. Inténtalo de nuevo.',
+      campos: {},
+    }
   }
 
   /*
-   * El nacimiento cambió y había lecturas: se retiran y se conservan.
-   *
-   * La lectura base y el retrato se escribieron sobre la carta anterior, así
-   * que ya no describen a esta persona. Se archivan en `reading_versions` con
-   * los datos sobre los que se escribieron —se pueden releer desde la pantalla
-   * de la lectura— y se vacían en el portal para que `/generando` y `/carta`
-   * los vuelvan a escribir sobre la carta nueva. Con el cliente administrativo:
-   * el usuario no tiene `insert` en la tabla de versiones, a propósito.
-   *
-   * Las activaciones de días pasados se quedan: fueron las de esos días. La de
-   * hoy se borra para que se escriba sobre la carta correcta. Las consultas de
-   * la guía se conservan todas: son un historial, no una interpretación viva.
+   * El nacimiento cambió y había lecturas: se retiran y se conservan. Cómo, y
+   * por qué no se vacían si no se pudo archivar, está en `retirarLecturas()`.
    */
-  const habiaLecturas = Boolean(anterior?.base_reading || anterior?.chart_reading)
+  const habiaLecturas = Boolean(anterior && (anterior.base_reading || anterior.chart_reading))
 
   if (anterior && habiaLecturas) {
-    const admin = createAdminClient()
-    const nacimiento = {
-      birth_date: anterior.birth_date,
-      birth_time: anterior.birth_time,
-      time_unknown: anterior.time_unknown,
-      birth_city: anterior.birth_city,
-      birth_country: anterior.birth_country,
-    }
-
-    const versiones = [
-      anterior.base_reading
-        ? {
-            portal_id: anterior.id,
-            kind: 'lectura',
-            content: anterior.base_reading,
-            generated_at: anterior.base_reading_at,
-            ...nacimiento,
-          }
-        : null,
-      anterior.chart_reading
-        ? {
-            portal_id: anterior.id,
-            kind: 'retrato',
-            content: anterior.chart_reading,
-            generated_at: anterior.chart_reading_at,
-            ...nacimiento,
-          }
-        : null,
-    ].filter((version) => version !== null)
-
-    const { error: errorArchivo } = await admin.from('reading_versions').insert(versiones)
-
-    if (errorArchivo) {
-      /*
-       * Si no se pudo archivar, NO se vacían las lecturas: perder un texto que
-       * la persona ya leyó es peor que dejarle uno desactualizado un rato más.
-       * Los datos nuevos ya están guardados y la carta se recalcula igual.
-       */
-      console.error('[onboarding] no se pudieron archivar las lecturas', errorArchivo)
-    } else {
-      const { error: errorVaciado } = await admin
-        .from('portals')
-        .update({
-          base_reading: null,
-          base_reading_at: null,
-          chart_reading: null,
-          chart_reading_at: null,
-        })
-        .eq('id', anterior.id)
-
-      if (errorVaciado) {
-        console.error('[onboarding] no se pudieron retirar las lecturas', errorVaciado)
-      }
-
-      const ciclo = diaDelCiclo(anterior.created_at, anterior.tz)
-      if (ciclo) {
-        const { error: errorActivacion } = await admin
-          .from('daily_activations')
-          .delete()
-          .eq('portal_id', anterior.id)
-          .gte('day_number', ciclo.diaReal)
-
-        if (errorActivacion) {
-          console.error('[onboarding] no se pudo retirar la activación de hoy', errorActivacion)
-        }
-      }
+    const retiro = await retirarLecturas(createAdminClient(), anterior, 'correccion-nacimiento')
+    if (!retiro.ok) {
+      console.error('[onboarding] no se pudieron retirar las lecturas', retiro.motivo)
     }
   }
 

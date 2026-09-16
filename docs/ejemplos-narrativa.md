@@ -1,6 +1,6 @@
 # Ejemplos de la narrativa nueva
 
-Generados el 2026-09-14 con los prompts de la rama `correcciones-qa-2026-09`, sobre una carta de muestra (Bogotá, 15 de julio de 1990, 08:30; nadie real). Son salida cruda del modelo, sin retocar, para que se juzgue el tono tal como llegará a una persona.
+Generados el 2026-09-15 con los prompts de la rama `correcciones-qa-2026-09`, sobre una carta de muestra (Bogotá, 15 de julio de 1990, 08:30; nadie real). Son salida cruda del modelo, sin retocar, para que se juzgue el tono tal como llegará a una persona.
 
 ## 1 · Lectura personal (perfil «Laura Gómez»)
 
@@ -48,48 +48,48 @@ Mercurio en Leo en la casa 12 indica pensamiento creativo y dramático que prime
 
 Plutón retrógrado en Escorpio en la casa 3 da profundidad mental, coraje para nombrar lo tabú y talento de investigación. Los trígonos de Sol y Júpiter a Plutón suman potencia transformadora a tu voz: influir sin dramatizar. La conjunción Urano–Neptuno en Capricornio en la 5 mezcla visión ideal con estructura en la creatividad; el sextil Neptuno–Plutón sugiere sensibilidad fina al trasfondo colectivo. Todo el cuadro pide balance: calidez que incluye límites, ambición con raíz y palabra que abre caminos.
 
-## 2 · Activación diaria (día 12, 213 palabras en total)
+## 2 · Activación diaria (día 12, 190 palabras en total)
 
 ### mensajePrincipal
 
-Laura, hoy puede que sientas la tensión entre lo que te gustaría imaginar y lo que pide el mundo concreto: Saturno en el cielo hace cuadratura a tu Neptuno natal, y eso puede traer confusión sobre límites y fantasías. En un día así aparece la duda: ¿continúo soñando o ajusto los pasos para que el sueño no se deshaga?
+Quizá hoy sientas un empujón interior: ganas de ser vista, de estirar una idea y dejarla más grande que antes, mientras debajo hay una inquietud que cuestiona si eso estará a la altura. Algo moviéndose en la zona de tus vínculos y de lo que quieres mostrar al mundo puede amplificar el deseo y la ansiedad a la vez, Laura.
 
 ### queObservar
 
-Fíjate en cuándo tu mente se dispersa hacia soluciones ideales y cuándo tu cuerpo reacciona con irritación o prisa. Podrías notar ganas de escapar en lugar de concretar, o una energía insistente que empuja contra reglas antiguas. Observa qué te calma y qué te acelera en esos momentos.
+Observa cuándo ese empuje aparece: suele activarse después de recibir atención o cuando piensas en proyectos donde otros participan. Fíjate si lo que quieres es reconocimiento o si es alivio para no quedarte esperando.
 
 ### queEvitar
 
-No te pierdas en justificantes grandiosos ni en promesas que no puedes cumplir para sentir alivio rápido. Evita decisiones impulsivas motivadas por enfado o por querer demostrar algo. Tampoco uses la indecisión como excusa para no poner límites claros.
+Evita las respuestas en piloto automático: prometer más de lo que deseas, hablar por imponerte o callar lo que realmente te preocupa para que no cambie la imagen que proyectas. No te conviertas en quien siempre sostiene la esperanza de todos.
 
 ### queActivar
 
-Haz un chequeo de realidad de 15 minutos: elige una idea que quieras avanzar, enumera tres límites reales (tiempo, recursos, personas) y ajusta una acción concreta para hoy que respete esos límites. Si hay tensión con alguien, practica decir una frase breve y clara que ponga un límite sin dramatizar.
+Antes de moverte, quédate un minuto con la sensación en el cuerpo: respira y nombra en voz baja una necesidad concreta —no un plan— (por ejemplo: espacio, claridad, apoyo). Ese gesto interno te separa de la urgencia de impresionar.
 
 ### preguntaReflexion
 
-¿Qué límite, si lo pones hoy, haría que tu siguiente paso fuese más realista y menos agotador?
+Si no tuvieras que demostrar nada hoy, ¿qué pedirías distinto a las personas que te rodean?
 
-## 3 · Respuesta de guía (186 palabras)
+## 3 · Respuesta de guía (184 palabras)
 
 **Pregunta:** «Llevo meses queriendo cambiar de trabajo y no doy el paso. ¿Qué me está frenando de verdad?»
 
-Laura, quizá has sentido que hay una voz interna que te pide “hacerlo bien” antes de moverte, y que esa misma voz se convierte en freno cuando no ves garantías claras. Esa parte tuya que frena —tu Saturno en Capricornio en casa 5, retrógrado— tiende a medir riesgos, exigir que tus pasos creativos o cambios importantes sean responsables y concretos; cuando no hay seguridad palpable, prefieres posponer.
+Laura: quizá has sentido una mezcla entre ganas de moverte y una voz interna que te frena. En tu carta, el freno más relevante aquí es tu Saturno en Capricornio en la casa 5 —esa parte tuya que pone límites cuando se trata de arriesgar la identidad, la creatividad o la visibilidad— y en retrógrado suele sentirse más como una crítica íntima y revisora que como una barrera externa.
 
-En la práctica eso se traduce en perfeccionismo, en esperar señales externas de aprobación, o en hacer mil ajustes hasta que la idea parece lo bastante segura; también puede venir con un temor a gastar energía en algo que no rinda como imaginas. No es que no quieras el cambio: es que te pones la tarea de hacerlo “sin fallar”, y eso encoge la acción.
+Eso puede traducirse en varias cosas: esperar a tener todo perfectamente planificado antes de dar el paso; medir cada movimiento por el posible “qué dirán” o por la necesidad de seguridad; o posponer hasta sentirte realmente competente. También puede haber un miedo a perder lo que ya construiste si te equivocas, y una tendencia a probarte a ti misma con estándares muy exigentes.
 
-Un paso pequeño: define el experimento mínimo que te enseñe si el trabajo nuevo tiene potencial (dos semanas, una conversación clave, un proyecto piloto) y ponle una medida clara de información para decidir. ¿Qué te pesa más ahora: perder seguridad financiera o defraudar las expectativas que te pones? Esa respuesta afina el próximo paso.
+Para salir del atasco, prueba un experimento pequeño: define el mínimo aceptable (tres criterios no-negociables para un nuevo trabajo) y da un paso sin que cambie tu vida: una búsqueda focalizada, una conversación exploratoria o actualizar tu perfil. ¿Qué aspecto del trabajo quieres cambiar primero: el contenido, el ambiente o la estabilidad?
 
-## 4 · Poco contexto, perfil «Inversiones AOA» (178 palabras)
+## 4 · Poco contexto, perfil «Inversiones AOA» (199 palabras)
 
 **Nombre que llega al modelo:** (ninguno: no parece un nombre de pila)
 
 **Pregunta:** «¿Qué decisión estoy evitando?»
 
-Quizá has sentido que hay una decisión que no termina de aparecer porque algo en ti tira del freno: ¿te guardas de empezar un proyecto que te expondría, de comprometerte con alguien en serio, o de ejercer una responsabilidad que implicaría ser visible y medirte con resultados? Esa parte tuya que pone el freno —tu Saturno en Capricornio en la casa 5— tiende a pedir garantías, orden y control antes de dar el salto. Lo que evitas no es la valentía en sí, sino aceptar la posibilidad de equivocarte o no ser “suficientemente bueno” en algo que te importa (creación, vínculo, mostrar tu talento).
+Quizá has notado una tensión entre querer aparecer y hacer algo grande en público, y luego retroceder porque te da miedo pasarte o no corresponder a lo que esperan. Puede sentirse como esforzarte y, al mismo tiempo, no atreverte a aceptar una responsabilidad o un lugar visible dentro de un grupo o proyecto: pedir apoyo, decir “sí” a dirigir algo, o reclamar reconocimiento por tu aporte.
 
-Esa resistencia suele manifestarse como demora, buscar más información o perfección, o posponer hasta que las condiciones sean perfectas. También puede esconder una prioridad: protegerte para no cargar con expectativas ajenas.
+Tu Sol muy cerca de Júpiter en Cáncer en la casa 11 señala eso: hay una parte tuya que se expande y quiere liderar o cuidar dentro de una comunidad, pero también pone en juego el miedo a destacarte y a no cumplir la expectativa afectiva que esas personas tengan de ti. Es una posibilidad, no una certeza sobre la situación concreta.
 
-Prueba hoy algo pequeño y claro: fija un paso con plazo corto y tangible (p. ej. enviar un mensaje, hacer un boceto, pedir una reunión) y decide hacerlo aunque no esté “perfecto”. ¿Qué sería un primer paso que podrías completar en 24–48 horas?
+Si la decisión que evitas tiene que ver con un rol, una petición de apoyo o aceptar visibilidad, prueba esto hoy: imagina el peor escenario por cinco minutos y luego define un experimento de una semana, con un “sí” limitado en tiempo o alcance (una reunión, un mensaje, un taller de prueba). ¿En qué área concreta sientes ese tirón: trabajo, amistad, un colectivo o algo personal? Ese dato afina la lectura.
 
 > Qué mirar aquí: que no aparezca un socio, un proyecto, una empresa ni una ruptura que la pregunta no menciona; que proponga una hipótesis y pida el dato que falta; y que no le hable a «Inversiones».
