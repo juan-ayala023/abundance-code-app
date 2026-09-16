@@ -6,4 +6,4 @@
  * existía: la gente escribía y nadie leía. Aquí se importa; no se escribe a
  * mano en ninguna pantalla.
  */
-export const CORREO_SOPORTE = 'inversionesaoa7@gmail.com'
+export const CORREO_SOPORTE = 'contact@abundancecode.us'
