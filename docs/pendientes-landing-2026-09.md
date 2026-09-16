@@ -87,6 +87,12 @@ conviene resolverlo antes que cualquier otro punto de esta lista.
 
 ## 7 · Nuevo, 15 de septiembre: botón «Regenerar lectura» en el panel
 
+> **Hecho por la landing el 16 de septiembre.** El panel llama a su propio
+> backend (`POST /api/admin/portal-users/regenerar-lectura`), que reenvía la
+> petición a la app con el secreto compartido y devuelve al panel los 404/409
+> con el `message` sin tocar. Probado contra producción: 401 sin secreto, 404
+> con correo inexistente. Nada más que hacer por parte de la app.
+
 La lectura base y el retrato se escriben una vez y se guardan para siempre.
 Cada vez que se ajuste la voz con la que se escriben, quien ya tenía lectura
 sigue leyendo la vieja; pasó el 15 de septiembre con la revisión de Andrea. Para
