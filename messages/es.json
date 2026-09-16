@@ -32,11 +32,11 @@
     "yaCompre": "Ya compré"
   },
   "activar": {
-    "titulo": "Activar tu acceso",
-    "descripcion": "Entra con la cuenta de Google asociada al correo que usaste al comprar.",
-    "conToken": "Puedes entrar con cualquier cuenta de Google: tu enlace ya lleva la compra dentro y la vinculamos sola.",
-    "sinToken": "Si compraste con un correo distinto al de tu cuenta de Google, entra igualmente: te ayudamos a vincular la compra en el siguiente paso.",
-    "google": "Entrar con Google",
+    "titulo": "Bienvenida a Abundance Code",
+    "descripcion": "Crea tu cuenta o inicia sesión con el correo que usaste al comprar.",
+    "conToken": "Tu enlace de compra ya viene incluido: al entrar, tu acceso queda activado en esta cuenta.",
+    "sinToken": "Entres por correo o por Google, llegas a la misma cuenta: la del correo con el que compraste.",
+    "google": "Continuar con Google",
     "conectando": "Conectando…",
     "errorGoogle": "No pudimos conectar con Google. Revisa tu conexión y vuelve a intentarlo.",
     "errores": {
@@ -51,12 +51,13 @@
       "no": "No, entrar con otra cuenta"
     },
     "correo": {
-      "etiqueta": "¿No usas Google? Entra con tu correo",
-      "placeholder": "tucorreo@ejemplo.com",
-      "boton": "Enviarme un enlace de acceso",
+      "etiqueta": "Tu correo",
+      "placeholder": "correo@ejemplo.com",
+      "boton": "Continuar",
       "enviando": "Enviando…",
-      "enviado": "Te enviamos un enlace a {correo}. Ábrelo desde este mismo navegador para entrar.",
-      "error": "No pudimos enviar el enlace. Revisa el correo y vuelve a intentarlo."
+      "enviado": "Enviamos un enlace de acceso a {correo}. Ábrelo en este mismo navegador para entrar.",
+      "error": "No pudimos enviar el enlace. Revisa el correo y vuelve a intentarlo.",
+      "enviadoTitulo": "Revisa tu correo"
     },
     "o": "o"
   },

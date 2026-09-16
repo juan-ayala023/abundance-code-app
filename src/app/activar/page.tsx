@@ -146,7 +146,15 @@ export default async function ActivarPage({
         </p>
       ) : null}
 
-      <GoogleSignInButton next={destinoTrasLogin} />
+      {/*
+        El correo es el camino principal: es lo que la persona escribió al
+        comprar. Google queda como alternativa. Los dos llevan a la misma
+        cuenta —Supabase une identidades con el mismo correo verificado— y
+        ninguno concede nada por escribir un correo: hay que abrir el enlace
+        que llega a ese buzón, o autenticarse con Google, para demostrar que
+        es suyo.
+      */}
+      <EmailSignInForm next={destinoTrasLogin} />
 
       <div className="flex items-center gap-4 text-xs uppercase tracking-widest opacity-50">
         <span className="h-px flex-1 bg-borde" />
@@ -154,15 +162,9 @@ export default async function ActivarPage({
         <span className="h-px flex-1 bg-borde" />
       </div>
 
-      {/* Para quien no tiene Google. Mismo destino, mismo callback. */}
-      <EmailSignInForm next={destinoTrasLogin} />
+      <GoogleSignInButton next={destinoTrasLogin} />
 
-      {/*
-        Con token, el correo deja de importar: el enlace ya demuestra el pago y
-        la compra se vincula a la cuenta con la que entre, sea cual sea. Decirlo
-        evita que alguien abandone creyendo que se equivocó de cuenta.
-      */}
-      <p className="text-sm opacity-70">{token ? t('conToken') : t('sinToken')}</p>
+      <p className="text-center text-sm opacity-70">{token ? t('conToken') : t('sinToken')}</p>
     </main>
   )
 }

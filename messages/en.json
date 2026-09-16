@@ -32,11 +32,11 @@
     "yaCompre": "I already bought"
   },
   "activar": {
-    "titulo": "Activate your access",
-    "descripcion": "Sign in with the Google account for the email you used to buy.",
-    "conToken": "You can sign in with any Google account: your link already carries your purchase, and we'll link it for you.",
-    "sinToken": "If you bought with a different email than your Google account, sign in anyway: we'll help you link your purchase in the next step.",
-    "google": "Sign in with Google",
+    "titulo": "Welcome to Abundance Code",
+    "descripcion": "Create your account or sign in with the email you used to purchase.",
+    "conToken": "Your purchase link is included: once you sign in, your access is activated on this account.",
+    "sinToken": "Whether you sign in by email or with Google, you reach the same account: the one for the email you purchased with.",
+    "google": "Continue with Google",
     "conectando": "Connecting…",
     "errorGoogle": "We couldn't reach Google. Check your connection and try again.",
     "errores": {
@@ -51,12 +51,13 @@
       "no": "No, sign in with another account"
     },
     "correo": {
-      "etiqueta": "Not using Google? Sign in with your email",
-      "placeholder": "you@example.com",
-      "boton": "Send me a sign-in link",
+      "etiqueta": "Your email",
+      "placeholder": "email@example.com",
+      "boton": "Continue",
       "enviando": "Sending…",
-      "enviado": "We sent a link to {correo}. Open it in this same browser to sign in.",
-      "error": "We could not send the link. Check the email and try again."
+      "enviado": "We sent a sign-in link to {correo}. Open it in this same browser to sign in.",
+      "error": "We could not send the link. Check the email and try again.",
+      "enviadoTitulo": "Check your email"
     },
     "o": "or"
   },
