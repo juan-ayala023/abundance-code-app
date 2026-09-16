@@ -84,3 +84,27 @@ conviene resolverlo antes que cualquier otro punto de esta lista.
 | Un token de prueba canjeable, o una compra de pruebas completa | Punto 2 |
 | Importe de renovación y, si existe, URL del precio de continuación | Punto 3 |
 | Correo de una suscripción de pruebas activa | Punto 4 |
+
+## 7 · Nuevo, 15 de septiembre: botón «Regenerar lectura» en el panel
+
+La lectura base y el retrato se escriben una vez y se guardan para siempre.
+Cada vez que se ajuste la voz con la que se escriben, quien ya tenía lectura
+sigue leyendo la vieja; pasó el 15 de septiembre con la revisión de Andrea. Para
+no depender de un `update` a mano, la app expone:
+
+```
+POST https://app.abundancecode.us/api/admin/regenerar-lectura
+Authorization: Bearer <APP_SHARED_SECRET>        (el mismo que /api/admin/usuarios)
+Content-Type: application/json
+{ "email": "persona@correo.com" }
+
+200 { "archivadas": ["lectura", "retrato"] }   retirada; se reescribe en su próxima visita
+404 { "message": "…" }                          sin cuenta, o sin datos de nacimiento
+409 { "message": "…" }                          no había lectura que retirar
+```
+
+No genera nada en la petición (tardaría más de un minuto): archiva la lectura,
+el retrato y la activación de hoy —la persona puede releer las versiones
+anteriores desde la app— y la siguiente visita los escribe con la voz vigente.
+En el panel bastaría un botón por usuario junto a los de `/api/admin/usuarios`,
+con confirmación, y mostrar el `message` si no es 200.
