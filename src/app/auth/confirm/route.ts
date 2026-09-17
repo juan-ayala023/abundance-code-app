@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
   const tokenHash = searchParams.get('token_hash')
   const type = searchParams.get('type') as EmailOtpType | null
-  const next = safeNextPath(searchParams.get('next'), '/portal')
+  const next = destinoDesde(searchParams.get('next'), origin)
 
   if (!tokenHash || !type) {
     console.warn('[auth/confirm] llamada sin token_hash o sin type')
@@ -59,6 +59,30 @@ export async function GET(request: NextRequest) {
       console.error('[auth/confirm] sin sesión después de verificar el enlace')
       return NextResponse.redirect(`${origin}/activar?error=sesion`)
   }
+}
+
+/**
+ * A dónde ir después de entrar.
+ *
+ * La plantilla manda `next={{ .RedirectTo }}`, y `RedirectTo` es la URL
+ * completa que pidió el cliente: `https://app…/auth/callback?next=/activar?token=…`.
+ * De ahí se saca el `next` interior (que es donde viaja el token de compra).
+ * Si llega una ruta relativa, se usa tal cual; cualquier otra cosa, al portal.
+ */
+function destinoDesde(valor: string | null, origin: string): string {
+  if (!valor) return '/portal'
+  if (valor.startsWith('/')) return safeNextPath(valor, '/portal')
+  try {
+    const url = new URL(valor)
+    if (url.origin === origin) {
+      const interior = url.searchParams.get('next')
+      if (interior) return safeNextPath(interior, '/portal')
+      return safeNextPath(url.pathname + url.search, '/portal')
+    }
+  } catch {
+    /* no es una URL */
+  }
+  return '/portal'
 }
 
 function resolveOrigin(request: NextRequest): string {
