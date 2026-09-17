@@ -14,6 +14,22 @@ import type { Cuerpo } from '@/lib/astrology/types'
 
 const parrafo = z.string().trim().min(1)
 
+/**
+ * Idioma en que se escribió un contenido, y sus traducciones guardadas.
+ *
+ * Lo que se genera se guarda una vez y no se reescribe. Pero la interfaz es
+ * bilingüe, y quien cambia a inglés veía los títulos en inglés y los párrafos
+ * en español (Andrea, 17 sept 2026). Ahora cada contenido recuerda en qué
+ * idioma nació (`idioma`; si falta, es anterior a este cambio: español) y
+ * puede llevar versiones traducidas (`traducciones`), que se piden desde la
+ * pantalla y se guardan al lado del original.
+ */
+const idiomaContenido = z.enum(['es', 'en'])
+const conIdioma = {
+  idioma: idiomaContenido.optional(),
+  traducciones: z.record(z.string(), z.record(z.string(), z.string())).optional(),
+}
+
 export const SECCIONES_LECTURA = [
   { clave: 'energiaPrincipal', titulo: 'Tu energía principal' },
   { clave: 'patronesAbundancia', titulo: 'Tus patrones de abundancia' },
@@ -26,7 +42,7 @@ export const SECCIONES_LECTURA = [
 
 export type ClaveSeccion = (typeof SECCIONES_LECTURA)[number]['clave']
 
-export const lecturaBaseSchema = z.object({
+const camposLectura = {
   /** Párrafo de apertura: «Resumen de tu Código Personal». */
   resumen: parrafo,
   energiaPrincipal: parrafo,
@@ -36,9 +52,17 @@ export const lecturaBaseSchema = z.object({
   senalesPersonales: parrafo,
   fortalezas: parrafo,
   recomendacionInicial: parrafo,
+}
+
+/** Solo el texto de una lectura: lo que se traduce y lo que se muestra. */
+export const lecturaTextoSchema = z.object({
+  ...camposLectura,
   /** Desarrollo largo, tras «Leer análisis completo». Opcional. */
   analisisCompleto: parrafo.optional(),
 })
+export type LecturaTexto = z.infer<typeof lecturaTextoSchema>
+
+export const lecturaBaseSchema = lecturaTextoSchema.extend(conIdioma)
 
 export type LecturaBase = z.infer<typeof lecturaBaseSchema>
 
@@ -52,9 +76,13 @@ export type LecturaBase = z.infer<typeof lecturaBaseSchema>
  * El de arriba sigue admitiendo lecturas sin `analisisCompleto`, porque valida
  * lo que ya está guardado y no todo tiene por qué haberse generado igual.
  */
-export const lecturaGeneradaSchema = lecturaBaseSchema.extend({
+export const lecturaGeneradaSchema = z.object({
+  ...camposLectura,
   analisisCompleto: parrafo,
 })
+
+/** Para traducir una lectura guardada sin `analisisCompleto`. */
+export const lecturaSinAnalisisSchema = z.object(camposLectura)
 
 export const activacionDiariaSchema = z.object({
   mensajePrincipal: parrafo,
@@ -62,6 +90,8 @@ export const activacionDiariaSchema = z.object({
   queEvitar: parrafo,
   queActivar: parrafo,
   preguntaReflexion: parrafo,
+  /** En qué idioma se escribió. Si falta, español (anterior al cambio). */
+  idioma: idiomaContenido.optional(),
 })
 
 export type ActivacionDiaria = z.infer<typeof activacionDiariaSchema>
@@ -121,11 +151,14 @@ const seccionesSinAscendente = {
  * exacta de nacimiento, y sin ella la carta se calcula `partial`. Un retrato sin
  * esa sección es un retrato completo para esa persona, no uno a medias.
  */
-export const retratoSchema = z.object({
+export const retratoTextoSchema = z.object({
   apertura: parrafo,
   ...seccionesSinAscendente,
   ascendente: parrafo.optional(),
 })
+export type RetratoTexto = z.infer<typeof retratoTextoSchema>
+
+export const retratoSchema = retratoTextoSchema.extend(conIdioma)
 
 export type Retrato = z.infer<typeof retratoSchema>
 

@@ -53,13 +53,22 @@ export async function asegurarActivacion(
     .eq('day_number', dia)
     .maybeSingle()
 
+  const idioma = await idiomaActual()
+
   if (existente) {
     const contenido = activacionDiariaSchema.safeParse(existente.content)
-    if (contenido.success) {
+    /*
+     * La activación es de un día: si se escribió en otro idioma que el que la
+     * persona usa ahora, se vuelve a escribir en el suyo en vez de enseñarle
+     * títulos en inglés con párrafos en español.
+     */
+    if (contenido.success && (contenido.data.idioma ?? 'es') === idioma) {
       return { id: existente.id, contenido: contenido.data, leidaEn: existente.read_at }
     }
-    // Guardada con una forma que ya no encaja: se regenera en vez de romper.
-    console.error('[activacion] contenido guardado inválido', { portalId, dia })
+    if (!contenido.success) {
+      // Guardada con una forma que ya no encaja: se regenera en vez de romper.
+      console.error('[activacion] contenido guardado inválido', { portalId, dia })
+    }
   }
 
   const transitos = await transitosDeHoy(carta)
@@ -74,8 +83,9 @@ export async function asegurarActivacion(
       dia,
       total,
       fecha,
-      idioma: await idiomaActual(),
+      idioma,
     })
+    contenido = { ...contenido, idioma }
   } catch (error) {
     console.error('[activacion] no se pudo generar', { portalId, dia, error })
     return null

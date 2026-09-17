@@ -7,7 +7,8 @@ import { cartaSchema } from '@/lib/astrology/schema'
 import type { Database } from '@/lib/supabase/database.types'
 
 import { generarLecturaBase } from './generar'
-import { lecturaBaseSchema, type LecturaBase } from './schemas'
+import { lecturaBaseSchema, lecturaTextoSchema, type LecturaBase, type LecturaTexto } from './schemas'
+import type { Idioma } from '@/i18n/idioma'
 import { nombreDePila } from './voz'
 
 /**
@@ -32,6 +33,23 @@ export type PortalParaLectura = {
 }
 
 export const COLUMNAS_LECTURA = 'id, full_name, chart, base_reading'
+
+/**
+ * La lectura en el idioma de la interfaz, si existe.
+ *
+ * Devuelve el texto que hay que enseñar y si es el original o una traducción
+ * guardada. `null` significa que hay que traducirla (o mostrar el original con
+ * el aviso y el botón).
+ */
+export function lecturaEnIdioma(
+  lectura: LecturaBase,
+  idioma: Idioma,
+): { texto: LecturaTexto; original: boolean } | null {
+  const escritaEn = lectura.idioma ?? 'es'
+  if (escritaEn === idioma) return { texto: lectura, original: true }
+  const guardada = lecturaTextoSchema.safeParse(lectura.traducciones?.[idioma])
+  return guardada.success ? { texto: guardada.data, original: false } : null
+}
 
 export async function asegurarLecturaBase(
   supabase: Cliente,

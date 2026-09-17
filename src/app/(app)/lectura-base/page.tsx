@@ -15,9 +15,32 @@ import { Tarjeta } from '@/components/layout/tarjeta'
 import { AnalisisCompleto } from '@/components/lectura/analisis-completo'
 import { VersionesAnteriores } from '@/components/lectura/versiones-anteriores'
 import type { Carta } from '@/lib/astrology/types'
+import { AvisoIdioma } from '@/components/lectura/aviso-idioma'
+import { lecturaEnIdioma } from '@/lib/lectura/portal'
 import { SECCIONES_LECTURA, lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 import { fechaDeCalendario, horaDeReloj } from '@/lib/time/formato'
+
+import { traducirLecturaActual } from './actions'
+
+/* Un párrafo largo del modelo se parte en dos o tres cortos para leer en
+   pantalla: 85–90 palabras seguidas a 14 px era lo que Andrea vio. */
+function parrafos(texto: string): string[] {
+  const frases = texto.split(/(?<=[.!?…»])\s+(?=[A-ZÁÉÍÓÚÑ¿¡«])/)
+  const bloques: string[] = []
+  let actual = ''
+  for (const frase of frases) {
+    const candidato = actual ? `${actual} ${frase}` : frase
+    if (candidato.length > 320 && actual) {
+      bloques.push(actual)
+      actual = frase
+    } else {
+      actual = candidato
+    }
+  }
+  if (actual) bloques.push(actual)
+  return bloques
+}
 
 export const metadata: Metadata = {
   title: 'Tu lectura base · Abundance Code',
@@ -51,14 +74,19 @@ export default async function LecturaBasePage() {
   const tCarta = await getTranslations('carta')
   const idioma = await idiomaActual()
 
-  return (
-    <Contenedor>
-      <EncabezadoPagina
-        titulo={t('titulo')}
-        descripcion={t('descripcion')}
-        volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
-      />
+  /* Qué texto se enseña: el original si está en el idioma de la interfaz, la
+     traducción guardada si la hay, o el original con el aviso para pedirla. */
+  const version = lectura.success ? lecturaEnIdioma(lectura.data, idioma) : null
+  const texto = version?.texto ?? (lectura.success ? lectura.data : null)
+  const escritaEn = lectura.success ? (lectura.data.idioma ?? 'es') : idioma
 
+  /*
+    Orden de la página (Andrea, 17 sept 2026): primero el resumen y las
+    secciones —lo que la persona compró—, y la rueda con la tabla al final,
+    plegadas. Antes el primer párrafo interpretativo empezaba a 1.750 px, tras
+    la carta entera. La página /carta sigue priorizando el gráfico.
+  */
+  const bloqueCarta = (
       <Tarjeta className="flex flex-col gap-6 p-8">
         {carta ? (
           /*
@@ -87,59 +115,88 @@ export default async function LecturaBasePage() {
           </>
         )}
       </Tarjeta>
+  )
 
-      {lectura.success ? (
+  return (
+    <Contenedor>
+      <EncabezadoPagina
+        titulo={t('titulo')}
+        descripcion={t('descripcion')}
+        volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
+      />
+
+      {lectura.success && texto ? (
         <>
-          <Tarjeta className="bg-oro-palido/40">
-            <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
-              {t('enEstaLectura')}
+          {!version ? (
+            <AvisoIdioma escritoEn={escritaEn} actual={idioma} traducir={traducirLecturaActual} />
+          ) : !version.original ? (
+            <p className="text-xs text-tinta-tenue">
+              {t('traducidaAviso', { idioma: idioma === 'es' ? 'inglés' : 'Spanish', destino: idioma === 'es' ? 'español' : 'English' })}
             </p>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {SECCIONES_LECTURA.map(({ clave }) => (
-                <li
-                  key={clave}
-                  className="rounded-full border border-borde bg-superficie px-3 py-1.5 text-xs text-tinta-suave"
-                >
-                  {t(`secciones.${clave}` as never)}
-                </li>
-              ))}
-            </ul>
-          </Tarjeta>
+          ) : null}
 
           <Tarjeta className="bg-oro-palido/40">
             <h2 className="flex items-center gap-3 text-2xl font-light">
               <Estrella />
               {t('resumen')}
             </h2>
-            {/* `max-w-prose`: el resumen es prosa suelta y a 1280 px daría
-                líneas de 180 caracteres. */}
-            <p className="mt-4 max-w-prose text-lg leading-relaxed text-tinta-suave">
-              {lectura.data.resumen}
-            </p>
+            <div className="mt-4 flex max-w-prose flex-col gap-3 text-lg leading-relaxed text-tinta-suave">
+              {parrafos(texto.resumen).map((p, i) => <p key={i}>{p}</p>)}
+            </div>
           </Tarjeta>
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {/* Índice: cada elemento lleva a su sección. */}
+          <nav aria-label={t('enEstaLectura')} className="rounded-2xl bg-oro-palido/40 px-5 py-4">
+            <p className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
+              {t('enEstaLectura')}
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {SECCIONES_LECTURA.map(({ clave }) => (
+                <li key={clave}>
+                  <a
+                    href={`#${clave}`}
+                    className="inline-block rounded-full border border-borde bg-superficie px-3 py-1.5 text-xs text-tinta-suave transition-colors hover:bg-fondo-hondo"
+                  >
+                    {t(`secciones.${clave}` as never)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Una columna de lectura, a 16 px: es texto para leer seguido, no tarjetas para comparar. */}
+          <div className="flex flex-col gap-6">
             {SECCIONES_LECTURA.map(({ clave }) => (
-              <Tarjeta key={clave} className="flex flex-col gap-3">
+              <Tarjeta key={clave} id={clave} className="flex scroll-mt-24 flex-col gap-3">
                 <h3 className="flex items-center gap-3 text-xl font-light">
                   <Estrella />
                   {t(`secciones.${clave}` as never)}
                 </h3>
-                <p className="text-sm leading-relaxed text-tinta-suave">
-                  {lectura.data[clave]}
-                </p>
+                <div className="flex max-w-prose flex-col gap-3 text-base leading-relaxed text-tinta-suave">
+                  {parrafos(texto[clave]).map((p, i) => <p key={i}>{p}</p>)}
+                </div>
               </Tarjeta>
             ))}
           </div>
 
-          {lectura.data.analisisCompleto ? (
-            <AnalisisCompleto texto={lectura.data.analisisCompleto} />
+          {texto.analisisCompleto ? (
+            <AnalisisCompleto texto={texto.analisisCompleto} />
           ) : null}
+
+          {/* La rueda y la tabla, al final y plegadas: siguen a un clic y en /carta. */}
+          <details className="group">
+            <summary className="cursor-pointer list-none rounded-2xl border border-borde bg-superficie px-5 py-4 text-sm font-medium transition-colors hover:bg-fondo-hondo">
+              <span className="group-open:hidden">{t('verCarta')}</span>
+              <span className="hidden group-open:inline">{t('ocultarCarta')}</span>
+            </summary>
+            <div className="mt-4">{bloqueCarta}</div>
+          </details>
 
           <VersionesAnteriores versiones={versiones ?? []} kind="lectura" />
         </>
       ) : (
         <>
+          {bloqueCarta}
           <AvisoPendiente>
             {t('noGenerada')}
           </AvisoPendiente>

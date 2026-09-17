@@ -5,12 +5,13 @@ import { generateObject } from 'ai'
 import { MODELO_LECTURA, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import type { Idioma } from '@/i18n/idioma'
+import { instruccionDeIdioma } from './idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
 import {
   retratoExactoSchema,
-  retratoParcialSchema,
+  retratoParcialSchema, type RetratoTexto,
   type Retrato,
 } from './schemas'
 
@@ -124,9 +125,27 @@ export async function generarRetrato(entrada: {
       razonamiento: usage.outputTokenDetails?.reasoningTokens,
     })
 
-    return object
+    return { ...object, idioma: entrada.idioma }
   } catch (error) {
     console.error('[retrato] falló la generación', error)
     throw new RetratoError('No pudimos preparar tu retrato ahora mismo.')
+  }
+}
+
+/** Traduce un retrato ya escrito, sección por sección. Ver `traducirLecturaBase`. */
+export async function traducirRetrato(retrato: RetratoTexto, idioma: Idioma): Promise<RetratoTexto> {
+  const { idioma: _i, traducciones: _t, ...texto } = retrato as RetratoTexto & { idioma?: unknown; traducciones?: unknown }
+  void _i; void _t
+  try {
+    const { object } = await generateObject({
+      model: modelo(MODELO_LECTURA),
+      schema: texto.ascendente ? retratoExactoSchema : retratoParcialSchema,
+      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} el retrato astrológico de una persona, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud. ${instruccionDeIdioma(idioma)}`,
+      prompt: JSON.stringify(texto),
+    })
+    return object
+  } catch (error) {
+    console.error('[retrato] falló la traducción', error)
+    throw new RetratoError('No pudimos traducir tu retrato ahora mismo.')
   }
 }

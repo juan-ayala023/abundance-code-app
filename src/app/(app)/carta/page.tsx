@@ -2,25 +2,21 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { Suspense } from 'react'
 
 import { idiomaActual } from '@/i18n/idioma'
 
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
 import { Contenedor } from '@/components/layout/contenedor'
-import { AvisoPendiente } from '@/components/layout/encabezado-pagina'
-import { Tarjeta } from '@/components/layout/tarjeta'
+import { AvisoIdioma } from '@/components/lectura/aviso-idioma'
 import { RetratoDeCarta } from '@/components/lectura/retrato'
+import { RetratoGeneracion } from '@/components/lectura/retrato-generacion'
+import { traducirRetratoActual } from './actions'
 import { VersionesAnteriores } from '@/components/lectura/versiones-anteriores'
-import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
-import { nivelDeAcceso } from '@/lib/access/nivel'
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
-import type { Carta } from '@/lib/astrology/types'
 import {
-  asegurarRetrato,
+  retratoEnIdioma,
   COLUMNAS_RETRATO,
-  type PortalParaRetrato,
 } from '@/lib/lectura/retrato'
 import { retratoSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
@@ -120,29 +116,28 @@ export default async function CartaPage() {
 
           {carta.precision === 'partial' && <AvisoSinHora />}
 
-          {/*
-            El retrato ya escrito se pinta directamente; el que hay que escribir
-            va detrás de un `<Suspense>`. La distinción importa en las dos
-            direcciones.
-
-            Hay que escribirlo la primera vez, y eso tarda más de un minuto. Sin
-            el límite, esa espera se la comería la página entera: quien abre su
-            carta vería el navegador girando durante minuto y medio sin ver nada
-            —ni la rueda, ni la tabla—, y lo normal es que se marchara antes.
-
-            Pero envolverlo SIEMPRE tampoco vale. Un componente asíncrono se
-            suspende aunque no tenga nada que esperar, así que quien ya tiene su
-            retrato guardado —o sea, todo el mundo a partir de la segunda
-            visita— recibiría primero los diez recuadros del esqueleto y luego el
-            texto. Un parpadeo de carga donde no se está cargando nada se lee
-            como que la página va mal.
-          */}
+          {/* El retrato guardado se pinta; el que falta se escribe a petición del
+              cliente (RetratoGeneracion), no durante el render. */}
           {retratoGuardado.success ? (
-            <RetratoDeCarta retrato={retratoGuardado.data} carta={carta} />
+            (() => {
+              const version = retratoEnIdioma(retratoGuardado.data, idioma)
+              return (
+                <>
+                  {!version ? (
+                    <AvisoIdioma
+                      escritoEn={retratoGuardado.data.idioma ?? 'es'}
+                      actual={idioma}
+                      traducir={traducirRetratoActual}
+                    />
+                  ) : null}
+                  <RetratoDeCarta retrato={version?.texto ?? retratoGuardado.data} carta={carta} />
+                </>
+              )
+            })()
           ) : (
-            <Suspense fallback={<RetratoPendiente />}>
-              <SeccionRetrato portal={portal} carta={carta} />
-            </Suspense>
+            /* Se escribe a petición del cliente, no durante el render: ver
+               `escribirRetrato` en ./actions.ts. */
+            <RetratoGeneracion />
           )}
 
           <VersionesAnteriores versiones={versiones ?? []} kind="retrato" />
@@ -154,69 +149,6 @@ export default async function CartaPage() {
   )
 }
 
-/**
- * El retrato que todavía hay que escribir.
- *
- * Solo se monta cuando no hay ninguno guardado: el que ya existe lo pinta la
- * página directamente. Va en su propio componente asíncrono porque es lo que
- * `<Suspense>` necesita para enseñar el resto de la pantalla mientras esto
- * tarda — el límite suspende a su hijo, no a su hermano.
- */
-async function SeccionRetrato({
-  portal,
-  carta,
-}: {
-  portal: PortalParaRetrato
-  carta: Carta
-}) {
-  const t = await getTranslations('retrato')
-
-  /*
-   * El nivel se comprueba ANTES de generar, igual que en `/activacion`: escribir
-   * un retrato que no se va a enseñar costaría dinero para nada.
-   *
-   * Nótese que quien ya tiene el suyo escrito **no pasa por aquí**, y eso es
-   * deliberado: lo que la persona ya leyó no se le retira aunque se dé de baja.
-   * Es la misma regla que protege la lectura base en `nivel.ts`.
-   */
-  const acceso = await resolveAccess()
-  if (nivelDeAcceso(entitlementDe(acceso)) === 'solo-lectura') {
-    return <AvisoPendiente>{t('requiereSuscripcion')}</AvisoPendiente>
-  }
-
-  const supabase = await createClient()
-  const retrato = await asegurarRetrato(supabase, portal)
-
-  if (!retrato) return <AvisoPendiente>{t('noDisponible')}</AvisoPendiente>
-
-  return <RetratoDeCarta retrato={retrato} carta={carta} />
-}
-
-/** Lo que se ve mientras el retrato se escribe, la primera vez. */
-async function RetratoPendiente() {
-  const t = await getTranslations('retrato')
-
-  return (
-    <section className="flex flex-col gap-6">
-      <h2 className="text-3xl font-light tracking-tight lg:text-4xl">{t('titulo')}</h2>
-
-      <AvisoPendiente>{t('pendiente')}</AvisoPendiente>
-
-      {/*
-        Diez recuadros vacíos con la forma que van a tener las tarjetas. No es
-        adorno: sin ellos la página da un salto de un aviso de tres líneas a diez
-        tarjetas de texto, y quien estaba leyendo la tabla de arriba pierde el
-        sitio. `motion-safe` porque un pulso continuo molesta a quien ha pedido
-        menos movimiento.
-      */}
-      <div aria-hidden="true" className="grid gap-5 md:grid-cols-2">
-        {Array.from({ length: 10 }, (_, indice) => (
-          <Tarjeta key={indice} className="h-44 motion-safe:animate-pulse" />
-        ))}
-      </div>
-    </section>
-  )
-}
 
 /**
  * Sin hora de nacimiento la carta existe, pero le faltan las casas, el

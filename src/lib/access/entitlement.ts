@@ -95,22 +95,6 @@ export const resolveAccess = cache(async function resolveAccess(): Promise<Acces
 
   if (!user?.email) return { kind: 'anonimo' }
 
-  /*
-   * El acceso de cortesía se resuelve **antes** de mirar la base, y a propósito.
-   *
-   * Si se resolviera después, haría falta una fila en `entitlements`, y esa fila
-   * la borraría la revalidación del día siguiente: la landing responde «no tiene
-   * acceso» a quien no ha comprado, que es exactamente el caso. Cortando aquí no
-   * hay nada que revalidar ni nada que revocar.
-   */
-  if (esCortesia(user.email)) {
-    return {
-      kind: 'concedido',
-      email: user.email,
-      entitlement: entitlementDeCortesia(user.email, user.id),
-    }
-  }
-
   // RLS deja ver la fila tanto si ya está vinculada por user_id como si solo
   // coincide el email. Por eso una sola lectura cubre los dos casos.
   const { data: entitlement } = await supabase
@@ -118,7 +102,30 @@ export const resolveAccess = cache(async function resolveAccess(): Promise<Acces
     .select('*')
     .maybeSingle()
 
-  if (!entitlement) return { kind: 'sin-compra', email: user.email }
+  /*
+   * La compra manda sobre la cortesía.
+   *
+   * Antes la cortesía se resolvía antes de mirar la base, y una cuenta de la
+   * lista que además compraba (Andrea, 16 sept 2026: pago confirmado en Stripe)
+   * veía «Acceso de cortesía · sin pago ni renovación que gestionar» y no tenía
+   * botón para gestionar una suscripción que sí se le iba a cobrar. Ahora: si
+   * hay fila de compra, es la compra la que se presenta, con su facturación y
+   * su portal de Stripe. La cortesía queda para quien no tiene fila, y como red
+   * si la compra deja de dar acceso (canceló pero sigue en la lista).
+   *
+   * No hace falta fila para la cortesía: si no hay compra no se toca la base,
+   * así que la revalidación diaria no tiene nada que borrar.
+   */
+  if (!entitlement) {
+    if (esCortesia(user.email)) {
+      return {
+        kind: 'concedido',
+        email: user.email,
+        entitlement: entitlementDeCortesia(user.email, user.id),
+      }
+    }
+    return { kind: 'sin-compra', email: user.email }
+  }
 
   // Primera vez que este usuario entra tras comprar: se vincula la fila a su
   // cuenta para no depender del email más adelante (por si lo cambia).
@@ -129,6 +136,13 @@ export const resolveAccess = cache(async function resolveAccess(): Promise<Acces
   const vigente = await revalidarSiToca(entitlement)
 
   if (!tieneAcceso(vigente)) {
+    if (esCortesia(user.email)) {
+      return {
+        kind: 'concedido',
+        email: user.email,
+        entitlement: entitlementDeCortesia(user.email, user.id),
+      }
+    }
     return { kind: 'inactivo', email: user.email, entitlement: vigente }
   }
 

@@ -102,6 +102,15 @@ export function vozComun(idioma: Idioma, nombre: string | null): string {
     '- **Profundidad no es acumular sufrimiento.** Describes una tensión con precisión, le das espacio y conduces hacia comprensión, libertad de elegir y un paso posible. La conexión se sostiene por utilidad, no por dejar a la persona angustiada. Alterna profundidad, fortaleza, alivio y propuesta práctica: que no todo sea oscuro.',
     '- **Cierras con algo que se pueda llevar:** una reflexión o una acción pequeña, distinta cada vez. Varías la estructura entre secciones y entre lecturas para que dos textos no parezcan el mismo molde.',
     '- Párrafos de dos o tres frases. Frases que se puedan decir en voz alta; ni titulares, ni sentencias, ni bloques largos.',
+    /*
+     * Lo que Andrea vio en la primera lectura real (17 sept 2026): procesos,
+     * prototipos, «versión mínima en 40 minutos», «ceder un 5 % de control»,
+     * «si cumple 2 de 3 criterios». Sonaba a asesoría de productividad. La
+     * vida de la que se escribe es cotidiana y emocional; el trabajo entra
+     * solo si la persona lo trae.
+     */
+    '- **Vida cotidiana, no gestión.** Nada de vocabulario de productividad ni de empresa: ni procesos, métodos, prototipos, versiones mínimas, metas medibles, criterios numerados, porcentajes, plazos en minutos ni resultados tangibles. Un paso pequeño es «dejar una decisión sin resolver hasta mañana» o «pedir algo concreto a alguien», no una tarea con cronómetro. No conviertas cada tema en trabajo o carrera salvo que la persona lo traiga.',
+    '- **Ortografía cuidada en español:** «formula» (verbo) sin tilde, «aun así» sin tilde, «solo» sin tilde; tildes correctas en interrogativos y esdrújulas. Nada de anglicismos innecesarios.',
     '- Nombras las tensiones sin dramatizarlas y las fortalezas sin halagar. Nada de «tienes un don extraordinario» ni de «esto te va a costar la vida».',
     '- No atribuyes sensaciones físicas a planetas ni a posiciones («Saturno pesa en el pecho»). Un planeta explica un patrón, no un síntoma.',
   ].join('\n')

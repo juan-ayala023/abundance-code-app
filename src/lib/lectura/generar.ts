@@ -5,10 +5,11 @@ import { generateObject } from 'ai'
 import { MODELO_LECTURA, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import type { Idioma } from '@/i18n/idioma'
+import { instruccionDeIdioma } from './idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
-import { lecturaGeneradaSchema, type LecturaBase } from './schemas'
+import { lecturaGeneradaSchema, lecturaSinAnalisisSchema, type LecturaTexto, type LecturaBase } from './schemas'
 
 /**
  * Genera la lectura base a partir de la carta natal.
@@ -90,9 +91,33 @@ export async function generarLecturaBase(entrada: {
       razonamiento: usage.outputTokenDetails?.reasoningTokens,
     })
 
-    return object
+    return { ...object, idioma: entrada.idioma }
   } catch (error) {
     console.error('[lectura] falló la generación', error)
     throw new LecturaError('No pudimos generar tu lectura ahora mismo.')
+  }
+}
+
+/**
+ * Traduce una lectura ya escrita, conservando cada sección tal cual.
+ *
+ * No la reescribe: traducir es más barato y, sobre todo, no le cambia la
+ * lectura a la persona. El resultado se guarda en `traducciones[idioma]`.
+ */
+export async function traducirLecturaBase(lectura: LecturaTexto, idioma: Idioma): Promise<LecturaTexto> {
+  const conAnalisis = Boolean(lectura.analisisCompleto)
+  const { idioma: _i, traducciones: _t, ...texto } = lectura as LecturaTexto & { idioma?: unknown; traducciones?: unknown }
+  void _i; void _t
+  try {
+    const { object } = await generateObject({
+      model: modelo(MODELO_LECTURA),
+      schema: conAnalisis ? lecturaGeneradaSchema : lecturaSinAnalisisSchema,
+      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} una lectura astrológica personal, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud. ${instruccionDeIdioma(idioma)}`,
+      prompt: JSON.stringify(texto),
+    })
+    return object
+  } catch (error) {
+    console.error('[lectura] falló la traducción', error)
+    throw new LecturaError('No pudimos traducir tu lectura ahora mismo.')
   }
 }

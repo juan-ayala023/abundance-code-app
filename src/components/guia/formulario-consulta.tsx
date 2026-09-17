@@ -1,7 +1,7 @@
 'use client'
 
 import { ShieldCheck } from 'lucide-react'
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useFormStatus } from 'react-dom'
 
@@ -26,6 +26,8 @@ const MINIMO = 10
  * `restantes` es el contador al cargar la página. El límite de verdad lo aplica
  * la acción de servidor: esto es información para el usuario, no la defensa.
  */
+const CLAVE_BORRADOR = 'guia:borrador'
+
 export function FormularioConsulta({
   restantes,
   preguntaInicial = '',
@@ -43,8 +45,31 @@ export function FormularioConsulta({
   preguntaInicial?: string
 }) {
   const t = useTranslations('guia_form')
+  /*
+   * La pregunta se guarda en el navegador mientras se escribe. Si la pantalla
+   * se cae a medias (un corte de red al enviar), al recargar vuelve al cuadro:
+   * no hay que volver a escribirla.
+   */
   const [pregunta, setPregunta] = useState(preguntaInicial)
   const [estado, enviar] = useActionState(consultarGuia, ESTADO_INICIAL)
+
+  // Tras montar, y no en el estado inicial: el servidor no tiene sessionStorage
+  // y un valor distinto entre servidor y cliente rompería la hidratación.
+  useEffect(() => {
+    if (preguntaInicial) return
+    try {
+      const guardada = sessionStorage.getItem(CLAVE_BORRADOR)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restaura un borrador externo (sessionStorage) una sola vez
+      if (guardada) setPregunta(guardada)
+    } catch { /* sin almacenamiento */ }
+  }, [preguntaInicial])
+
+  useEffect(() => {
+    try {
+      if (estado.respuesta) sessionStorage.removeItem(CLAVE_BORRADOR)
+      else sessionStorage.setItem(CLAVE_BORRADOR, pregunta)
+    } catch { /* sin almacenamiento */ }
+  }, [pregunta, estado.respuesta])
 
   // Si acaba de responderse una consulta, ya se ha gastado.
   const disponibles = estado.respuesta ? Math.max(restantes - 1, 0) : restantes

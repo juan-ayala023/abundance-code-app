@@ -7,7 +7,8 @@ import { cartaSchema } from '@/lib/astrology/schema'
 import type { Database } from '@/lib/supabase/database.types'
 
 import { generarRetrato } from './generar-retrato'
-import { retratoSchema, type Retrato } from './schemas'
+import { retratoSchema, retratoTextoSchema, type Retrato, type RetratoTexto } from './schemas'
+import type { Idioma } from '@/i18n/idioma'
 import { nombreDePila } from './voz'
 
 /**
@@ -31,6 +32,17 @@ export type PortalParaRetrato = {
 }
 
 export const COLUMNAS_RETRATO = 'id, full_name, chart, chart_reading'
+
+/** El retrato en el idioma de la interfaz, si existe. Ver `lecturaEnIdioma`. */
+export function retratoEnIdioma(
+  retrato: Retrato,
+  idioma: Idioma,
+): { texto: RetratoTexto; original: boolean } | null {
+  const escritoEn = retrato.idioma ?? 'es'
+  if (escritoEn === idioma) return { texto: retrato, original: true }
+  const guardado = retratoTextoSchema.safeParse(retrato.traducciones?.[idioma])
+  return guardado.success ? { texto: guardado.data, original: false } : null
+}
 
 export async function asegurarRetrato(
   supabase: Cliente,

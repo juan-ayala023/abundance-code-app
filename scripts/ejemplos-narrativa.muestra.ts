@@ -90,6 +90,7 @@ it('genera los ejemplos de la narrativa nueva', async () => {
     guardado?.lectura ?? (await generarLecturaBase({ nombre: 'Laura', carta, idioma: 'es' }))
   partes.push('## 1 · Lectura personal (perfil «Laura Gómez»)', '')
   for (const [clave, texto] of Object.entries(lectura)) {
+    if (typeof texto !== 'string') continue   // idioma / traducciones no son secciones
     partes.push(`### ${clave} · ${contar(texto)} palabras`, '', texto, '')
   }
 

@@ -98,16 +98,15 @@ export async function GET(request: Request) {
     const email = normaliza(perfil.email)
     const compra = porEmail.get(email) ?? null
 
-    /* La cortesía se mira ANTES que la compra, igual que en `resolveAccess`: es
-       la puerta que se resuelve primero, así que decir otra cosa aquí sería
-       describir un acceso que no es el que la persona tiene. */
-    const acceso: AccesoDeUsuario = cortesias.has(email)
-      ? 'cortesia'
-      : compra
-        ? tieneAcceso(compra)
-          ? 'comprado'
-          : 'inactivo'
-        : 'sin-compra'
+    /* Mismo orden que `resolveAccess`: la compra manda; la cortesía solo cuenta
+       si no hay compra o si la compra ya no da acceso. */
+    const acceso: AccesoDeUsuario = compra && tieneAcceso(compra)
+      ? 'comprado'
+      : cortesias.has(email)
+        ? 'cortesia'
+        : compra
+          ? 'inactivo'
+          : 'sin-compra'
 
     return {
       id: perfil.id,

@@ -167,8 +167,14 @@ export async function guardarDatosNacimiento(
    */
   await asegurarCarta(supabase, portal)
 
-  // Quien corrigió y tenía lectura va directo a que se escriba la nueva.
-  redirect(editando && habiaLecturas ? '/generando' : '/portal')
+  /*
+   * Siempre a /generando: allí se escribe la lectura con progreso visible y
+   * salida si falla. Antes el alta nueva iba al portal, que al no encontrar
+   * lectura enseñaba «Tu lectura base no llegó a escribirse» —como si algo
+   * hubiera fallado— cuando en realidad nadie la había empezado (Andrea,
+   * 17 sept 2026). /generando manda a /lectura-base si ya existe.
+   */
+  redirect('/generando')
 }
 
 /** `time` de Postgres llega como `HH:MM:SS`; el formulario manda `HH:MM`. */
