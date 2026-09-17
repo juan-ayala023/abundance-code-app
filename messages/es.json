@@ -32,7 +32,7 @@
     "yaCompre": "Ya compré"
   },
   "activar": {
-    "titulo": "Bienvenida a Abundance Code",
+    "titulo": "Te damos la bienvenida a Abundance Code",
     "descripcion": "Crea tu cuenta o inicia sesión con el correo que usaste al comprar.",
     "conToken": "Tu enlace de compra ya viene incluido: al entrar, tu acceso queda activado en esta cuenta.",
     "sinToken": "Entres por correo o por Google, llegas a la misma cuenta: la del correo con el que compraste.",
@@ -128,8 +128,8 @@
     "nombreGuardado": "Tu nombre quedó guardado. Como tu nacimiento no cambió, tu carta y tus lecturas siguen siendo las mismas."
   },
   "portal": {
-    "bienvenida": "Bienvenido a tu Portal",
-    "bienvenidaConNombre": "Bienvenido a tu Portal, {nombre}",
+    "bienvenida": "Te damos la bienvenida a tu portal",
+    "bienvenidaConNombre": "Te damos la bienvenida a tu portal, {nombre}",
     "subtitulo": "Este es tu espacio privado de lectura, claridad y alineación.",
     "primerPaso": "Primer paso",
     "completaDatos": "Completa tus datos de nacimiento",
