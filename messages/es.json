@@ -219,8 +219,7 @@
       "queActivar": "Qué activar",
       "preguntaReflexion": "Pregunta de reflexión"
     },
-    "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
-    "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
+    "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada.",
     "siguiente": "Tu próxima activación se desbloquea mañana.",
     "reglaDia": "El día cambia a medianoche en tu hora local ({zona}); el contador de consultas de la guía cambia a la misma hora."
   },
@@ -239,27 +238,28 @@
     }
   },
   "generando": {
+    "duracion": "Suele tardar entre uno y tres minutos. Puedes dejar esta pantalla abierta.",
+    "bienvenidaTitulo": "Te damos la bienvenida a tu portal, {nombre}.",
+    "bienvenidaTituloSinNombre": "Te damos la bienvenida a tu portal.",
+    "bienvenidaTexto": "Tu carta y tu lectura personal ya están listas.",
+    "bienvenidaBoton": "Entrar a mi portal",
     "pasos": {
-      "carta": {
-        "titulo": "Calculando tu carta natal",
-        "descripcion": "Posicionando planetas y aspectos clave."
-      },
-      "patrones": {
-        "titulo": "Identificando tus patrones de abundancia",
-        "descripcion": "Reconociendo ciclos, tensiones y fortalezas personales."
-      },
-      "bloqueos": {
-        "titulo": "Analizando tus bloqueos internos",
-        "descripcion": "Comprendiendo lo que puede estar limitando tu expansión."
-      },
-      "guia": {
-        "titulo": "Preparando tu guía personalizada",
-        "descripcion": "Organizando la lectura creada para ti."
-      },
-      "portal": {
-        "titulo": "Activando tu portal privado",
-        "descripcion": "Abriendo tu espacio personal de lectura."
-      }
+          "carta": {
+                "titulo": "Calculando tu carta natal",
+                "descripcion": "Posicionando planetas, casas y aspectos."
+          },
+          "interpretando": {
+                "titulo": "Interpretando tu carta",
+                "descripcion": "Leyendo lo que dice de ti, pieza a pieza."
+          },
+          "lectura": {
+                "titulo": "Preparando tu lectura personal",
+                "descripcion": "Escribiendo tus patrones, tus fortalezas y tu primer paso."
+          },
+          "portal": {
+                "titulo": "Tu portal está listo",
+                "descripcion": "Abriendo tu espacio personal de lectura."
+          }
     },
     "error": "No hemos podido preparar tu lectura.",
     "errorTexto": "Vuelve a intentarlo en unos minutos; tus datos y tu carta están guardados.",
@@ -473,6 +473,13 @@
     "medioCielo": "Medio Cielo"
   },
   "onboarding": {
+    "dia": "Día",
+    "mes": "Mes",
+    "anio": "Año",
+    "fechaNoValida": "Esa fecha no existe. Revisa el día, el mes y el año.",
+    "horaDesconocidaCorto": "hora desconocida",
+    "confirmar": {"titulo": "Vamos a crear tu carta con estos datos, {nombre}:", "aviso": "Revisa que estén correctos. Después de crear tu carta, cualquier corrección deberá ser revisada por soporte.", "crear": "Confirmar y crear mi carta", "corregir": "Corregir un dato"},
+    "meses": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
     "titulo": "Tus datos de nacimiento",
     "descripcion": "Con esto calculamos tu carta natal. La hora y el lugar importan tanto como la fecha: determinan la posición exacta del cielo sobre ti.",
     "nombre": "Nombre completo",

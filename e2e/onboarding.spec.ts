@@ -32,7 +32,7 @@ test('buscar una ciudad muestra su zona horaria', async ({ page }) => {
 
   await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
 
-  const opcion = page.getByRole('option').first()
+  const opcion = page.getByRole('listbox').getByRole('option').first()
   await expect(opcion).toBeVisible({ timeout: 15_000 })
   await opcion.click()
 
@@ -40,44 +40,79 @@ test('buscar una ciudad muestra su zona horaria', async ({ page }) => {
   await expect(page.getByText('America/Bogota')).toBeVisible()
 })
 
-test('completar el formulario lleva al portal', async ({ page }) => {
+test('«Continuar» no se enciende hasta que los datos valen', async ({ page }) => {
+  await page.goto('/onboarding')
+
+  const continuar = page.getByRole('button', { name: 'Continuar' })
+  await expect(continuar).toBeDisabled()
+
+  await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByLabel('Día').fill('31')
+  await page.getByLabel('Mes').selectOption({ label: 'Febrero' })
+  await page.getByLabel('Año').fill('1992')
+
+  // 31 de febrero no existe: se dice, y el botón sigue apagado.
+  await expect(page.getByText(/esa fecha no existe/i)).toBeVisible()
+  await expect(continuar).toBeDisabled()
+})
+
+test('confirmar antes de crear la carta, y poder volver a corregir', async ({ page }) => {
+  /*
+   * La generación de la lectura cuesta dinero de verdad. La prueba llega hasta
+   * el momento de crearla —que es lo que se está probando— y corta la llamada
+   * a la acción del servidor.
+   */
+  await page.route('**/onboarding', async (route) => {
+    if (route.request().method() === 'POST') return route.abort()
+    return route.continue()
+  })
+
   await page.goto('/onboarding')
 
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
-  await page.getByLabel('Fecha de nacimiento').fill('1992-06-15')
+  await page.getByLabel('Día').fill('15')
+  await page.getByLabel('Mes').selectOption({ label: 'Junio' })
+  await page.getByLabel('Año').fill('1992')
   await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
 
   await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
-  const opcion = page.getByRole('option').first()
+  const opcion = page.getByRole('listbox').getByRole('option').first()
   await expect(opcion).toBeVisible({ timeout: 15_000 })
   await opcion.click()
 
   await page.getByRole('button', { name: 'Continuar' }).click()
 
-  await expect(page).toHaveURL(/\/portal/)
-  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/i })).toBeVisible()
+  // Lo que se va a crear, escrito en claro antes de crearlo.
+  await expect(page.getByText('15 de junio de 1992 · 08:30 · Bogotá', { exact: false })).toBeVisible()
+  await expect(page.getByText(/deberá ser revisada por soporte/i)).toBeVisible()
+
+  // Y se puede volver atrás sin perder lo escrito.
+  await page.getByRole('button', { name: 'Corregir un dato' }).click()
+  await expect(page.getByLabel('Día')).toHaveValue('15')
+  await expect(page.getByRole('button', { name: 'Continuar' })).toBeEnabled()
 })
 
 test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => {
   await page.goto('/onboarding')
 
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
-  await page.getByLabel('Fecha de nacimiento').fill('1992-06-15')
+  await page.getByLabel('Día').fill('15')
+  await page.getByLabel('Mes').selectOption({ label: 'Junio' })
+  await page.getByLabel('Año').fill('1992')
   await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
   // Se escribe la ciudad pero NO se elige de la lista: sin coordenadas ni zona
   // horaria no hay carta posible.
   await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
 
-  await page.getByRole('button', { name: 'Continuar' }).click()
-
+  // El botón ni siquiera se enciende: el error llega antes de intentarlo.
   await expect(page).toHaveURL(/\/onboarding/)
-  await expect(page.getByText(/elige una ciudad de la lista/i)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Continuar' })).toBeDisabled()
 })
 
 test('el portal saluda y ofrece completar los datos', async ({ page }) => {
   await page.goto('/portal')
 
-  await expect(page.getByRole('heading', { name: /Bienvenido a tu portal/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /bienvenida a tu portal/i })).toBeVisible()
 
   // Sin datos de nacimiento, lo primero que se ofrece es completarlos.
   await expect(
@@ -115,14 +150,23 @@ test('la carta que se dibuja es la real, calculada desde los datos guardados', a
   // Sin datos de nacimiento no hay carta: primero se completa el onboarding.
   await page.goto('/onboarding')
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
-  await page.getByLabel('Fecha de nacimiento').fill('1992-06-15')
+  await page.getByLabel('Día').fill('15')
+  await page.getByLabel('Mes').selectOption({ label: 'Junio' })
+  await page.getByLabel('Año').fill('1992')
   await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
   await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
-  const opcion = page.getByRole('option').first()
+  const opcion = page.getByRole('listbox').getByRole('option').first()
   await expect(opcion).toBeVisible({ timeout: 15_000 })
   await opcion.click()
   await page.getByRole('button', { name: 'Continuar' }).click()
-  await expect(page).toHaveURL(/\/portal/)
+  await page.getByRole('button', { name: 'Confirmar y crear mi carta' }).click()
+
+  /*
+   * Tras guardar se va a la pantalla de generación, que escribe la lectura.
+   * Aquí solo interesa la carta, así que no se espera a que termine: se va
+   * directo a /carta, que ya la tiene calculada.
+   */
+  await expect(page).toHaveURL(/\/generando/)
 
   await page.goto('/carta')
 

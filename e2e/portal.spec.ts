@@ -17,14 +17,24 @@ import {
 async function completarOnboarding(page: import('@playwright/test').Page) {
   await page.goto('/onboarding')
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
-  await page.getByLabel('Fecha de nacimiento').fill('1992-06-15')
+  await page.getByLabel('Día').fill('15')
+  await page.getByLabel('Mes').selectOption({ label: 'Junio' })
+  await page.getByLabel('Año').fill('1992')
   await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
   await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
-  const opcion = page.getByRole('option').first()
+  const opcion = page.getByRole('listbox').getByRole('option').first()
   await expect(opcion).toBeVisible({ timeout: 15_000 })
   await opcion.click()
   await page.getByRole('button', { name: 'Continuar' }).click()
-  await expect(page).toHaveURL(/\/portal/)
+  await page.getByRole('button', { name: 'Confirmar y crear mi carta' }).click()
+
+  /*
+   * El alta termina en la pantalla de generación, que escribe la lectura base.
+   * Las pruebas de aquí abajo no la necesitan: se va al portal en cuanto la
+   * carta está guardada, sin esperar al texto.
+   */
+  await expect(page).toHaveURL(/\/generando/)
+  await page.goto('/portal')
 }
 
 test('la navegación lateral lleva a todas las secciones', async ({ page }) => {
@@ -80,17 +90,26 @@ test('la lectura base enseña sus secciones aunque no esté generada', async ({ 
   await expect(page.getByRole('link', { name: /escribir mi lectura ahora/i })).toBeVisible()
 })
 
-test('la activación anuncia sus partes sin inventarlas', async ({ page }) => {
+test('si la activación falla, lo dice y no finge una lectura', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/activacion')
 
   /*
    * El servidor de estas pruebas corre sin clave de IA, así que la generación
-   * falla. Se comprueba que lo dice y que igualmente enseña de qué se compone
-   * una activación, en vez de dejar la pantalla en blanco.
+   * falla: reproduce el estado exacto que se revisó el 23 de septiembre.
+   *
+   * Antes esta pantalla pintaba los cinco títulos de la activación con el texto
+   * vacío debajo, y quien lo veía entendía que su lectura era eso. Ahora hay un
+   * aviso y un botón, y —esto es lo que de verdad se comprueba— **ningún
+   * título de sección**: nada que se pueda leer como una activación a medias.
    */
-  await expect(page.getByText(/no hemos podido preparar tu activación/i)).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Qué evitar' })).toBeVisible()
+  await expect(page.getByText(/tu lectura todavía no está lista/i)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Intentar de nuevo' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Volver a mi portal', exact: true })).toBeVisible()
+
+  for (const titulo of ['Qué observar', 'Qué evitar', 'Qué activar']) {
+    await expect(page.getByRole('heading', { name: titulo })).toHaveCount(0)
+  }
 })
 
 /**
@@ -129,8 +148,9 @@ test('la guía muestra el límite real y el aviso legal', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/guia')
 
-  // 3 al día, no 20: es lo que promete el producto al usuario.
-  await expect(page.getByText(/3 consultas por día/i)).toBeVisible()
+  // 3 al día, no 20: es lo que promete el producto al usuario. El contador se
+  // lee entero —«te quedan 3 de 3 consultas hoy»— y no por una frase suelta.
+  await expect(page.getByText(/de 3 consultas hoy/i)).toBeVisible()
 
   // El aviso legal cubre los guardrails de CLAUDE.md §8.
   await expect(page.getByText(/no reemplaza asesoría médica/i)).toBeVisible()
@@ -195,20 +215,27 @@ test('mi cuenta muestra el día del ciclo y la fecha de activación', async ({ p
   await expect(page.getByText('Fecha de activación')).toBeVisible()
 })
 
-test('generando refleja el progreso real, no un temporizador', async ({ page }) => {
+test('generando dice los pasos y el plazo, sin barra que no avanza', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/generando')
 
-  const barra = page.getByRole('progressbar', { name: /progreso de tu lectura/i })
-  await expect(barra).toBeVisible()
-
   /*
-   * La carta ya está calculada al terminar el onboarding, así que el primer
-   * paso de cinco está hecho de verdad: 20 %. Si esto fuera una animación, el
-   * valor dependería de cuándo se mire.
+   * El porcentaje se retiró en la revisión del 23 de septiembre: salía de un
+   * solo dato —si la carta estaba calculada— y se quedaba clavado en 20 % hasta
+   * que la pantalla cambiaba de golpe. Que no haya barra es parte de lo que se
+   * comprueba: si vuelve, vuelve el 20 % congelado.
    */
-  await expect(barra).toHaveAttribute('aria-valuenow', '20')
-  await expect(page.getByText('Paso 2 de 5')).toBeVisible()
+  await expect(page.getByRole('progressbar')).toHaveCount(0)
+
+  // Cuatro pasos, y el primero hecho de verdad: la carta ya está calculada.
+  await expect(page.getByRole('heading', { name: 'Calculando tu carta natal', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Interpretando tu carta', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Preparando tu lectura personal', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Tu portal está listo', exact: true })).toBeVisible()
+  await expect(page.getByText('Completado')).toHaveCount(1)
+
+  // Y cuánto tarda, que es lo que la persona quiere saber mientras espera.
+  await expect(page.getByText(/entre uno y tres minutos/i)).toBeVisible()
 
   /*
    * El servidor de estas pruebas corre sin clave de IA a propósito (ver
@@ -446,7 +473,7 @@ test('el portal enseña la rueda natal', async ({ page }) => {
   await completarOnboarding(page)
 
   await expect(page.getByRole('img', { name: /Carta natal/ })).toBeVisible()
-  await expect(page.getByRole('link', { name: /Ver mi carta completa/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Ver mi carta natal completa/ })).toBeVisible()
 })
 
 /**
@@ -462,8 +489,13 @@ test('el portal enseña la rueda natal', async ({ page }) => {
 test('la rueda va acompañada del Sol, la Luna y el Ascendente', async ({ page }) => {
   await completarOnboarding(page)
 
+  /*
+   * Por su papel de término de la lista y no por el texto suelto: los `<title>`
+   * de la rueda dicen lo mismo —es lo que oye un lector de pantalla al posarse
+   * sobre el glifo— y el selector encontraba dos elementos.
+   */
   for (const etiqueta of ['Sol', 'Luna', 'Ascendente']) {
-    await expect(page.getByText(etiqueta, { exact: true })).toBeVisible()
+    await expect(page.getByRole('term').filter({ hasText: etiqueta })).toBeVisible()
   }
 
   /*
@@ -499,7 +531,7 @@ test('el portal enseña el cielo de hoy y el equilibrio de la carta', async ({ p
   // El reparto por elementos, con su lectura en una frase.
   await expect(page.getByText('Tu equilibrio elemental')).toBeVisible()
   await expect(
-    page.getByText(/tu carta pesa en|reparte sus fuerzas/i),
+    page.getByText(/predomina en tu carta|no hay ningún planeta en|reparte sus fuerzas/i).first(),
   ).toBeVisible()
 })
 
@@ -518,7 +550,7 @@ test('el portal avisa cuando la lectura no llegó a escribirse', async ({ page }
   await completarOnboarding(page)
 
   await expect(
-    page.getByRole('heading', { name: /tu lectura base no llegó a escribirse/i }),
+    page.getByRole('heading', { name: /tu lectura base todavía no está escrita/i }),
   ).toBeVisible()
 
   await page.getByRole('link', { name: /escribirla ahora/i }).click()
@@ -608,7 +640,7 @@ test('el botón de idioma cambia la interfaz y se mantiene', async ({ page }) =>
   await completarOnboarding(page)
 
   // Arranca en español: es el idioma del producto original.
-  await expect(page.getByRole('heading', { name: /Bienvenido a tu Portal/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /bienvenida a tu portal/i })).toBeVisible()
 
   await page.getByRole('button', { name: 'English' }).click()
 
@@ -630,7 +662,7 @@ test('el botón de idioma cambia la interfaz y se mantiene', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'What decision am I avoiding?' })).toBeVisible()
 
   await page.goto('/generando')
-  await expect(page.getByText('Calculating your birth chart')).toBeVisible()
+  await expect(page.getByText('Calculating your natal chart')).toBeVisible()
 
   // Ninguna clave sin traducir asomando en la pantalla.
   await expect(page.getByText(/^[a-z_]+\.[a-zA-Z.]+$/)).toHaveCount(0)

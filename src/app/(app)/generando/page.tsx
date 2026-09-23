@@ -1,4 +1,4 @@
-import { BookOpen, Check, DoorOpen, Lock, Route, Sun } from 'lucide-react'
+import { BookOpen, Check, DoorOpen, Route, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
 import { Generacion } from '@/components/lectura/generacion'
 import { createClient } from '@/lib/supabase/server'
+import { nombreDePila } from '@/lib/lectura/voz'
 
 export const metadata: Metadata = {
   title: 'Preparando tu lectura · Abundance Code',
@@ -34,40 +35,33 @@ export const maxDuration = 300
 /** Solo los iconos: los textos viven en los diccionarios. */
 const PASOS = [
   { clave: 'carta', Icono: Sun },
-  { clave: 'patrones', Icono: Route },
-  { clave: 'bloqueos', Icono: Lock },
-  { clave: 'guia', Icono: BookOpen },
+  { clave: 'interpretando', Icono: Route },
+  { clave: 'lectura', Icono: BookOpen },
   { clave: 'portal', Icono: DoorOpen },
 ] as const
 
 /**
  * Pantalla de espera mientras se genera la lectura.
  *
- * De momento es estática: no hay nada que generar todavía. Cuando exista la
- * capa de IA, el progreso vendrá del estado real del trabajo — nunca de un
- * temporizador que simule avance, que es la forma habitual de que una barra
- * llegue al 99 % y se quede ahí.
+ * Cuatro pasos y ningún porcentaje. El que había salía de un solo dato —si la
+ * carta estaba calculada— así que se quedaba clavado en 20 % hasta que la
+ * página cambiaba de golpe: un progreso que no progresa miente sobre lo que
+ * está pasando, y la revisión del 23 de septiembre pidió quitarlo. Los pasos sí
+ * se marcan, y solo cuando están hechos de verdad.
  */
 export default async function GenerandoPage() {
   const supabase = await createClient()
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('birth_date, chart, base_reading')
+    .select('birth_date, chart, base_reading, full_name')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
   if (portal.base_reading) redirect('/lectura-base')
 
-  /*
-   * El progreso sale del estado real, no de un temporizador. El primer paso
-   * está hecho de verdad —la carta se calcula al terminar el onboarding— y los
-   * cuatro restantes dependen de la capa de interpretación, que no está
-   * conectada. Simular avance es justo lo que hace que una barra llegue al 99 %
-   * y se quede ahí para siempre.
-   */
+  /* El primer paso está hecho cuando hay carta. Lo demás lo cuenta <Generacion />. */
   const completados = portal.chart ? 1 : 0
-  const progreso = Math.round((completados / PASOS.length) * 100)
   const t = await getTranslations('generando')
 
   return (
@@ -83,26 +77,7 @@ export default async function GenerandoPage() {
       </header>
 
       <Tarjeta className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-baseline justify-between text-sm">
-            <span className="text-tinta-suave">
-              {t('paso', { n: Math.min(completados + 1, PASOS.length), total: PASOS.length })}
-            </span>
-            <span className="text-tinta-tenue">{progreso} %</span>
-          </div>
-          <div
-            role="progressbar"
-            aria-valuenow={progreso}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={t('progresoLabel')}
-            className="h-2 overflow-hidden rounded-full bg-oro-palido"
-          >
-            {/* Sin transición: el ancho refleja un estado guardado, no una
-                animación que sugiera un avance que no está ocurriendo. */}
-            <div className="h-full rounded-full bg-oro" style={{ width: `${progreso}%` }} />
-          </div>
-        </div>
+        <p className="text-sm text-tinta-suave">{t('duracion')}</p>
 
         <ol className="flex flex-col gap-5">
           {PASOS.map(({ clave, Icono }, indice) => {
@@ -124,7 +99,7 @@ export default async function GenerandoPage() {
         </ol>
       </Tarjeta>
 
-      <Generacion pasosTotales={PASOS.length} />
+      <Generacion pasosTotales={PASOS.length} nombre={nombreDePila(portal.full_name)} />
     </main>
   )
 }

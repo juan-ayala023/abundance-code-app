@@ -36,7 +36,14 @@ type Estado = 'generando' | 'lista' | 'error'
  * una—, así que reintentar nunca produce dos lecturas ni cobra dos veces. Solo
  * faltaba el botón.
  */
-export function Generacion({ pasosTotales }: { pasosTotales: number }) {
+export function Generacion({
+  pasosTotales,
+  nombre,
+}: {
+  pasosTotales: number
+  /** Nombre de pila, para la bienvenida. */
+  nombre: string | null
+}) {
   const t = useTranslations('generando')
   const router = useRouter()
   const [estado, setEstado] = useState<Estado>('generando')
@@ -66,8 +73,12 @@ export function Generacion({ pasosTotales }: { pasosTotales: number }) {
         if (!vigente) return
 
         if (lista) {
+          /*
+           * Antes se saltaba solo a la lectura. La revisión del 23 de
+           * septiembre pidió una bienvenida: el alta termina en una frase que
+           * cierra el proceso, y es la persona quien entra cuando quiere.
+           */
           setEstado('lista')
-          router.replace('/lectura-base')
         } else {
           setEstado('error')
         }
@@ -103,11 +114,28 @@ export function Generacion({ pasosTotales }: { pasosTotales: number }) {
     )
   }
 
+  if (estado === 'lista') {
+    return (
+      <section className="flex flex-col items-center gap-4 text-center" role="status">
+        <h2 className="text-2xl font-light">
+          {/* Dos frases y no una con la coma remendada: el nombre puede faltar. */}
+          {nombre ? t('bienvenidaTitulo', { nombre }) : t('bienvenidaTituloSinNombre')}
+        </h2>
+        <p className="text-tinta-suave">{t('bienvenidaTexto')}</p>
+        <button
+          type="button"
+          onClick={() => router.replace('/portal')}
+          className="rounded-full bg-oro px-8 py-3.5 font-medium text-white transition-colors hover:bg-oro-hondo"
+        >
+          {t('bienvenidaBoton')}
+        </button>
+      </section>
+    )
+  }
+
   return (
     <p role="status" aria-live="polite" className="text-center text-sm text-tinta-suave">
-      {estado === 'lista'
-        ? t('lista')
-        : t('esperando', { total: pasosTotales })}
+      {t('esperando', { total: pasosTotales })}
     </p>
   )
 }
