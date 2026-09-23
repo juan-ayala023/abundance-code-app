@@ -187,6 +187,62 @@ export const retratoParcialSchema = z.object({
   ...seccionesSinAscendente,
 })
 
+/* ───────────────────────── Pronóstico ─────────────────────────
+   Lo que el modelo escribe sobre cada ventana. Las fechas NO están aquí a
+   propósito: las pone `generarPronostico()` desde el cálculo, después de
+   generar. Si estuvieran en el esquema, el modelo las rellenaría, y las
+   rellenaría mal. */
+const ventanaEscritaSchema = z.object({
+  /** `v1`, `v2`… El identificador que se le dio en el calendario. */
+  id: z.string().trim().min(1),
+  /** Un título corto de lo que se activa. */
+  titulo: parrafo,
+  /** La configuración astrológica, en palabras corrientes. */
+  configuracion: parrafo,
+  /** Qué área de la vida se activa. */
+  area: parrafo,
+  /** De 2 a 3, ordenadas de más a menos probable. */
+  manifestaciones: z.array(parrafo).min(2).max(3),
+  /** Qué mirar durante esos días. */
+  queObservar: parrafo,
+})
+
+/** Lo que se le pide al modelo. */
+export const pronosticoGeneradoSchema = z.object({
+  /** Resumen del periodo y de la etapa de fondo. */
+  apertura: parrafo,
+  ventanas: z.array(ventanaEscritaSchema),
+  /** Posibilidades de menor respaldo, sin fecha. */
+  secundarias: z.array(parrafo),
+  /** Cierre: las ventanas por orden de importancia. */
+  cierre: parrafo,
+})
+
+/** Una ventana tal y como se guarda y se muestra: texto + fechas calculadas. */
+export const ventanaSchema = ventanaEscritaSchema.extend({
+  desde: z.string(),
+  hasta: z.string(),
+  fecha: z.string(),
+  nivel: z.enum(['alta', 'media', 'observar']),
+})
+
+export const pronosticoTextoSchema = z.object({
+  apertura: parrafo,
+  ventanas: z.array(ventanaSchema),
+  secundarias: z.array(parrafo),
+  cierre: parrafo,
+  idioma: idiomaContenido.optional(),
+})
+
+export type PronosticoTexto = z.infer<typeof pronosticoTextoSchema>
+
+/** Lo guardado: el texto más sus traducciones. */
+export const pronosticoGuardadoSchema = pronosticoTextoSchema.extend({
+  traducciones: z.record(z.string(), z.unknown()).optional(),
+})
+
+export type PronosticoGuardado = z.infer<typeof pronosticoGuardadoSchema>
+
 /** Duración del portal, en días. */
 export const DIAS_DE_PORTAL = 30
 

@@ -1,4 +1,4 @@
-import { Compass, MessageCircle, Sparkles, Sun } from 'lucide-react'
+import { CalendarDays, Compass, MessageCircle, Sparkles, Sun } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -243,6 +243,15 @@ export default async function PortalPage() {
           descripcion={t('activacionTexto')}
           href={tieneDatos ? '/activacion' : undefined}
           accion={tieneDatos ? t('leerActivacion') : undefined}
+          pendiente={tieneDatos ? undefined : t('trasDatosCorto')}
+        />
+
+        <TarjetaAccion
+          Icono={CalendarDays}
+          titulo={t('pronosticoTitulo')}
+          descripcion={t('pronosticoTexto')}
+          href={tieneDatos ? '/pronostico' : undefined}
+          accion={tieneDatos ? t('verPronostico') : undefined}
           pendiente={tieneDatos ? undefined : t('trasDatosCorto')}
         />
 

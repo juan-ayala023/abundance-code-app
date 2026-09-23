@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, LogOut, MessageCircle, Sparkles, Sun, User } from 'lucide-react'
+import { Home, LogOut, MessageCircle, Sparkles, Sun, User, CalendarDays } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -19,6 +19,7 @@ const ENLACES = [
   { href: '/portal', clave: 'portal', Icono: Home },
   { href: '/lectura-base', clave: 'lecturaBase', Icono: Sparkles },
   { href: '/activacion', clave: 'activacion', Icono: Sun },
+  { href: '/pronostico', clave: 'pronostico', Icono: CalendarDays },
   { href: '/guia', clave: 'guia', Icono: MessageCircle },
   { href: '/cuenta', clave: 'cuenta', Icono: User },
 ] as const

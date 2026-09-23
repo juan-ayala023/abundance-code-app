@@ -235,6 +235,50 @@ export type Database = {
         }
         Relationships: []
       }
+      forecasts: {
+        Row: {
+          content: Json
+          created_at: string
+          desde: string
+          eventos: Json | null
+          hasta: string
+          id: string
+          model: string | null
+          portal_id: string
+          tokens: number | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          desde: string
+          eventos?: Json | null
+          hasta: string
+          id?: string
+          model?: string | null
+          portal_id: string
+          tokens?: number | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          desde?: string
+          eventos?: Json | null
+          hasta?: string
+          id?: string
+          model?: string | null
+          portal_id?: string
+          tokens?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forecasts_portal_id_fkey"
+            columns: ["portal_id"]
+            isOneToOne: false
+            referencedRelation: "portals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reading_versions: {
         Row: {
           archived_at: string
