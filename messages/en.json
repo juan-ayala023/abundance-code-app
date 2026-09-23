@@ -191,13 +191,25 @@
     "resumen": "Summary of your Personal Code",
     "noGenerada": "Your reading isn't written yet. These are the sections it will have. If you just completed your details, it takes about a minute — come back in a moment.",
     "secciones": {
-      "energiaPrincipal": "Your main energy",
-      "patronesAbundancia": "Your abundance patterns",
-      "bloqueosInternos": "Your inner blocks",
-      "formaDecidir": "How you decide",
+      "energiaPrincipal": "Your core energy",
+      "mundoEmocional": "Your emotional world",
+      "patronesAbundancia": "Abundance and money",
+      "amorVinculos": "Love and relationships",
+      "bloqueosInternos": "Repeating patterns",
       "senalesPersonales": "Your personal signs",
+      "aprendizajeKarmico": "Karmic learning",
+      "formaDecidir": "How you decide",
       "fortalezas": "Your strengths",
-      "recomendacionInicial": "Your first recommendation"
+      "recomendacionInicial": "Your next step"
+    },
+    "ampliar": {
+      "titulo": "Your reading can grow: {n} new sections",
+      "texto": "After yours was written we added these sections: {secciones}. They're written from your same chart and don't change a word of what you already have.",
+      "boton": "Add the new sections",
+      "escribiendo": "Writing them…",
+      "error": "We couldn't write them right now. Try again in a few minutes; your reading is untouched.",
+      "reintentar": "Try again",
+      "requiereSuscripcion": "New sections are written with an active subscription. Your reading and your chart remain yours."
     },
     "generarAhora": "Write my reading now",
     "verContexto": "See the astrological context",
@@ -244,22 +256,22 @@
     "bienvenidaTexto": "Your chart and your personal reading are ready.",
     "bienvenidaBoton": "Enter my portal",
     "pasos": {
-          "carta": {
-                "titulo": "Calculating your natal chart",
-                "descripcion": "Placing planets, houses and key aspects."
-          },
-          "interpretando": {
-                "titulo": "Interpreting your chart",
-                "descripcion": "Reading what it says about you, piece by piece."
-          },
-          "lectura": {
-                "titulo": "Preparing your personal reading",
-                "descripcion": "Writing your patterns, your strengths and your first step."
-          },
-          "portal": {
-                "titulo": "Your portal is ready",
-                "descripcion": "Opening your personal reading space."
-          }
+      "carta": {
+        "titulo": "Calculating your natal chart",
+        "descripcion": "Placing planets, houses and key aspects."
+      },
+      "interpretando": {
+        "titulo": "Interpreting your chart",
+        "descripcion": "Reading what it says about you, piece by piece."
+      },
+      "lectura": {
+        "titulo": "Preparing your personal reading",
+        "descripcion": "Writing your patterns, your strengths and your first step."
+      },
+      "portal": {
+        "titulo": "Your portal is ready",
+        "descripcion": "Opening your personal reading space."
+      }
     },
     "error": "We couldn't prepare your reading.",
     "errorTexto": "Try again in a few minutes; your details and your chart are saved.",
@@ -302,6 +314,74 @@
     "revisarDatos": "Review my birth details",
     "tuCartaNatal": "Your birth chart"
   },
+  "casas": {
+    "titulo": "Your twelve houses",
+    "descripcion": "The twelve grounds of a life. Your chart says which sign each one starts in and which planets you have inside.",
+    "ayuda": "Tap a house to read it.",
+    "numero": "House {n}",
+    "sinHora": "Houses are calculated from your exact birth time. Your chart was made without it, so here you can read what each house is, but not which sign is yours in it: that would be made up.",
+    "cuspide": "Starts at {grado}° of {signo}",
+    "recorre": "It also runs through {signos}.",
+    "sinPlanetas": "No planets inside.",
+    "conPlanetas": "Inside you have {planetas}.",
+    "sistema": "Houses by {sistema}.",
+    "sistemas": {
+      "placidus": "Placidus",
+      "whole-sign": "whole sign",
+      "koch": "Koch",
+      "equal": "equal houses"
+    },
+    "lista": [
+      {
+        "nombre": "You and how you show up",
+        "texto": "It's how you walk into a room: what others notice before you speak. It also says how you start things. It may not match what you feel inside, and both are true."
+      },
+      {
+        "nombre": "Your money and your resources",
+        "texto": "What you earn, what you spend and what you believe your work is worth. Also what you take as yours: the talent you count on without asking permission."
+      },
+      {
+        "nombre": "Your voice and what you learn",
+        "texto": "How you speak, how you write and how you find things out. Siblings, the people close by and short trips live here: everyday life."
+      },
+      {
+        "nombre": "Your home and your roots",
+        "texto": "Where you come from and what makes you feel at home. It speaks of family and of the place you retreat to when the day is over."
+      },
+      {
+        "nombre": "What lights you up",
+        "texto": "What you do because it feels good: creating, playing, being liked, taking a risk. Children live here, and whatever is born from you and wants to be seen."
+      },
+      {
+        "nombre": "Your daily life and your body",
+        "texto": "Routine, the concrete work and how you take care of yourself. It speaks of what you hold up each day, and of what your body flags when you overdo it."
+      },
+      {
+        "nombre": "Your one-to-one bonds",
+        "texto": "Partners, business partners and whoever stands across from you. Here you can see what you look for in the other, and what they reflect back to you."
+      },
+      {
+        "nombre": "What you share and what you let go",
+        "texto": "Money that isn't only yours, intimacy and endings. It speaks of what changes hands and of what transforms when something is over."
+      },
+      {
+        "nombre": "What opens the world for you",
+        "texto": "Long journeys, study and what you believe. This is the search for meaning: what takes you out of familiar ground, outwardly or inwardly."
+      },
+      {
+        "nombre": "Your place in the world",
+        "texto": "Profession, recognition and what others expect of you. It speaks of the direction your life points in when you look at it from a distance."
+      },
+      {
+        "nombre": "Your people and what's ahead",
+        "texto": "Friends, groups and plans for the future. This is the support that isn't family, and what you walk toward alongside others."
+      },
+      {
+        "nombre": "Your inner world",
+        "texto": "What isn't visible: rest, silence and what you carry without naming it. It speaks of what closes so something else can begin."
+      }
+    ]
+  },
   "signos": {
     "aries": "Aries",
     "tauro": "Taurus",
@@ -317,29 +397,29 @@
     "piscis": "Pisces"
   },
   "pronostico": {
-      "titulo": "Your forecast",
-      "descripcion": "Which areas of your life become active over the next 30 days, when, and how they could show up.",
-      "seccion": "The forecast",
-      "aunNo": "You haven't requested your forecast yet",
-      "queEs": "We calculate the transits of the next 30 days over your chart and find the dates where they cluster. Then we explain which area each one activates and which manifestations are most likely. It takes two or three minutes and stays saved for the whole period.",
-      "escribir": "Prepare my forecast",
-      "escribiendo": "Calculating the transits of the period and writing your windows… it usually takes two to three minutes. Don't close this page.",
-      "noDisponible": "We could not prepare your forecast right now. You can try again.",
-      "reintentar": "Try again",
-      "sinCarta": "Your forecast will arrive as soon as your chart is calculated.",
-      "requiereSuscripcion": "The forecast is prepared with an active subscription. Your chart and your base reading remain yours.",
-      "apertura": "The period as a whole",
-      "area": "Area that becomes active",
-      "manifestaciones": "How it could show up",
-      "queObservar": "What to watch",
-      "secundarias": "Other possibilities, with less backing",
-      "cierre": "The moments that weigh most",
-      "nivel": {
-          "alta": "High intensity",
-          "media": "Medium intensity",
-          "observar": "To watch"
-      },
-      "aviso": "The dates come from calculating the real transits over your chart. What is described are possibilities with astrological backing, not guaranteed facts: the decision, and the reading of whatever happens, remain yours."
+    "titulo": "Your forecast",
+    "descripcion": "Which areas of your life become active over the next 30 days, when, and how they could show up.",
+    "seccion": "The forecast",
+    "aunNo": "You haven't requested your forecast yet",
+    "queEs": "We calculate the transits of the next 30 days over your chart and find the dates where they cluster. Then we explain which area each one activates and which manifestations are most likely. It takes two or three minutes and stays saved for the whole period.",
+    "escribir": "Prepare my forecast",
+    "escribiendo": "Calculating the transits of the period and writing your windows… it usually takes two to three minutes. Don't close this page.",
+    "noDisponible": "We could not prepare your forecast right now. You can try again.",
+    "reintentar": "Try again",
+    "sinCarta": "Your forecast will arrive as soon as your chart is calculated.",
+    "requiereSuscripcion": "The forecast is prepared with an active subscription. Your chart and your base reading remain yours.",
+    "apertura": "The period as a whole",
+    "area": "Area that becomes active",
+    "manifestaciones": "How it could show up",
+    "queObservar": "What to watch",
+    "secundarias": "Other possibilities, with less backing",
+    "cierre": "The moments that weigh most",
+    "nivel": {
+      "alta": "High intensity",
+      "media": "Medium intensity",
+      "observar": "To watch"
+    },
+    "aviso": "The dates come from calculating the real transits over your chart. What is described are possibilities with astrological backing, not guaranteed facts: the decision, and the reading of whatever happens, remain yours."
   },
   "retrato": {
     "escribir": "Write my portrait",
@@ -478,8 +558,26 @@
     "anio": "Year",
     "fechaNoValida": "That date doesn't exist. Check the day, month and year.",
     "horaDesconocidaCorto": "time unknown",
-    "confirmar": {"titulo": "We'll create your chart with these details, {nombre}:", "aviso": "Please check they are correct. After your chart is created, any correction must be reviewed by support.", "crear": "Confirm and create my chart", "corregir": "Change a detail"},
-    "meses": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "confirmar": {
+      "titulo": "We'll create your chart with these details, {nombre}:",
+      "aviso": "Please check they are correct. After your chart is created, any correction must be reviewed by support.",
+      "crear": "Confirm and create my chart",
+      "corregir": "Change a detail"
+    },
+    "meses": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
     "titulo": "Your birth details",
     "descripcion": "This is what we use to calculate your birth chart. Time and place matter as much as the date: they determine the exact position of the sky above you.",
     "nombre": "Full name",
@@ -519,9 +617,9 @@
     "error": "We could not generate the image. Please try again."
   },
   "errorPantalla": {
-      "titulo": "Something did not load properly",
-      "texto": "It may be a momentary connection issue. Whatever you had already saved — your reading, your questions — is still there.",
-      "reintentar": "Reload",
-      "portal": "Go to my portal"
+    "titulo": "Something did not load properly",
+    "texto": "It may be a momentary connection issue. Whatever you had already saved — your reading, your questions — is still there.",
+    "reintentar": "Reload",
+    "portal": "Go to my portal"
   }
 }

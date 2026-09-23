@@ -6,22 +6,24 @@ import { redirect } from 'next/navigation'
 import { idiomaActual, type Idioma } from '@/i18n/idioma'
 
 import { CartaDescargable } from '@/components/chart/boton-descargar'
+import { DoceCasas } from '@/components/chart/casas'
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
 import { Contenedor } from '@/components/layout/contenedor'
 import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { Estrella } from '@/components/layout/estrella'
 import { Tarjeta } from '@/components/layout/tarjeta'
+import { AmpliarLectura } from '@/components/lectura/ampliar-lectura'
 import { AnalisisCompleto } from '@/components/lectura/analisis-completo'
 import { VersionesAnteriores } from '@/components/lectura/versiones-anteriores'
 import type { Carta } from '@/lib/astrology/types'
 import { AvisoIdioma } from '@/components/lectura/aviso-idioma'
 import { lecturaEnIdioma } from '@/lib/lectura/portal'
-import { SECCIONES_LECTURA, lecturaBaseSchema } from '@/lib/lectura/schemas'
+import { SECCIONES_LECTURA, clavesQueFaltan, lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 import { fechaDeCalendario, horaDeReloj } from '@/lib/time/formato'
 
-import { traducirLecturaActual } from './actions'
+import { ampliarLecturaActual, traducirLecturaActual } from './actions'
 
 /* Un párrafo largo del modelo se parte en dos o tres cortos para leer en
    pantalla: 85–90 palabras seguidas a 14 px era lo que Andrea vio. */
@@ -45,6 +47,13 @@ function parrafos(texto: string): string[] {
 export const metadata: Metadata = {
   title: 'Tu lectura base · Abundance Code',
 }
+
+/**
+ * `ampliarLecturaActual()` se ejecuta dentro de esta ruta y llama al modelo.
+ * Sin esto, el límite por defecto la cortaría a mitad. Ver la nota larga en
+ * `generando/page.tsx`.
+ */
+export const maxDuration = 120
 
 export default async function LecturaBasePage() {
   const supabase = await createClient()
@@ -81,40 +90,50 @@ export default async function LecturaBasePage() {
   const escritaEn = lectura.success ? (lectura.data.idioma ?? 'es') : idioma
 
   /*
-    Orden de la página (Andrea, 17 sept 2026): primero el resumen y las
-    secciones —lo que la persona compró—, y la rueda con la tabla al final,
-    plegadas. Antes el primer párrafo interpretativo empezaba a 1.750 px, tras
-    la carta entera. La página /carta sigue priorizando el gráfico.
+    Las secciones que esta lectura tiene de verdad.
+
+    Tres se añadieron el 23 de septiembre de 2026 y las lecturas anteriores no
+    las traen. Se recorre lo que hay: enseñar el título de una sección vacía es
+    justo el fallo que se corrigió en la activación.
+  */
+  const secciones = texto
+    ? SECCIONES_LECTURA.filter(({ clave }) => {
+        const contenido = texto[clave]
+        return typeof contenido === 'string' && contenido.trim().length > 0
+      })
+    : []
+
+  /* Lo que le falta a una lectura anterior a las secciones nuevas. */
+  const faltan = lectura.success && carta ? clavesQueFaltan(lectura.data) : []
+
+  /*
+    Orden de la página (documento del 23 sept 2026): la carta primero y en
+    tamaño equilibrado, después las doce casas explicadas, después la lectura,
+    y al final el contexto técnico plegado.
+
+    La rueda va limitada a `max-w-sm` a propósito: el documento pide «no hacer
+    la carta gigante». A tamaño completo empujaba el primer párrafo de la
+    lectura por debajo de la pantalla en cualquier portátil, que es lo contrario
+    de lo que se compró.
   */
   const bloqueCarta = (
-      <Tarjeta className="flex flex-col gap-6 p-8">
-        {carta ? (
-          /*
-            Rueda y tabla en paralelo a partir de `xl`. Apiladas dejaban medio
-            ancho vacío en pantallas grandes y obligaban a bajar para relacionar
-            un planeta del dibujo con su fila. Por debajo de `xl` se apilan, que
-            es lo único legible en una columna estrecha.
-          */
-          <CartaDescargable
-            nombreArchivo={`carta-natal-${portal.birth_date}`}
-            cabecera={
-              <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
-            }
-          >
-            <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-              <NatalChart carta={carta} />
-              <TablaPosiciones carta={carta} />
-            </div>
-          </CartaDescargable>
-        ) : (
-          <>
+    <Tarjeta className="flex flex-col gap-6 p-8">
+      {carta ? (
+        <CartaDescargable
+          nombreArchivo={`carta-natal-${portal.birth_date}`}
+          cabecera={
             <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
-            <AvisoPendiente>
-              {t('cartaPendiente')}
-            </AvisoPendiente>
-          </>
-        )}
-      </Tarjeta>
+          }
+        >
+          <NatalChart carta={carta} className="mx-auto w-full max-w-sm" />
+        </CartaDescargable>
+      ) : (
+        <>
+          <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
+          <AvisoPendiente>{t('cartaPendiente')}</AvisoPendiente>
+        </>
+      )}
+    </Tarjeta>
   )
 
   return (
@@ -124,6 +143,10 @@ export default async function LecturaBasePage() {
         descripcion={t('descripcion')}
         volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
+
+      {bloqueCarta}
+
+      {carta ? <DoceCasas carta={carta} idioma={idioma} /> : null}
 
       {lectura.success && texto ? (
         <>
@@ -151,7 +174,7 @@ export default async function LecturaBasePage() {
               {t('enEstaLectura')}
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {SECCIONES_LECTURA.map(({ clave }) => (
+              {secciones.map(({ clave }) => (
                 <li key={clave}>
                   <a
                     href={`#${clave}`}
@@ -166,40 +189,46 @@ export default async function LecturaBasePage() {
 
           {/* Una columna de lectura, a 16 px: es texto para leer seguido, no tarjetas para comparar. */}
           <div className="flex flex-col gap-6">
-            {SECCIONES_LECTURA.map(({ clave }) => (
+            {secciones.map(({ clave }) => (
               <Tarjeta key={clave} id={clave} className="flex scroll-mt-24 flex-col gap-3">
                 <h3 className="flex items-center gap-3 text-xl font-light">
                   <Estrella />
                   {t(`secciones.${clave}` as never)}
                 </h3>
                 <div className="flex max-w-prose flex-col gap-3 text-base leading-relaxed text-tinta-suave">
-                  {parrafos(texto[clave]).map((p, i) => <p key={i}>{p}</p>)}
+                  {parrafos(texto[clave] as string).map((p, i) => <p key={i}>{p}</p>)}
                 </div>
               </Tarjeta>
             ))}
           </div>
 
-          {texto.analisisCompleto ? (
-            <AnalisisCompleto texto={texto.analisisCompleto} />
+          {faltan.length > 0 ? (
+            <AmpliarLectura
+              cuantas={faltan.length}
+              titulos={faltan.map((clave) => t(`secciones.${clave}` as never))}
+              ampliar={ampliarLecturaActual}
+            />
           ) : null}
 
-          {/* La rueda y la tabla, al final y plegadas: siguen a un clic y en /carta. */}
-          <details className="group">
-            <summary className="cursor-pointer list-none rounded-2xl border border-borde bg-superficie px-5 py-4 text-sm font-medium transition-colors hover:bg-fondo-hondo">
-              <span className="group-open:hidden">{t('verCarta')}</span>
-              <span className="hidden group-open:inline">{t('ocultarCarta')}</span>
-            </summary>
-            <div className="mt-4">{bloqueCarta}</div>
-          </details>
+          {/*
+            El contexto técnico, en un solo sitio y plegado.
+
+            Antes eran dos desplegables seguidos —la tabla de posiciones en uno
+            y el análisis en otro— que decían lo mismo con dos botones. Ahora la
+            tabla vive dentro del análisis: es de dónde sale lo que el análisis
+            cuenta.
+          */}
+          {texto.analisisCompleto || carta ? (
+            <AnalisisCompleto texto={texto.analisisCompleto}>
+              {carta ? <TablaPosiciones carta={carta} /> : null}
+            </AnalisisCompleto>
+          ) : null}
 
           <VersionesAnteriores versiones={versiones ?? []} kind="lectura" />
         </>
       ) : (
         <>
-          {bloqueCarta}
-          <AvisoPendiente>
-            {t('noGenerada')}
-          </AvisoPendiente>
+          <AvisoPendiente>{t('noGenerada')}</AvisoPendiente>
 
           {/*
             La salida del callejón.

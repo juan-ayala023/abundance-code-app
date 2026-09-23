@@ -192,12 +192,24 @@
     "noGenerada": "Tu lectura todavía no está escrita. Estas son las secciones que tendrá. Si acabas de completar tus datos, tarda alrededor de un minuto: vuelve a entrar en un momento.",
     "secciones": {
       "energiaPrincipal": "Tu energía principal",
-      "patronesAbundancia": "Tus patrones de abundancia",
-      "bloqueosInternos": "Tus bloqueos internos",
-      "formaDecidir": "Tu forma de decidir",
+      "mundoEmocional": "Tu mundo emocional",
+      "patronesAbundancia": "Abundancia y dinero",
+      "amorVinculos": "Amor y vínculos",
+      "bloqueosInternos": "Patrones repetidos",
       "senalesPersonales": "Tus señales personales",
+      "aprendizajeKarmico": "Aprendizaje kármico",
+      "formaDecidir": "Tu forma de decidir",
       "fortalezas": "Tus fortalezas",
-      "recomendacionInicial": "Tu recomendación inicial"
+      "recomendacionInicial": "Tu siguiente paso"
+    },
+    "ampliar": {
+      "titulo": "Tu lectura puede crecer: {n} apartados nuevos",
+      "texto": "Después de escribirse la tuya añadimos estos apartados: {secciones}. Se escriben sobre tu misma carta y no cambian ni una palabra de lo que ya tienes.",
+      "boton": "Añadir los apartados nuevos",
+      "escribiendo": "Escribiéndolos…",
+      "error": "No hemos podido escribirlos ahora mismo. Vuelve a intentarlo en unos minutos; tu lectura sigue intacta.",
+      "reintentar": "Intentar de nuevo",
+      "requiereSuscripcion": "Los apartados nuevos se escriben con una suscripción activa. Tu lectura y tu carta siguen siendo tuyas."
     },
     "generarAhora": "Escribir mi lectura ahora",
     "verContexto": "Ver el contexto astrológico",
@@ -244,22 +256,22 @@
     "bienvenidaTexto": "Tu carta y tu lectura personal ya están listas.",
     "bienvenidaBoton": "Entrar a mi portal",
     "pasos": {
-          "carta": {
-                "titulo": "Calculando tu carta natal",
-                "descripcion": "Posicionando planetas, casas y aspectos."
-          },
-          "interpretando": {
-                "titulo": "Interpretando tu carta",
-                "descripcion": "Leyendo lo que dice de ti, pieza a pieza."
-          },
-          "lectura": {
-                "titulo": "Preparando tu lectura personal",
-                "descripcion": "Escribiendo tus patrones, tus fortalezas y tu primer paso."
-          },
-          "portal": {
-                "titulo": "Tu portal está listo",
-                "descripcion": "Abriendo tu espacio personal de lectura."
-          }
+      "carta": {
+        "titulo": "Calculando tu carta natal",
+        "descripcion": "Posicionando planetas, casas y aspectos."
+      },
+      "interpretando": {
+        "titulo": "Interpretando tu carta",
+        "descripcion": "Leyendo lo que dice de ti, pieza a pieza."
+      },
+      "lectura": {
+        "titulo": "Preparando tu lectura personal",
+        "descripcion": "Escribiendo tus patrones, tus fortalezas y tu primer paso."
+      },
+      "portal": {
+        "titulo": "Tu portal está listo",
+        "descripcion": "Abriendo tu espacio personal de lectura."
+      }
     },
     "error": "No hemos podido preparar tu lectura.",
     "errorTexto": "Vuelve a intentarlo en unos minutos; tus datos y tu carta están guardados.",
@@ -302,6 +314,74 @@
     "revisarDatos": "Revisar mis datos de nacimiento",
     "tuCartaNatal": "Tu carta natal"
   },
+  "casas": {
+    "titulo": "Tus doce casas",
+    "descripcion": "Los doce terrenos de una vida. La carta dice en qué signo empieza cada uno y qué planetas tienes dentro.",
+    "ayuda": "Toca una casa para leerla.",
+    "numero": "Casa {n}",
+    "sinHora": "Las casas se calculan con la hora exacta de nacimiento. Tu carta se hizo sin ella, así que aquí se explica qué es cada casa, pero no se dice cuál es tu signo en ella: sería inventarlo.",
+    "cuspide": "Empieza en {grado}° de {signo}",
+    "recorre": "También recorre {signos}.",
+    "sinPlanetas": "Sin planetas dentro.",
+    "conPlanetas": "Dentro tienes {planetas}.",
+    "sistema": "Casas por {sistema}.",
+    "sistemas": {
+      "placidus": "Placidus",
+      "whole-sign": "signos enteros",
+      "koch": "Koch",
+      "equal": "casas iguales"
+    },
+    "lista": [
+      {
+        "nombre": "Tú y cómo te presentas",
+        "texto": "Es tu forma de entrar en cualquier sitio: lo que otros notan antes de que hables. Habla también de cómo empiezas las cosas. Puede no parecerse a lo que sientes por dentro, y las dos son verdad."
+      },
+      {
+        "nombre": "Tu dinero y tus recursos",
+        "texto": "Lo que ganas, lo que gastas y lo que crees que vale tu trabajo. También lo que das por tuyo: el talento con el que cuentas sin pedir permiso."
+      },
+      {
+        "nombre": "Tu voz y lo que aprendes",
+        "texto": "Cómo hablas, cómo escribes y cómo te enteras de las cosas. Aquí están los hermanos, la gente cercana y los trayectos cortos: la vida de todos los días."
+      },
+      {
+        "nombre": "Tu casa y tus raíces",
+        "texto": "De dónde vienes y qué te hace sentir en casa. Habla de la familia y del sitio donde te recoges cuando el día se acaba."
+      },
+      {
+        "nombre": "Lo que te enciende",
+        "texto": "Lo que haces porque te da gusto: crear, jugar, gustar, arriesgarte. Aquí están los hijos, lo que nace de ti y la parte que quiere que se la vea."
+      },
+      {
+        "nombre": "Tu día a día y tu cuerpo",
+        "texto": "La rutina, el trabajo concreto y cómo te cuidas. Habla de lo que sostienes cada día y de lo que tu cuerpo avisa cuando te pasas."
+      },
+      {
+        "nombre": "Tus vínculos de tú a tú",
+        "texto": "La pareja, los socios y quien se te pone enfrente. Aquí se ve qué buscas en el otro, y también qué te devuelve de ti."
+      },
+      {
+        "nombre": "Lo que compartes y lo que sueltas",
+        "texto": "El dinero que no es solo tuyo, la intimidad y los finales. Habla de lo que cambia de manos y de lo que se transforma cuando algo se acaba."
+      },
+      {
+        "nombre": "Lo que te abre el mundo",
+        "texto": "Los viajes largos, los estudios y lo que crees. Aquí está la búsqueda de sentido: lo que te saca de tu terreno conocido, por fuera o por dentro."
+      },
+      {
+        "nombre": "Tu lugar en el mundo",
+        "texto": "La profesión, el reconocimiento y lo que otros esperan de ti. Habla de la dirección a la que apunta tu vida cuando se mira de lejos."
+      },
+      {
+        "nombre": "Tu gente y lo que viene",
+        "texto": "Los amigos, los grupos y los planes a futuro. Aquí está el apoyo que no es de familia y aquello hacia lo que caminas con otros."
+      },
+      {
+        "nombre": "Tu mundo de dentro",
+        "texto": "Lo que no se ve: el descanso, el silencio y lo que cargas sin nombrarlo. Habla de lo que se cierra para que pueda empezar otra cosa."
+      }
+    ]
+  },
   "signos": {
     "aries": "Aries",
     "tauro": "Tauro",
@@ -317,29 +397,29 @@
     "piscis": "Piscis"
   },
   "pronostico": {
-      "titulo": "Tu pronóstico",
-      "descripcion": "Qué áreas de tu vida se activan en los próximos 30 días, cuándo y de qué forma podrían manifestarse.",
-      "seccion": "El pronóstico",
-      "aunNo": "Todavía no has pedido tu pronóstico",
-      "queEs": "Calculamos los tránsitos de los próximos 30 días sobre tu carta y encontramos las fechas en que se concentran. Después te explicamos qué área se activa en cada una y qué manifestaciones son más probables. Tarda dos o tres minutos y queda guardado durante todo el periodo.",
-      "escribir": "Preparar mi pronóstico",
-      "escribiendo": "Calculando los tránsitos del periodo y escribiendo tus ventanas… suele tardar entre dos y tres minutos. No cierres esta página.",
-      "noDisponible": "No hemos podido preparar tu pronóstico ahora mismo. Puedes intentarlo de nuevo.",
-      "reintentar": "Volver a intentarlo",
-      "sinCarta": "Tu pronóstico llegará en cuanto tu carta esté calculada.",
-      "requiereSuscripcion": "El pronóstico se prepara con una suscripción activa. Tu carta y tu lectura base siguen siendo tuyas.",
-      "apertura": "El periodo, en conjunto",
-      "area": "Área que se activa",
-      "manifestaciones": "Cómo podría manifestarse",
-      "queObservar": "Qué observar",
-      "secundarias": "Otras posibilidades, con menos respaldo",
-      "cierre": "Los momentos que más pesan",
-      "nivel": {
-          "alta": "Intensidad alta",
-          "media": "Intensidad media",
-          "observar": "Para observar"
-      },
-      "aviso": "Las fechas salen del cálculo de los tránsitos reales sobre tu carta. Lo que se describe son posibilidades con respaldo astrológico, no hechos garantizados: la decisión y la lectura de lo que ocurra siguen siendo tuyas."
+    "titulo": "Tu pronóstico",
+    "descripcion": "Qué áreas de tu vida se activan en los próximos 30 días, cuándo y de qué forma podrían manifestarse.",
+    "seccion": "El pronóstico",
+    "aunNo": "Todavía no has pedido tu pronóstico",
+    "queEs": "Calculamos los tránsitos de los próximos 30 días sobre tu carta y encontramos las fechas en que se concentran. Después te explicamos qué área se activa en cada una y qué manifestaciones son más probables. Tarda dos o tres minutos y queda guardado durante todo el periodo.",
+    "escribir": "Preparar mi pronóstico",
+    "escribiendo": "Calculando los tránsitos del periodo y escribiendo tus ventanas… suele tardar entre dos y tres minutos. No cierres esta página.",
+    "noDisponible": "No hemos podido preparar tu pronóstico ahora mismo. Puedes intentarlo de nuevo.",
+    "reintentar": "Volver a intentarlo",
+    "sinCarta": "Tu pronóstico llegará en cuanto tu carta esté calculada.",
+    "requiereSuscripcion": "El pronóstico se prepara con una suscripción activa. Tu carta y tu lectura base siguen siendo tuyas.",
+    "apertura": "El periodo, en conjunto",
+    "area": "Área que se activa",
+    "manifestaciones": "Cómo podría manifestarse",
+    "queObservar": "Qué observar",
+    "secundarias": "Otras posibilidades, con menos respaldo",
+    "cierre": "Los momentos que más pesan",
+    "nivel": {
+      "alta": "Intensidad alta",
+      "media": "Intensidad media",
+      "observar": "Para observar"
+    },
+    "aviso": "Las fechas salen del cálculo de los tránsitos reales sobre tu carta. Lo que se describe son posibilidades con respaldo astrológico, no hechos garantizados: la decisión y la lectura de lo que ocurra siguen siendo tuyas."
   },
   "retrato": {
     "escribir": "Escribir mi retrato",
@@ -478,8 +558,26 @@
     "anio": "Año",
     "fechaNoValida": "Esa fecha no existe. Revisa el día, el mes y el año.",
     "horaDesconocidaCorto": "hora desconocida",
-    "confirmar": {"titulo": "Vamos a crear tu carta con estos datos, {nombre}:", "aviso": "Revisa que estén correctos. Después de crear tu carta, cualquier corrección deberá ser revisada por soporte.", "crear": "Confirmar y crear mi carta", "corregir": "Corregir un dato"},
-    "meses": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+    "confirmar": {
+      "titulo": "Vamos a crear tu carta con estos datos, {nombre}:",
+      "aviso": "Revisa que estén correctos. Después de crear tu carta, cualquier corrección deberá ser revisada por soporte.",
+      "crear": "Confirmar y crear mi carta",
+      "corregir": "Corregir un dato"
+    },
+    "meses": [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre"
+    ],
     "titulo": "Tus datos de nacimiento",
     "descripcion": "Con esto calculamos tu carta natal. La hora y el lugar importan tanto como la fecha: determinan la posición exacta del cielo sobre ti.",
     "nombre": "Nombre completo",
@@ -519,9 +617,9 @@
     "error": "No pudimos generar la imagen. Vuelve a intentarlo."
   },
   "errorPantalla": {
-      "titulo": "Algo no ha cargado bien",
-      "texto": "Puede ser un corte momentáneo de conexión. Lo que ya habías guardado —tu lectura, tus consultas— sigue ahí.",
-      "reintentar": "Volver a cargar",
-      "portal": "Ir a mi portal"
+    "titulo": "Algo no ha cargado bien",
+    "texto": "Puede ser un corte momentáneo de conexión. Lo que ya habías guardado —tu lectura, tus consultas— sigue ahí.",
+    "reintentar": "Volver a cargar",
+    "portal": "Ir a mi portal"
   }
 }

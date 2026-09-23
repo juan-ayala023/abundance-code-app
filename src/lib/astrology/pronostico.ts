@@ -2,6 +2,7 @@ import 'server-only'
 
 import { DateTime } from 'luxon'
 
+import { casaDe } from './casas'
 import { createLocalChartProvider } from './local'
 import {
   ANGULO_ASPECTO,
@@ -201,31 +202,6 @@ export type Pronostico = {
 type Muestra = {
   fecha: string
   posiciones: Map<Cuerpo, { longitud: number; retrogrado: boolean; casa: number | null }>
-}
-
-/**
- * En qué casa natal cae una longitud.
- *
- * Las cúspides vienen en orden desde la 1. Una casa va de su cúspide a la
- * siguiente, cruzando 0° Aries cuando toca. Sin cúspides (carta parcial) no
- * hay casas y se devuelve null, que es la verdad: no se inventa.
- */
-export function casaDe(longitud: number, cuspides: number[]): number | null {
-  if (cuspides.length !== 12) return null
-
-  const grados = ((longitud % 360) + 360) % 360
-
-  for (let i = 0; i < 12; i += 1) {
-    const inicio = cuspides[i]!
-    const fin = cuspides[(i + 1) % 12]!
-    const cruzaCero = fin < inicio
-    const dentro = cruzaCero
-      ? grados >= inicio || grados < fin
-      : grados >= inicio && grados < fin
-    if (dentro) return i + 1
-  }
-
-  return null
 }
 
 /** Las posiciones del cielo a mediodía UTC de un día. */

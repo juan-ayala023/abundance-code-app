@@ -30,14 +30,30 @@ const conIdioma = {
   traducciones: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 }
 
+/**
+ * Las secciones de la lectura, en el orden en que se leen.
+ *
+ * El orden es el del documento del 23 de septiembre de 2026, que lo pidió
+ * explícitamente: del retrato general a lo concreto —dinero, vínculos, patrones—
+ * y termina en un paso que se pueda dar esta semana.
+ *
+ * Dos secciones de ese documento no existían y se añadieron: `mundoEmocional` y
+ * `amorVinculos`, más `aprendizajeKarmico`. Y dos que sí existen no estaban en
+ * su lista —`energiaPrincipal` y `senalesPersonales`—: se conservan, porque son
+ * contenido que la gente ya tiene comprado, colocadas junto a lo que más se les
+ * parece.
+ */
 export const SECCIONES_LECTURA = [
   { clave: 'energiaPrincipal', titulo: 'Tu energía principal' },
-  { clave: 'patronesAbundancia', titulo: 'Tus patrones de abundancia' },
-  { clave: 'bloqueosInternos', titulo: 'Tus bloqueos internos' },
-  { clave: 'formaDecidir', titulo: 'Tu forma de decidir' },
+  { clave: 'mundoEmocional', titulo: 'Tu mundo emocional' },
+  { clave: 'patronesAbundancia', titulo: 'Abundancia y dinero' },
+  { clave: 'amorVinculos', titulo: 'Amor y vínculos' },
+  { clave: 'bloqueosInternos', titulo: 'Patrones repetidos' },
   { clave: 'senalesPersonales', titulo: 'Tus señales personales' },
+  { clave: 'aprendizajeKarmico', titulo: 'Aprendizaje kármico' },
+  { clave: 'formaDecidir', titulo: 'Tu forma de decidir' },
   { clave: 'fortalezas', titulo: 'Tus fortalezas' },
-  { clave: 'recomendacionInicial', titulo: 'Tu recomendación inicial' },
+  { clave: 'recomendacionInicial', titulo: 'Tu siguiente paso' },
 ] as const
 
 export type ClaveSeccion = (typeof SECCIONES_LECTURA)[number]['clave']
@@ -54,9 +70,26 @@ const camposLectura = {
   recomendacionInicial: parrafo,
 }
 
+/**
+ * Las secciones añadidas el 23 de septiembre de 2026.
+ *
+ * Van aparte porque **al leer son opcionales y al generar no**. Las lecturas
+ * escritas antes de esa fecha no las tienen, y una lectura sin ellas es
+ * completa para quien la compró: exigirlas al validar dejaría esas lecturas sin
+ * poder abrirse. Toda lectura nueva sí las trae.
+ */
+const camposNuevos = {
+  mundoEmocional: parrafo,
+  amorVinculos: parrafo,
+  aprendizajeKarmico: parrafo,
+}
+
 /** Solo el texto de una lectura: lo que se traduce y lo que se muestra. */
 export const lecturaTextoSchema = z.object({
   ...camposLectura,
+  mundoEmocional: parrafo.optional(),
+  amorVinculos: parrafo.optional(),
+  aprendizajeKarmico: parrafo.optional(),
   /** Desarrollo largo, tras «Leer análisis completo». Opcional. */
   analisisCompleto: parrafo.optional(),
 })
@@ -78,11 +111,35 @@ export type LecturaBase = z.infer<typeof lecturaBaseSchema>
  */
 export const lecturaGeneradaSchema = z.object({
   ...camposLectura,
+  ...camposNuevos,
   analisisCompleto: parrafo,
 })
 
-/** Para traducir una lectura guardada sin `analisisCompleto`. */
-export const lecturaSinAnalisisSchema = z.object(camposLectura)
+/** Solo las secciones nuevas: para completar una lectura anterior a ellas. */
+export const seccionesNuevasSchema = z.object(camposNuevos)
+
+/** Las claves de las secciones que se añadieron después. */
+export const CLAVES_NUEVAS = Object.keys(camposNuevos) as (keyof typeof camposNuevos)[]
+
+/** Las de `CLAVES_NUEVAS` que una lectura guardada todavía no tiene. */
+export function clavesQueFaltan(lectura: Record<string, unknown>): string[] {
+  return CLAVES_NUEVAS.filter((clave) => {
+    const valor = lectura[clave]
+    return typeof valor !== 'string' || valor.trim().length === 0
+  })
+}
+
+/**
+ * Un esquema estricto con exactamente estas claves de texto.
+ *
+ * Para traducir hace falta pedir al modelo **las secciones que esa lectura
+ * tiene**, ni una más: con un esquema fijo, una lectura anterior a las
+ * secciones nuevas obligaba al modelo a escribirlas, y lo que devolvía no era
+ * una traducción sino texto inventado sobre una carta que no había visto.
+ */
+export function esquemaDeTexto(claves: string[]) {
+  return z.object(Object.fromEntries(claves.map((clave) => [clave, parrafo])))
+}
 
 export const activacionDiariaSchema = z.object({
   mensajePrincipal: parrafo,

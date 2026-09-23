@@ -7,13 +7,27 @@ import { useState } from 'react'
 import { Tarjeta } from '@/components/layout/tarjeta'
 
 /**
- * Desarrollo largo de la lectura, plegado por defecto.
+ * El contexto astrológico de la lectura, plegado por defecto.
+ *
+ * Es el último punto del orden que pidió el documento del 23 de septiembre:
+ * «contexto astrológico técnico desplegable». Dentro van las dos cosas que lo
+ * forman —el desarrollo largo que escribe el modelo y la tabla de posiciones de
+ * la que sale— en un solo desplegable. Antes eran dos botones seguidos que
+ * prometían lo mismo.
  *
  * Se usa `aria-expanded` y `aria-controls` en lugar de un `<details>` para
  * poder darle al disparador la forma de botón de la marca sin pelearse con el
  * estilo por defecto del navegador.
  */
-export function AnalisisCompleto({ texto }: { texto: string }) {
+export function AnalisisCompleto({
+  texto,
+  children,
+}: {
+  /** Puede faltar: una lectura anterior a este bloque no siempre lo trae. */
+  texto?: string
+  /** La tabla de posiciones, si hay carta. */
+  children?: React.ReactNode
+}) {
   const t = useTranslations('lectura')
   const [abierto, setAbierto] = useState(false)
 
@@ -41,12 +55,15 @@ export function AnalisisCompleto({ texto }: { texto: string }) {
       </button>
 
       {abierto ? (
-        <Tarjeta id="analisis-completo" className="w-full">
-          <div className="flex flex-col gap-4 leading-relaxed text-tinta-suave">
-            {texto.split('\n\n').map((parrafo, indice) => (
-              <p key={indice}>{parrafo}</p>
-            ))}
-          </div>
+        <Tarjeta id="analisis-completo" className="flex w-full flex-col gap-6">
+          {texto ? (
+            <div className="flex flex-col gap-4 leading-relaxed text-tinta-suave">
+              {texto.split('\n\n').map((parrafo, indice) => (
+                <p key={indice}>{parrafo}</p>
+              ))}
+            </div>
+          ) : null}
+          {children}
         </Tarjeta>
       ) : null}
     </div>

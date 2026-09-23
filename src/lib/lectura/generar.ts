@@ -12,7 +12,7 @@ import { instruccionDeIdioma } from './idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
-import { lecturaGeneradaSchema, lecturaSinAnalisisSchema, type LecturaTexto, type LecturaBase } from './schemas'
+import { esquemaDeTexto, lecturaGeneradaSchema, type LecturaTexto, type LecturaBase } from './schemas'
 
 /**
  * Genera la lectura base a partir de la carta natal.
@@ -39,10 +39,13 @@ export class LecturaError extends Error {}
 const ENCARGOS = [
   'resumen: cómo es esta persona por dentro y qué la mueve. Sin lista de rasgos: una imagen que se pueda recordar.',
   'energiaPrincipal: de qué está hecha su fuerza de fondo, qué la enciende y qué la agota. Abre con una escena cotidiana en la que esa energía se nota.',
+  'mundoEmocional: cómo siente y cómo se le nota —o no— por fuera. De qué necesita para calmarse y qué hace cuando algo le duele. Se apoya sobre todo en la Luna, su signo, su casa y sus aspectos, y en el agua de la carta.',
   'patronesAbundancia: cómo se relaciona con recibir, pedir, gastar y merecer. Qué le sale natural y dónde se le repite algo que ya no le sirve.',
-  'bloqueosInternos: la tensión que más la frena, dicha con precisión y sin dramatizar. Y hacia dónde se abre cuando esa tensión se entiende.',
-  'formaDecidir: cómo decide de verdad —rápido o rumiando, con la cabeza o con el cuerpo, a solas o pidiendo permiso— y qué la paraliza.',
+  'amorVinculos: cómo se acerca, qué busca en el otro y qué le cuesta sostener cuando el vínculo se hace cotidiano. Se apoya en Venus y Marte, en la casa 7 si la carta tiene hora, y en sus aspectos. Sin predecir relaciones ni describir lo que otra persona siente.',
+  'bloqueosInternos: la tensión que más se le repite, dicha con precisión y sin dramatizar. Y hacia dónde se abre cuando esa tensión se entiende.',
   'senalesPersonales: qué señales suele pasar por alto y cuáles merecen su atención: cansancios, entusiasmos, repeticiones. Concreto y observable.',
+  'aprendizajeKarmico: lo que esta vida le pide aprender, y que suele costarle. Se apoya en Saturno —su signo, su casa, sus aspectos duros— y en el reparto de elementos que le falta. Se dice como aprendizaje, nunca como castigo, deuda de otra vida o destino cerrado.',
+  'formaDecidir: cómo decide de verdad —rápido o rumiando, con la cabeza o con el cuerpo, a solas o pidiendo permiso— y qué la paraliza.',
   'fortalezas: lo que sabe hacer bien, deducido de lo mejor situado en su carta. Utilizable, no una lista de adjetivos.',
   'recomendacionInicial: un solo paso pequeño para esta semana, que salga de todo lo anterior. Una acción, no un propósito de vida.',
 ]
@@ -124,19 +127,89 @@ export async function generarLecturaBase(entrada: {
  * lectura a la persona. El resultado se guarda en `traducciones[idioma]`.
  */
 export async function traducirLecturaBase(lectura: LecturaTexto, idioma: Idioma): Promise<LecturaTexto> {
-  const conAnalisis = Boolean(lectura.analisisCompleto)
   const { idioma: _i, traducciones: _t, ...texto } = lectura as LecturaTexto & { idioma?: unknown; traducciones?: unknown }
   void _i; void _t
+
+  /* Las secciones que esta lectura tiene, y solo esas. Ver `esquemaDeTexto`. */
+  const claves = Object.entries(texto)
+    .filter(([, valor]) => typeof valor === 'string' && valor.trim().length > 0)
+    .map(([clave]) => clave)
+
   try {
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
-      schema: conAnalisis ? lecturaGeneradaSchema : lecturaSinAnalisisSchema,
+      schema: esquemaDeTexto(claves),
       system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} una lectura astrológica personal, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud. ${instruccionDeIdioma(idioma)}`,
       prompt: JSON.stringify(texto),
     })
-    return object
+    return object as LecturaTexto
   } catch (error) {
     console.error('[lectura] falló la traducción', error)
     throw new LecturaError('No pudimos traducir tu lectura ahora mismo.')
+  }
+}
+
+/**
+ * Escribe las secciones que se añadieron después, para una lectura ya escrita.
+ *
+ * El 23 de septiembre de 2026 la lectura pasó de siete secciones a diez. Quien
+ * ya tenía la suya se quedaría con tres huecos, y reescribirla entera no es una
+ * opción: la lectura es de esa persona, la ha leído y puede haberla guardado.
+ * Así que se escriben **solo las que faltan**, con la lectura actual delante
+ * para que no repitan lo que ya dice ni la contradigan.
+ */
+export async function escribirSeccionesNuevas(entrada: {
+  nombre: string | null
+  carta: Carta
+  idioma: Idioma
+  /** La lectura tal como está guardada, para no repetirse. */
+  lectura: LecturaTexto
+  /** Las claves que faltan. Nunca vacío. */
+  claves: string[]
+}): Promise<Record<string, string>> {
+  const nombre = entrada.nombre?.trim() || null
+
+  const yaEscrito = Object.entries(entrada.lectura)
+    .filter(([clave, valor]) => typeof valor === 'string' && clave !== 'analisisCompleto')
+    .map(([clave, valor]) => `${clave}: ${valor as string}`)
+    .join('\n\n')
+
+  const prompt = [
+    'CARTA NATAL YA CALCULADA:',
+    describirCarta(entrada.carta),
+    '',
+    'LO QUE SU LECTURA YA DICE (no lo repitas, no lo contradigas):',
+    yaEscrito,
+    '',
+    `Escribe únicamente estas secciones: ${entrada.claves.join(', ')}. Cada una entre 60 y 100 palabras, con el mismo tono y la misma persona que lo de arriba.`,
+  ].join('\n')
+
+  try {
+    const { object } = await generateObject({
+      model: modelo(MODELO_LECTURA),
+      schema: esquemaDeTexto(entrada.claves),
+      system: sistema(entrada.idioma, nombre),
+      prompt,
+      providerOptions: opcionesRazonamiento('medium'),
+    })
+
+    /* Ninguna se publica cortada, igual que al generar la lectura entera. */
+    return await completarSecciones(
+      object as Record<string, string>,
+      async (claves) => {
+        const { object: rehechas } = await generateObject({
+          model: modelo(MODELO_LECTURA),
+          schema: esquemaDeTexto(claves),
+          system: sistema(entrada.idioma, nombre),
+          prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
+          providerOptions: opcionesRazonamiento('low'),
+        })
+        return rehechas as Record<string, string>
+      },
+      'lectura',
+    )
+  } catch (error) {
+    console.error('[lectura] no se pudieron escribir las secciones nuevas', error)
+    throw new LecturaError('No pudimos ampliar tu lectura ahora mismo.')
   }
 }

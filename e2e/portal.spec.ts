@@ -73,7 +73,7 @@ test('la lectura base enseña sus secciones aunque no esté generada', async ({ 
    */
   await expect(page.getByText(/todavía no está escrita/i)).toBeVisible()
   await expect(page.getByText(/capa de interpretación/i)).toHaveCount(0)
-  await expect(page.getByText('Tus patrones de abundancia')).toBeVisible()
+  await expect(page.getByText('Abundancia y dinero')).toBeVisible()
 
   /*
    * Y sobre todo: hay salida.
@@ -88,6 +88,48 @@ test('la lectura base enseña sus secciones aunque no esté generada', async ({ 
    * exactamente ese estado: carta sí, lectura no.
    */
   await expect(page.getByRole('link', { name: /escribir mi lectura ahora/i })).toBeVisible()
+})
+
+/**
+ * El orden de la lectura y las doce casas.
+ *
+ * El orden se comprueba por la posición vertical de cada bloque y no por que
+ * existan: el documento del 23 de septiembre pide una secuencia concreta —carta,
+ * casas, lectura— y «están los tres en la página» pasaría en verde con la carta
+ * al final, que es justo de donde venimos.
+ *
+ * Y las doce casas son doce. Se contaron porque la versión anterior de esta
+ * pantalla enseñaba cinco áreas y el documento subraya «no seleccionar solo
+ * cinco casas»: un descuido ahí no rompe nada y no se ve.
+ */
+test('la lectura pone la carta, las casas y el texto en ese orden', async ({ page }) => {
+  await completarOnboarding(page)
+  await page.goto('/lectura-base')
+
+  const carta = page.getByRole('img', { name: /Carta natal/ })
+  const casas = page.getByRole('heading', { name: 'Tus doce casas' })
+
+  await expect(carta).toBeVisible()
+  await expect(casas).toBeVisible()
+
+  const arribaCarta = (await carta.boundingBox())!.y
+  const arribaCasas = (await casas.boundingBox())!.y
+  expect(arribaCarta).toBeLessThan(arribaCasas)
+
+  // Las doce, cada una plegada y con su nombre cotidiano.
+  const filas = page.getByRole('group')
+  await expect(filas).toHaveCount(12)
+  await expect(page.getByText('Casa 1', { exact: true })).toBeVisible()
+  await expect(page.getByText('Casa 12', { exact: true })).toBeVisible()
+
+  /*
+   * Y se abren. Lo personal de una casa —su signo y sus planetas— está dentro:
+   * si el desplegable no funcionara, la explicación estaría en el HTML y nadie
+   * podría leerla.
+   */
+  const septima = page.getByRole('group').nth(6)
+  await septima.getByRole('button').or(septima.locator('summary')).first().click()
+  await expect(septima.getByText(/empieza en \d+° de /i)).toBeVisible()
 })
 
 test('si la activación falla, lo dice y no finge una lectura', async ({ page }) => {

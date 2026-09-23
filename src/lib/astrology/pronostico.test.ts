@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { describe, expect, it } from 'vitest'
 
 import { createLocalChartProvider } from './local'
-import { calcularPronostico, casaDe } from './pronostico'
+import { calcularPronostico } from './pronostico'
 
 /**
  * El pronóstico se prueba contra el cielo real, no contra una carta de
@@ -22,28 +22,6 @@ async function pronosticoDePrueba() {
   const natal = await createLocalChartProvider().calcular(NATAL)
   return calcularPronostico(natal, { desde: DateTime.utc(2026, 3, 1), dias: 30 })
 }
-
-describe('casaDe', () => {
-  it('sitúa una longitud en su casa', () => {
-    // Cúspides de 30 en 30 desde 0°: la casa 1 va de 0 a 30.
-    const cuspides = Array.from({ length: 12 }, (_, i) => i * 30)
-    expect(casaDe(5, cuspides)).toBe(1)
-    expect(casaDe(35, cuspides)).toBe(2)
-    expect(casaDe(355, cuspides)).toBe(12)
-  })
-
-  it('resuelve la casa que cruza 0° Aries', () => {
-    // Casa 1 de 340° a 10°.
-    const cuspides = [340, 10, 40, 70, 100, 130, 160, 190, 220, 250, 280, 310]
-    expect(casaDe(350, cuspides)).toBe(1)
-    expect(casaDe(5, cuspides)).toBe(1)
-    expect(casaDe(20, cuspides)).toBe(2)
-  })
-
-  it('sin cúspides no inventa casa', () => {
-    expect(casaDe(100, [])).toBeNull()
-  })
-})
 
 describe('calcularPronostico', () => {
   it('devuelve un periodo con ventanas fechadas', async () => {
