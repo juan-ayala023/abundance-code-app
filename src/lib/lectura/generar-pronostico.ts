@@ -44,6 +44,7 @@ QUÉ HACE DISTINTO A ESTE TEXTO
 - Ejemplo de lo que NO sirve: «Venus activa asuntos del pasado y genera reflexión sobre los vínculos».
 - Ejemplo de lo que sí: «Entre el 12 y el 16 aumenta la posibilidad de que reaparezca un vínculo, una conversación o un asunto sentimental que parecía cerrado. Puede manifestarse como un contacto inesperado, un encuentro, una noticia o una situación que obligue a reconsiderar algo que creías resuelto».
 - **Trabajas sobre las ventanas que te doy, con SUS fechas.** No inventes días, no muevas los que te doy, no añadas ventanas que no estén en la lista. Cita cada ventana por su identificador en el campo correspondiente.
+- **Los identificadores (v1, v2…) son internos y NUNCA se escriben en el texto.** Solo van en el campo "id". Dentro de la apertura, del cierre o de cualquier frase, las ventanas se nombran por sus fechas («la ventana del 24 al 27 de septiembre») o por su título, nunca por el código: quien lee no sabe qué es «v3».
 - **Cada ventana se explica en este orden**: qué configuración la produce (en palabras corrientes) → qué área de la vida activa → qué manifestaciones son plausibles → qué observar.
 - **Dos o tres manifestaciones por ventana, no diez.** Y ordenadas: primero la más probable. Cada una debe poder sostenerse en algo de lo que te he dado.
 - **El peso lo marcan los factores que coinciden.** Una ventana con cuatro factores (tránsito exacto + casa relevante + lunación + estación) pesa mucho más que una con un solo aspecto suelto. Respeta la intensidad que te viene indicada: no conviertas una ventana «para observar» en un acontecimiento mayor.
@@ -77,7 +78,7 @@ export async function generarPronostico(entrada: {
     '',
     `Escribe el pronóstico del periodo. Devuelve una entrada por cada ventana de la lista (${
       ventanas.map((v) => v.id).join(', ') || 'ninguna'
-    }), en el mismo orden, con su identificador exacto en el campo "id". La apertura resume el periodo en conjunto y nombra la etapa de fondo. El cierre ordena las ventanas por importancia y dice en una frase qué mirar en cada una.`,
+    }), en el mismo orden, con su identificador exacto en el campo "id". La apertura resume el periodo en conjunto y nombra la etapa de fondo. El cierre ordena las ventanas por importancia y dice en una frase qué mirar en cada una, citándolas por sus fechas o por su título —nunca por el identificador—.`,
   ].join('\n')
 
   try {
