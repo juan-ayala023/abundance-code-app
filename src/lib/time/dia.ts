@@ -21,6 +21,22 @@ import { DateTime } from 'luxon'
  * en otro.
  */
 
+/**
+ * La zona horaria con la que se cuenta el día de un portal.
+ *
+ * **Una sola regla, y es esta**: la hora del lugar donde está la persona
+ * (`display_tz`, que guarda el navegador la primera vez que entra). Antes se
+ * usaba la de la ciudad de nacimiento, y quien nació en Bogotá y vive en
+ * Sídney veía el día anterior al suyo. Mientras no se sepa dónde está, se usa
+ * la de nacimiento, que es mejor que UTC.
+ */
+export function zonaDelPortal(portal: {
+  display_tz?: string | null
+  tz?: string | null
+}): string {
+  return zonaDe(portal.display_tz ?? portal.tz)
+}
+
 export function zonaDe(tz: string | null | undefined): string {
   return tz && DateTime.local().setZone(tz).isValid ? tz : 'UTC'
 }

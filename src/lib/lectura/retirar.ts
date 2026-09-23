@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database, Json } from '@/lib/supabase/database.types'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { zonaDelPortal } from '@/lib/time/dia'
 
 /**
  * Retira la lectura base y el retrato de un portal, conservándolos.
@@ -110,7 +111,7 @@ export async function retirarLecturas(
     return { ok: false, motivo: 'no-se-pudo-vaciar' }
   }
 
-  const ciclo = diaDelCiclo(portal.created_at, portal.tz)
+  const ciclo = diaDelCiclo(portal.created_at, zonaDelPortal(portal))
   if (ciclo) {
     const { error: errorActivacion } = await admin
       .from('daily_activations')

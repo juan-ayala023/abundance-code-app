@@ -33,6 +33,35 @@ export type ActivacionGuardada = {
   leidaEn: string | null
 }
 
+/**
+ * La activación de un día, solo si ya está escrita.
+ *
+ * La pantalla la usa para pintar sin generar nada: generar durante el render
+ * dejaba la página colgada más de diez segundos y, cuando fallaba, enseñaba la
+ * lista de títulos vacíos como si fuera la lectura (revisión del 23 sept).
+ */
+export async function activacionGuardada(
+  portalId: string,
+  dia: number,
+  idioma: string,
+): Promise<ActivacionGuardada | null> {
+  const { data } = await createAdminClient()
+    .from('daily_activations')
+    .select('id, content, read_at')
+    .eq('portal_id', portalId)
+    .eq('day_number', dia)
+    .maybeSingle()
+
+  if (!data) return null
+
+  const contenido = activacionDiariaSchema.safeParse(data.content)
+  if (!contenido.success) return null
+  // En otro idioma que el de la interfaz se reescribe, así que aún no vale.
+  if ((contenido.data.idioma ?? 'es') !== idioma) return null
+
+  return { id: data.id, contenido: contenido.data, leidaEn: data.read_at }
+}
+
 export async function asegurarActivacion(
   portalId: string,
   carta: Carta,

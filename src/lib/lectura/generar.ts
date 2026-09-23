@@ -4,7 +4,10 @@ import { generateObject } from 'ai'
 
 import { MODELO_LECTURA, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
+import { z } from 'zod'
+
 import type { Idioma } from '@/i18n/idioma'
+import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
@@ -91,7 +94,23 @@ export async function generarLecturaBase(entrada: {
       razonamiento: usage.outputTokenDetails?.reasoningTokens,
     })
 
-    return { ...object, idioma: entrada.idioma }
+    /* Ninguna sección se publica cortada: se rehace solo la que lo esté. */
+    const completo = await completarSecciones(
+      object,
+      async (claves) => {
+        const { object: rehechas } = await generateObject({
+          model: modelo(MODELO_LECTURA),
+          schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
+          system: sistema(entrada.idioma, nombre),
+          prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
+          providerOptions: opcionesRazonamiento('low'),
+        })
+        return rehechas as Partial<typeof object>
+      },
+      'lectura',
+    )
+
+    return { ...completo, idioma: entrada.idioma }
   } catch (error) {
     console.error('[lectura] falló la generación', error)
     throw new LecturaError('No pudimos generar tu lectura ahora mismo.')

@@ -25,6 +25,7 @@ import { nivelDeAcceso } from "@/lib/access/nivel";
 import { diaDelCiclo } from "@/lib/lectura/ciclo";
 import { CONSULTAS_GUIA_POR_DIA, DIAS_DE_PORTAL } from "@/lib/lectura/schemas";
 import { createClient } from "@/lib/supabase/server";
+import { zonaDelPortal } from "@/lib/time/dia";
 import {
   fechaDeCalendario,
   fechaDeInstante,
@@ -78,7 +79,7 @@ export default async function CuentaPage({
 
   // El mismo contador que ve el usuario en el portal: se deriva de la fecha de
   // creación, no de una columna que pudiera quedar desincronizada.
-  const ciclo = diaDelCiclo(portal?.created_at, portal?.tz);
+  const ciclo = diaDelCiclo(portal?.created_at, portal ? zonaDelPortal(portal) : null);
   const nivel = nivelDeAcceso(entitlement);
   const esCortesia = entitlement?.status === ESTADO_CORTESIA;
 

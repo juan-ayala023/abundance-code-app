@@ -9,7 +9,7 @@ import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { createLocalChartProvider } from '@/lib/astrology/local'
 import { cartaSchema } from '@/lib/astrology/schema'
-import { inicioDelDia } from '@/lib/time/dia'
+import { inicioDelDia, zonaDelPortal } from '@/lib/time/dia'
 import { aspectosDeTransito } from '@/lib/astrology/transitos'
 import { lecturaBaseSchema, CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { generarRespuestaGuia } from '@/lib/lectura/generar-guia'
@@ -74,7 +74,7 @@ export async function consultarGuia(
   }
 
   // El día se corta a la misma hora que el ciclo: ver `@/lib/time/dia`.
-  const desde = inicioDelDia(portal.tz)
+  const desde = inicioDelDia(zonaDelPortal(portal))
 
   const { count } = await supabase
     .from('guidance_queries')

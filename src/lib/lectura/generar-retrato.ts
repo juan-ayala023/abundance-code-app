@@ -4,7 +4,10 @@ import { generateObject } from 'ai'
 
 import { MODELO_LECTURA, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
+import { z } from 'zod'
+
 import type { Idioma } from '@/i18n/idioma'
+import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
@@ -125,7 +128,22 @@ export async function generarRetrato(entrada: {
       razonamiento: usage.outputTokenDetails?.reasoningTokens,
     })
 
-    return { ...object, idioma: entrada.idioma }
+    const completo = await completarSecciones(
+      object,
+      async (claves) => {
+        const { object: rehechas } = await generateObject({
+          model: modelo(MODELO_LECTURA),
+          schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
+          system: sistema(entrada.idioma, nombre),
+          prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
+          providerOptions: opcionesRazonamiento('low'),
+        })
+        return rehechas as Partial<typeof object>
+      },
+      'retrato',
+    )
+
+    return { ...completo, idioma: entrada.idioma }
   } catch (error) {
     console.error('[retrato] falló la generación', error)
     throw new RetratoError('No pudimos preparar tu retrato ahora mismo.')

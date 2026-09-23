@@ -13,7 +13,7 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
 import { AREAS } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
-import { inicioDelDia } from '@/lib/time/dia'
+import { inicioDelDia, zonaDelPortal } from '@/lib/time/dia'
 
 /**
  * La acción `consultarGuia()` corre dentro de esta ruta: unos 6 s medidos, que
@@ -67,7 +67,7 @@ export default async function GuiaPage({
    * distinto, habría momentos en que el portal dice «día 5» y la guía todavía
    * cuenta las consultas del 4.
    */
-  const desde = inicioDelDia(portal.tz)
+  const desde = inicioDelDia(zonaDelPortal(portal))
 
   const { count } = await supabase
     .from('guidance_queries')

@@ -177,6 +177,7 @@ export type Database = {
           chart_reading_at: string | null
           chart_version: string | null
           created_at: string
+          display_tz: string | null
           full_name: string | null
           id: string
           lat: number | null
@@ -200,6 +201,7 @@ export type Database = {
           chart_reading_at?: string | null
           chart_version?: string | null
           created_at?: string
+          display_tz?: string | null
           full_name?: string | null
           id?: string
           lat?: number | null
@@ -223,6 +225,7 @@ export type Database = {
           chart_reading_at?: string | null
           chart_version?: string | null
           created_at?: string
+          display_tz?: string | null
           full_name?: string | null
           id?: string
           lat?: number | null

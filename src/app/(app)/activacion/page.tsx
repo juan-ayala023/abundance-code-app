@@ -6,27 +6,24 @@ import { redirect } from 'next/navigation'
 import { idiomaActual } from '@/i18n/idioma'
 import { ArcoDeLuz } from '@/components/layout/arco'
 import { Contenedor } from '@/components/layout/contenedor'
-import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
+import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
+import { ZonaHoraria } from '@/components/layout/zona-horaria'
+import { ActivacionGeneracion } from '@/components/lectura/activacion-generacion'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
-import { cartaSchema } from '@/lib/astrology/schema'
-import { asegurarActivacion } from '@/lib/lectura/activacion'
+import { activacionGuardada } from '@/lib/lectura/activacion'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { createClient } from '@/lib/supabase/server'
-
-/**
- * Esta pantalla **genera durante el render**: si hoy no hay activación, la pide
- * al modelo antes de responder. Son unos 13 s medidos, por encima de los 15 s
- * por defecto de una función serverless en cuanto el modelo tarde un poco más
- * de la cuenta. 60 s da margen sin llegar a dejar a nadie esperando de verdad.
- */
-export const maxDuration = 60
+import { zonaDelPortal } from '@/lib/time/dia'
 
 export const metadata: Metadata = {
   title: 'Activación de hoy · Abundance Code',
 }
+
+/** La acción que escribe la activación vive en esta ruta. */
+export const maxDuration = 60
 
 const BLOQUES = [
   { clave: 'mensajePrincipal', Icono: Sparkles },
@@ -36,61 +33,39 @@ const BLOQUES = [
   { clave: 'preguntaReflexion', Icono: CircleHelp },
 ] as const
 
+/**
+ * La activación de hoy.
+ *
+ * **No genera durante el render** (revisión del 23 sept): la página carga
+ * siempre, y si la activación de hoy todavía no está escrita, se pide aparte
+ * con su estado y su botón de reintentar. La lista de títulos sin texto que se
+ * veía antes al fallar ya no existe: o hay lectura, o hay un mensaje que
+ * explica qué pasa.
+ */
 export default async function ActivacionPage() {
   const supabase = await createClient()
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, birth_date, birth_city, created_at, tz, chart')
+    .select('id, full_name, birth_date, birth_city, created_at, tz, display_tz, chart')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
 
-  /*
-   * La activación es la del día que corresponde, no la última que exista. Con
-   * «la más reciente» un portal en el día 5 vería la del 4 si la del 5 aún no
-   * se hubiera generado, y parecería la de hoy.
-   */
-  const ciclo = diaDelCiclo(portal.created_at, portal.tz)
-  const carta = cartaSchema.safeParse(portal.chart)
+  const zona = zonaDelPortal(portal)
+  const ciclo = diaDelCiclo(portal.created_at, zona)
 
   const t = await getTranslations('activacion')
   const tNav = await getTranslations('nav')
+  const idioma = await idiomaActual()
+
   const acceso = await resolveAccess()
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
-  /*
-   * Se genera al pedirla, una vez por día. Sin carta no hay nada que
-   * interpretar: la IA no la calcula.
-   *
-   * El nivel se comprueba ANTES de generar, no solo al pintar: generar una
-   * activación que no se va a mostrar costaría dinero por nada.
-   */
-  /*
-   * `ciclo.diaReal` y no `ciclo.dia`: el segundo se queda en 30 para siempre,
-   * y con él la activación de un suscriptor que sigue pagando era la misma cada
-   * día a partir del 31. Ver el comentario de `diaDelCiclo()`.
-   */
+  /* Solo se lee. Escribirla es cosa de <ActivacionGeneracion />. */
   const activacion =
-    nivel === 'completo' && ciclo && carta.success
-      ? await asegurarActivacion(
-          portal.id,
-          carta.data,
-          ciclo.diaReal,
-          ciclo.total,
-          ciclo.fecha,
-          portal.full_name,
-        )
-      : null
+    nivel === 'completo' && ciclo ? await activacionGuardada(portal.id, ciclo.diaReal, idioma) : null
 
-  /*
-   * La fecha a la que corresponde la activación, escrita para leerse. Y la
-   * regla, dicha: el día cambia a medianoche en la hora del lugar de
-   * nacimiento, igual que el contador de consultas de la guía. Sin esto no
-   * había forma de saber si lo que se veía era «lo de hoy» ni cuándo
-   * cambiaría —que es lo que pidió la revisión.
-   */
-  const idioma = await idiomaActual()
   const fechaLegible = ciclo
     ? new Date(`${ciclo.fecha}T12:00:00Z`).toLocaleDateString(idioma, {
         weekday: 'long',
@@ -103,15 +78,9 @@ export default async function ActivacionPage() {
 
   return (
     <Contenedor>
-      {/*
-        El titular decía «Activación del Día 13», como en el producto original.
-        El cliente pidió que el número de día no aparezca en ninguna pantalla, así
-        que ahora es siempre «Activación de Hoy».
+      {/* Registra en qué huso está la persona: de ahí sale la fecha de arriba. */}
+      <ZonaHoraria guardada={portal.display_tz} />
 
-        El día **sigue existiendo y sigue mandando**: es lo que decide cuál de las
-        treinta activaciones toca hoy, y se le pasa a `asegurarActivacion()` unas
-        líneas más arriba. Lo que se quitó es enseñarlo, no contarlo.
-      */}
       <EncabezadoPagina
         titulo={t('titulo')}
         descripcion={fechaLegible ? `${fechaLegible} · ${t('descripcion')}` : t('descripcion')}
@@ -122,11 +91,6 @@ export default async function ActivacionPage() {
         <RequiereSuscripcion seccion={t('seccion')} />
       ) : activacion ? (
         <>
-          {/*
-            El arco ocupa la columna izquierda a partir de `lg`, como en el
-            producto original. Sin él, cinco párrafos cortos dejaban medio ancho
-            vacío en pantallas grandes.
-          */}
           <Tarjeta className="grid gap-8 p-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">
             <ArcoDeLuz className="hidden h-full max-h-80 w-full self-center lg:block" />
 
@@ -145,34 +109,37 @@ export default async function ActivacionPage() {
             </div>
           </Tarjeta>
 
-          {/*
-            Aquí estaba el botón «Marcar como leída». Se retiró a petición del
-            cliente; se conserva el aviso de cuándo llega la siguiente, que no
-            dice ningún número y evita que la pantalla parezca un final.
-          */}
+          {/* La regla del día, dicha: ahora es la hora de donde está la persona. */}
           <p className="flex items-center justify-center gap-2 text-center text-sm text-tinta-tenue">
             <Clock size={14} aria-hidden="true" className="shrink-0" />
-            <span>{t('siguiente')} {t('reglaDia', { ciudad: portal.birth_city ?? 'UTC' })}</span>
+            <span>
+              {t('siguiente')} {t('reglaDia', { zona: nombreDeZona(zona, idioma) })}
+            </span>
           </p>
         </>
       ) : (
-        <>
-          <AvisoPendiente>
-            {carta.success
-              ? t('noPreparada')
-              : t('sinCarta')}
-          </AvisoPendiente>
-
-          <Tarjeta className="flex flex-col divide-y divide-borde">
-            {BLOQUES.map(({ clave, Icono }) => (
-              <section key={clave} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                <Insignia Icono={Icono} />
-                <h2 className="text-lg font-light text-tinta-suave">{t(`bloques.${clave}` as never)}</h2>
-              </section>
-            ))}
-          </Tarjeta>
-        </>
+        <ActivacionGeneracion tieneCarta={Boolean(portal.chart)} />
       )}
     </Contenedor>
   )
+}
+
+/**
+ * «Madrid» en vez de «Europe/Madrid».
+ *
+ * El identificador IANA es correcto y nadie lo lee así. Se enseña la ciudad,
+ * que es lo que la persona reconoce de su propia hora.
+ */
+function nombreDeZona(zona: string, idioma: string): string {
+  const ciudad = zona.split('/').pop()?.replace(/_/g, ' ')
+  if (!ciudad) return zona
+
+  try {
+    const corta = new Intl.DateTimeFormat(idioma, { timeZone: zona, timeZoneName: 'short' })
+      .formatToParts(new Date())
+      .find((parte) => parte.type === 'timeZoneName')?.value
+    return corta ? `${ciudad} (${corta})` : ciudad
+  } catch {
+    return ciudad
+  }
 }

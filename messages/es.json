@@ -204,6 +204,11 @@
     "ocultarContexto": "Ocultar el contexto astrológico"
   },
   "activacion": {
+    "preparando": "Estamos preparando tu lectura de hoy. Suele tardar menos de un minuto.",
+    "noLista": "Tu lectura todavía no está lista. Puedes intentarlo nuevamente ahora. Si sales de esta página, seguiremos preparándola.",
+    "reintentar": "Intentar de nuevo",
+    "volverAlPortal": "Volver a mi portal",
+    "requiereSuscripcion": "Tu lectura de hoy se prepara con una suscripción activa. Tu carta y tu lectura base siguen siendo tuyas.",
     "titulo": "Activación de Hoy",
     "descripcion": "Una señal para observar hoy desde tu Código Personal.",
     "seccion": "La activación diaria",
@@ -217,7 +222,7 @@
     "noPreparada": "No hemos podido preparar tu activación de hoy. Vuelve a intentarlo en unos minutos. Estas son las partes que tendrá.",
     "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada. Estas son las partes que tendrá.",
     "siguiente": "Tu próxima activación se desbloquea mañana.",
-    "reglaDia": "El día cambia a medianoche en la hora de {ciudad}, tu lugar de nacimiento; el contador de consultas de la guía cambia a la misma hora."
+    "reglaDia": "El día cambia a medianoche en tu hora local ({zona}); el contador de consultas de la guía cambia a la misma hora."
   },
   "guia": {
     "titulo": "Guía Personalizada",

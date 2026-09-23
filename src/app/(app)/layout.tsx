@@ -7,6 +7,7 @@ import { PieLegal } from '@/components/layout/pie-legal'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { createClient } from '@/lib/supabase/server'
+import { zonaDelPortal } from '@/lib/time/dia'
 
 /**
  * Puerta de entrada al portal, y armazón de todas sus pantallas.
@@ -56,7 +57,7 @@ export default async function AppLayout({
     .select('created_at, tz')
     .maybeSingle()
 
-  const ciclo = diaDelCiclo(portal?.created_at, portal?.tz)
+  const ciclo = diaDelCiclo(portal?.created_at, portal ? zonaDelPortal(portal) : null)
 
   return (
     <div className="flex min-h-dvh flex-col lg:flex-row">

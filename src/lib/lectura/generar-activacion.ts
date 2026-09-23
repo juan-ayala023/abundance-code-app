@@ -89,6 +89,9 @@ export async function generarActivacionDiaria(entrada: {
       // Texto corto y muy pautado: razonar mucho aquí no mejora el resultado y
       // sí multiplica el coste, que se paga treinta veces por usuario.
       providerOptions: opcionesRazonamiento('low'),
+      // Margen de sobra: los bloques son cortos, pero los tokens de razonar
+      // cuentan contra el mismo tope y son los que cortaban el texto.
+      maxOutputTokens: 4000,
     })
 
     console.info('[activacion] generada', {

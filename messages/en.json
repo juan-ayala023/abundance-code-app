@@ -204,6 +204,11 @@
     "ocultarContexto": "Hide the astrological context"
   },
   "activacion": {
+    "preparando": "We're preparing today's reading. It usually takes less than a minute.",
+    "noLista": "Your reading isn't ready yet. You can try again now. If you leave this page, we'll keep preparing it.",
+    "reintentar": "Try again",
+    "volverAlPortal": "Back to my portal",
+    "requiereSuscripcion": "Today's reading is prepared with an active subscription. Your chart and your base reading remain yours.",
     "titulo": "Today's Activation",
     "descripcion": "A sign to watch for today, read from your Personal Code.",
     "seccion": "Daily activation",
@@ -217,7 +222,7 @@
     "noPreparada": "We couldn't prepare today's activation. Try again in a few minutes. These are the parts it will have.",
     "sinCarta": "Your activation will arrive as soon as your chart is calculated. These are the parts it will have.",
     "siguiente": "Your next activation unlocks tomorrow.",
-    "reglaDia": "The day changes at midnight in {ciudad} time, your place of birth; the guide's daily question counter changes at the same time."
+    "reglaDia": "The day changes at midnight in your local time ({zona}); the guide question counter resets at the same time."
   },
   "guia": {
     "titulo": "Personal Guidance",
