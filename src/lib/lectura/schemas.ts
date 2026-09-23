@@ -345,9 +345,19 @@ export type MesGuardado = z.infer<typeof mesGuardadoSchema>
 export const DIAS_DE_PORTAL = 30
 
 /**
- * Consultas de guía incluidas por día.
+ * Consultas de guía incluidas por mes.
  *
- * Son 3, no 20: la app anterior lo promete por escrito al usuario en pantalla.
- * CLAUDE.md §8 proponía 20 como ejemplo; manda el producto.
+ * Eran 3 al día. El documento del 23 de septiembre de 2026 las cambia por
+ * **doce al mes, cada una con dos preguntas para profundizar**, y el cambio no
+ * es solo de número: una consulta deja de ser una pregunta suelta y pasa a ser
+ * una conversación sobre un tema.
+ *
+ * El mes es el del portal —bloques de 30 días desde que se creó—, no el del
+ * calendario. Así el contador se reinicia el mismo día que el ciclo que la
+ * persona ya ve en su cuenta, en vez de regalar doce consultas más el día 1 a
+ * quien compró el 28.
  */
-export const CONSULTAS_GUIA_POR_DIA = 3
+export const CONSULTAS_GUIA_POR_MES = 12
+
+/** Preguntas para profundizar que incluye cada consulta. */
+export const SEGUIMIENTOS_POR_CONSULTA = 2

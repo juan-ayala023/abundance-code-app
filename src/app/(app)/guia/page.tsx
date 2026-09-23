@@ -10,10 +10,11 @@ import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
 import { Tarjeta } from '@/components/layout/tarjeta'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
-import { CONSULTAS_GUIA_POR_DIA } from '@/lib/lectura/schemas'
+import { CONSULTAS_GUIA_POR_MES } from '@/lib/lectura/schemas'
+import { mesDeGuia } from '@/lib/lectura/guia'
 import { AREAS } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
-import { inicioDelDia, zonaDelPortal } from '@/lib/time/dia'
+import { zonaDelPortal } from '@/lib/time/dia'
 
 /**
  * La acción `consultarGuia()` corre dentro de esta ruta: unos 6 s medidos, que
@@ -62,34 +63,35 @@ export default async function GuiaPage({
   const nivel = nivelDeAcceso(entitlementDe(acceso))
 
   /*
-   * Consultas gastadas hoy. El día se corta a la misma hora que el ciclo —
-   * medianoche en la zona del lugar de nacimiento—: si cada uno usara un huso
-   * distinto, habría momentos en que el portal dice «día 5» y la guía todavía
-   * cuenta las consultas del 4.
+   * Consultas gastadas este mes del portal —bloques de treinta días desde que
+   * se creó—, no hoy. Solo cuentan las de tipo `consulta`: un seguimiento va
+   * dentro de la que ya se gastó y una aclaración no la pidió la persona.
    */
-  const desde = inicioDelDia(zonaDelPortal(portal))
+  const mes = mesDeGuia(portal.created_at, zonaDelPortal(portal))
 
   const { count } = await supabase
     .from('guidance_queries')
     .select('id', { count: 'exact', head: true })
     .eq('portal_id', portal.id)
-    .gte('created_at', desde.toISOString())
+    .eq('tipo', 'consulta')
+    .gte('created_at', (mes?.desde ?? new Date(0)).toISOString())
 
   const usadas = count ?? 0
-  const restantes = Math.max(CONSULTAS_GUIA_POR_DIA - usadas, 0)
+  const restantes = Math.max(CONSULTAS_GUIA_POR_MES - usadas, 0)
 
   /*
-   * El historial. Las últimas cincuenta bastan: son 3 al día, así que cubren
-   * más de dos semanas, y quien quiera ir más atrás tiene el buscador del
-   * navegador. Se piden aunque la guía esté cerrada por falta de suscripción:
-   * lo que ya se respondió es suyo y se puede releer.
+   * El historial. Las últimas cien bastan: son doce consultas al mes con dos
+   * seguimientos cada una, así que cubren más de dos meses de conversación, y
+   * quien quiera ir más atrás tiene el buscador del navegador. Se piden aunque
+   * la guía esté cerrada por falta de suscripción: lo que ya se respondió es
+   * suyo y se puede releer.
    */
   const { data: consultas } = await supabase
     .from('guidance_queries')
-    .select('id, question, answer, created_at')
+    .select('id, question, answer, created_at, thread_id, tipo')
     .eq('portal_id', portal.id)
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(100)
 
   return (
     <Contenedor className="max-w-5xl">

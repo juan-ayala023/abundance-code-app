@@ -133,6 +133,8 @@ export type Database = {
           model: string | null
           portal_id: string
           question: string
+          thread_id: string
+          tipo: string
           tokens: number | null
         }
         Insert: {
@@ -142,6 +144,8 @@ export type Database = {
           model?: string | null
           portal_id: string
           question: string
+          thread_id?: string
+          tipo?: string
           tokens?: number | null
         }
         Update: {
@@ -151,6 +155,8 @@ export type Database = {
           model?: string | null
           portal_id?: string
           question?: string
+          thread_id?: string
+          tipo?: string
           tokens?: number | null
         }
         Relationships: [

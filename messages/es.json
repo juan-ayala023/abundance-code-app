@@ -99,7 +99,7 @@
     "diaActual": "Día actual",
     "completado": "{progreso}% completado",
     "primerosDias": "primeros {total} días",
-    "incluye": "Tu suscripción incluye tu lectura base, tu retrato, la activación de cada día y {consultas} consultas de guía al día. Si algún día se cancela, tu lectura base y tu carta natal siguen siendo tuyas.",
+    "incluye": "Tu suscripción incluye tu lectura base y tu carta natal, tu lectura predictiva del mes, tu lectura personal de cada día y {consultas} consultas de guía al mes, cada una con dos preguntas para profundizar. Si algún día se cancela, tu lectura base y tu carta natal siguen siendo tuyas.",
     "gestionar": "Gestionar mi suscripción",
     "estados": {
       "active": "Activo",
@@ -121,7 +121,7 @@
       "monthly": "Suscripción mensual",
       "inactivo": "Suscripción no activa"
     },
-    "incluyeCortesia": "Tienes acceso de cortesía: lo mismo que una suscripción —lectura base, retrato, activación diaria y {consultas} consultas de guía al día— sin pago ni renovación que gestionar.",
+    "incluyeCortesia": "Tienes acceso de cortesía: lo mismo que una suscripción —lectura base y carta natal, lectura del mes, lectura de cada día y {consultas} consultas de guía al mes con sus preguntas para profundizar— sin pago ni renovación que gestionar.",
     "nacimiento": "Datos de nacimiento",
     "sinHora": "hora desconocida",
     "corregirNacimiento": "Corregir mis datos",
@@ -247,8 +247,10 @@
       "titulo": "Mis consultas",
       "nota": "Todo lo que has preguntado y lo que te respondió tu guía. Releerlas no gasta ninguna consulta.",
       "vacio": "Todavía no has hecho ninguna consulta. Cuando la hagas, quedará guardada aquí con su respuesta.",
-      "sinRespuesta": "Esta consulta se quedó sin respuesta."
-    }
+      "sinRespuesta": "Esta consulta se quedó sin respuesta.",
+      "mensajes": "{n} mensajes"
+    },
+    "profundizar": "Profundizar en este tema"
   },
   "generando": {
     "duracion": "Suele tardar entre uno y tres minutos. Puedes dejar esta pantalla abierta.",
@@ -292,8 +294,8 @@
     "pregunta": "¿Qué necesitas entender hoy?",
     "placeholder": "Escribe tu pregunta aquí…",
     "sugeridasTitulo": "— Preguntas sugeridas —",
-    "restantes": "Te quedan <b>{n}</b> de {total} consultas hoy. El límite es diario y es el mismo para todas las cuentas, con o sin pago; releer una respuesta guardada no gasta ninguna.",
-    "agotadas": "Has usado tus {total} consultas de hoy. Vuelven a estar disponibles mañana; mientras tanto puedes releer las anteriores más abajo.",
+    "restantes": "Te quedan <b>{n}</b> consultas este mes. Cada consulta incluye tu pregunta y {seguimientos} preguntas para profundizar; releer una respuesta guardada no gasta ninguna.",
+    "agotadas": "Has usado tus {total} consultas de este mes. Vuelven con tu próximo ciclo; mientras tanto puedes releer las anteriores más abajo.",
     "responde": "Tu guía responde",
     "aviso": "La Guía Personalizada está diseñada para reflexión personal y claridad interna. No reemplaza asesoría médica, legal, financiera o psicológica profesional.",
     "sugeridas": {
@@ -302,7 +304,16 @@
       "patron": "¿Qué patrón de abundancia estoy repitiendo?",
       "senal": "¿Qué señal debería mirar esta semana?",
       "energia": "¿Qué energía necesito activar hoy?"
-    }
+    },
+    "preguntaSeguimiento": "¿Qué más quieres saber sobre esto?",
+    "placeholderSeguimiento": "Pregunta otra cosa sobre este mismo tema…",
+    "agotadasError": "Has usado tus consultas de este mes. Vuelven con tu próximo ciclo.",
+    "puedesSeguir": "Puedes hacer {n} preguntas más sobre este tema.",
+    "temaCerrado": "Has usado las dos preguntas de este tema. Para abrir otro, recarga la página.",
+    "aclaracionNoGasta": "Tu guía necesita un dato para responderte. Contestar esto no gasta ninguna consulta.",
+    "preguntaDeVuelta": "Tu guía necesita saber",
+    "sinCarta": "Tu carta todavía no está calculada. Vuelve en un momento.",
+    "seguimientosAgotados": "Ya has hecho las dos preguntas de profundizar de este tema."
   },
   "carta": {
     "sol": "Sol",

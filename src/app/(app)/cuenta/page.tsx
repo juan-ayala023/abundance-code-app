@@ -23,7 +23,7 @@ import { urlDeCompra } from "@/lib/access/enlaces";
 import { entitlementDe, resolveAccess } from "@/lib/access/entitlement";
 import { nivelDeAcceso } from "@/lib/access/nivel";
 import { diaDelCiclo } from "@/lib/lectura/ciclo";
-import { CONSULTAS_GUIA_POR_DIA, DIAS_DE_PORTAL } from "@/lib/lectura/schemas";
+import { CONSULTAS_GUIA_POR_MES, DIAS_DE_PORTAL } from "@/lib/lectura/schemas";
 import { createClient } from "@/lib/supabase/server";
 import { zonaDelPortal } from "@/lib/time/dia";
 import {
@@ -182,10 +182,10 @@ export default async function CuentaPage({
         {nivel === "solo-lectura"
           ? tSus("mensaje")
           : esCortesia
-            ? t("incluyeCortesia", { consultas: CONSULTAS_GUIA_POR_DIA })
+            ? t("incluyeCortesia", { consultas: CONSULTAS_GUIA_POR_MES })
             : t("incluye", {
                 total: DIAS_DE_PORTAL,
-                consultas: CONSULTAS_GUIA_POR_DIA,
+                consultas: CONSULTAS_GUIA_POR_MES,
               })}
       </Tarjeta>
 

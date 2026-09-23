@@ -227,9 +227,20 @@ test('la guía muestra el límite real y el aviso legal', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/guia')
 
-  // 3 al día, no 20: es lo que promete el producto al usuario. El contador se
-  // lee entero —«te quedan 3 de 3 consultas hoy»— y no por una frase suelta.
-  await expect(page.getByText(/de 3 consultas hoy/i)).toBeVisible()
+  /*
+   * Doce al mes, no tres al día: el documento del 23 de septiembre cambió el
+   * límite y también lo que es una consulta —ahora incluye dos preguntas para
+   * profundizar—, así que el contador tiene que decir las dos cosas.
+   */
+  await expect(page.getByText(/12 consultas este mes/i)).toBeVisible()
+  await expect(page.getByText(/2 preguntas para profundizar/i)).toBeVisible()
+
+  /*
+   * Y la frase que el documento manda quitar. Decía que el límite «es el mismo
+   * para todas las cuentas, con o sin pago»: cierto y desafortunado, porque lo
+   * primero que lee quien acaba de pagar es que pagar no le da más.
+   */
+  await expect(page.getByText(/el mismo para todas las cuentas/i)).toHaveCount(0)
 
   // El aviso legal cubre los guardrails de CLAUDE.md §8.
   await expect(page.getByText(/no reemplaza asesoría médica/i)).toBeVisible()
@@ -244,8 +255,8 @@ test('la consulta se envía y avisa cuando no puede responder', async ({ page })
 
   const boton = page.getByRole('button', { name: 'Consultar mi guía' })
 
-  // Una pregunta demasiado corta no habilita el envío: gastar una de las tres
-  // consultas del día en «hola» sería un mal negocio para el usuario.
+  // Una pregunta demasiado corta no habilita el envío: gastar una de las doce
+  // consultas del mes en «hola» sería un mal negocio para el usuario.
   await page.getByLabel(/qué necesitas entender hoy/i).fill('hola')
   await expect(boton).toBeDisabled()
 

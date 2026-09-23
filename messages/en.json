@@ -99,7 +99,7 @@
     "diaActual": "Current day",
     "completado": "{progreso}% complete",
     "primerosDias": "first {total} days",
-    "incluye": "Your subscription includes your base reading, your portrait, each day's activation and {consultas} guide questions a day. If it is ever cancelled, your base reading and your natal chart remain yours.",
+    "incluye": "Your subscription includes your base reading and your natal chart, your predictive reading of the month, your personal reading each day and {consultas} guidance consultations a month, each with two follow-up questions. If it's ever cancelled, your base reading and your natal chart remain yours.",
     "gestionar": "Manage my subscription",
     "estados": {
       "active": "Active",
@@ -121,7 +121,7 @@
       "monthly": "Monthly subscription",
       "inactivo": "Subscription not active"
     },
-    "incluyeCortesia": "You have courtesy access: the same as a subscription —base reading, portrait, daily activation and {consultas} guide questions a day— with no payment or renewal to manage.",
+    "incluyeCortesia": "You have courtesy access: the same as a subscription —base reading and natal chart, reading of the month, daily reading and {consultas} guidance consultations a month with their follow-up questions— with no payment or renewal to manage.",
     "nacimiento": "Birth details",
     "sinHora": "time unknown",
     "corregirNacimiento": "Correct my details",
@@ -245,10 +245,12 @@
     "intro": "Sometimes you do not need more information. Sometimes what you need is clarity. Your Personal Code has answers. Ask from intention and receive the guidance your soul is ready to hear.",
     "historial": {
       "titulo": "My questions",
-      "nota": "Everything you have asked and what your guide answered. Re-reading them does not use up a question.",
+      "nota": "Everything you've asked and what your guide answered. Re-reading them doesn't use a consultation.",
       "vacio": "You have not asked anything yet. When you do, it will be kept here with its answer.",
-      "sinRespuesta": "This question was left without an answer."
-    }
+      "sinRespuesta": "This question was left without an answer.",
+      "mensajes": "{n} messages"
+    },
+    "profundizar": "Go deeper on this topic"
   },
   "generando": {
     "duracion": "It usually takes one to three minutes. You can leave this screen open.",
@@ -292,8 +294,8 @@
     "pregunta": "What do you need to understand today?",
     "placeholder": "Write your question here…",
     "sugeridasTitulo": "— Suggested questions —",
-    "restantes": "You have <b>{n}</b> of {total} questions left today. The limit is daily and the same for every account, paid or not; re-reading a saved answer does not use one.",
-    "agotadas": "You have used your {total} questions for today. They come back tomorrow; meanwhile you can re-read the previous ones below.",
+    "restantes": "You have <b>{n}</b> consultations left this month. Each one includes your question and {seguimientos} follow-up questions; re-reading a saved answer doesn't use any.",
+    "agotadas": "You've used your {total} consultations for this month. They come back with your next cycle; in the meantime you can re-read the previous ones below.",
     "responde": "Your guidance answers",
     "aviso": "Personal Guidance is designed for personal reflection and inner clarity. It does not replace professional medical, legal, financial or psychological advice.",
     "sugeridas": {
@@ -302,7 +304,16 @@
       "patron": "What abundance pattern am I repeating?",
       "senal": "What sign should I watch for this week?",
       "energia": "What energy do I need to activate today?"
-    }
+    },
+    "preguntaSeguimiento": "What else would you like to know about this?",
+    "placeholderSeguimiento": "Ask something else about this same topic…",
+    "agotadasError": "You've used your consultations for this month. They come back with your next cycle.",
+    "puedesSeguir": "You can ask {n} more questions about this topic.",
+    "temaCerrado": "You've used both questions on this topic. To open another one, reload the page.",
+    "aclaracionNoGasta": "Your guide needs one detail before answering. Replying to this doesn't use a consultation.",
+    "preguntaDeVuelta": "Your guide needs to know",
+    "sinCarta": "Your chart isn't calculated yet. Come back in a moment.",
+    "seguimientosAgotados": "You've already asked both follow-up questions on this topic."
   },
   "carta": {
     "sol": "Sun",
