@@ -172,7 +172,7 @@ async function AvisoSinHora() {
       {t.rich('sinHoraAviso', {
         b: (trozo) => <strong>{trozo}</strong>,
         enlace: (trozo) => (
-          <Link href="/onboarding?editar=1" className="underline underline-offset-4">
+          <Link href="/cuenta/correccion" className="underline underline-offset-4">
             {trozo}
           </Link>
         ),

@@ -295,14 +295,76 @@ test('mi cuenta muestra los datos reales del usuario', async ({ page, usuario })
   await expect(page.getByText('e2e', { exact: true })).toBeVisible()
 })
 
-test('mi cuenta muestra el día del ciclo y la fecha de activación', async ({ page }) => {
+/**
+ * Estado, día y fecha de activación, en una sola tarjeta.
+ *
+ * Eran tres fichas separadas y el documento del 23 de septiembre pidió unirlas:
+ * cada una decía media verdad —una sin saber en qué día va, otra sin saber si
+ * el portal sigue activo— y había que leer las tres para entender una cosa. Se
+ * comprueba que el titular las diga juntas, no que los tres textos existan por
+ * algún sitio de la pantalla.
+ */
+test('mi cuenta reúne estado, día y activación en una tarjeta', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/cuenta')
 
-  // Los dos datos que la app anterior enseña aquí y que faltaban.
-  await expect(page.getByText('Día actual')).toBeVisible()
-  await expect(page.getByText('Día 1 de 30')).toBeVisible()
-  await expect(page.getByText('Fecha de activación')).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Día 1 de 30/ })).toBeVisible()
+  await expect(page.getByText(/^Activado el /)).toBeVisible()
+
+  // Y las fichas que se fueron no quedan duplicadas por ahí.
+  await expect(page.getByText('Día actual')).toHaveCount(0)
+  await expect(page.getByText('Fecha de activación')).toHaveCount(0)
+})
+
+/**
+ * El nombre se cambia aquí; el nacimiento, no.
+ *
+ * Es la separación que pidió el documento, y las dos mitades importan: cambiar
+ * una letra del nombre no toca nada calculado, y cambiar la fecha invalidaría
+ * la carta y archivaría la lectura base y el retrato. Por eso una es un lápiz
+ * y la otra es una solicitud que alguien mira.
+ */
+test('el nombre se cambia solo; la fecha de nacimiento pasa por soporte', async ({ page }) => {
+  await completarOnboarding(page)
+  await page.goto('/cuenta')
+
+  await page.getByRole('button', { name: 'Cambiar mi nombre' }).click()
+  const campo = page.getByLabel('Nombre', { exact: true })
+  await campo.fill('Persona corregida')
+  await page.getByRole('button', { name: 'Guardar mi nombre' }).click()
+
+  /*
+   * Con margen: detrás del botón hay una escritura en la base y su
+   * confirmación, y con la suite entera en marcha eso pasa de los cinco
+   * segundos por defecto. No es lentitud de la pantalla, es una ida y vuelta
+   * al servidor.
+   */
+  await expect(page.getByText('Persona corregida')).toBeVisible({ timeout: 15_000 })
+
+  // El nacimiento: se solicita, no se edita.
+  await page.getByRole('link', { name: 'Solicitar una corrección' }).click()
+  await expect(page).toHaveURL(/\/cuenta\/correccion/)
+  await expect(page.getByRole('heading', { name: 'Solicitar una corrección' })).toBeVisible()
+
+  await page.getByLabel('Lo correcto').fill('16 de junio de 1992 · 09:30 · Bogotá, Colombia')
+  await page.getByLabel(/Confirmo que son mis propios datos/).check()
+  await page.getByRole('button', { name: 'Enviar mi solicitud' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Solicitud recibida' })).toBeVisible()
+
+  /*
+   * Y lo que de verdad importa: no ha cambiado nada. La carta sigue siendo la
+   * del 15 de junio, que es lo que la solicitud existe para no romper.
+   */
+  await page.goto('/cuenta')
+  await expect(page.getByText(/15 de junio de 1992/)).toBeVisible()
+})
+
+test('con carta calculada, el formulario de alta ya no corrige el nacimiento', async ({ page }) => {
+  await completarOnboarding(page)
+
+  await page.goto('/onboarding?editar=1')
+  await expect(page).toHaveURL(/\/cuenta\/correccion/)
 })
 
 test('generando dice los pasos y el plazo, sin barra que no avanza', async ({ page }) => {
@@ -551,6 +613,7 @@ test('el portal ya no cuenta los días; el dato vive en Mi Cuenta', async ({ pag
   const barra = page.getByRole('progressbar', { name: '3% completado' })
   await expect(barra).toBeVisible()
   await expect(barra).toHaveAttribute('aria-valuenow', '3')
+  await expect(page.getByRole('heading', { name: /Día 1 de 30/ })).toBeVisible()
 })
 
 /**

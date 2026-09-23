@@ -39,6 +39,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      correction_requests: {
+        Row: {
+          confirmado: boolean
+          created_at: string
+          dato_actual: string
+          dato_correcto: string
+          estado: string
+          id: string
+          motivo: string | null
+          portal_id: string
+          resolved_at: string | null
+        }
+        Insert: {
+          confirmado?: boolean
+          created_at?: string
+          dato_actual: string
+          dato_correcto: string
+          estado?: string
+          id?: string
+          motivo?: string | null
+          portal_id: string
+          resolved_at?: string | null
+        }
+        Update: {
+          confirmado?: boolean
+          created_at?: string
+          dato_actual?: string
+          dato_correcto?: string
+          estado?: string
+          id?: string
+          motivo?: string | null
+          portal_id?: string
+          resolved_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correction_requests_portal_id_fkey"
+            columns: ["portal_id"]
+            isOneToOne: false
+            referencedRelation: "portals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_activations: {
         Row: {
           content: Json

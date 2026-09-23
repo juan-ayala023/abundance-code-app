@@ -12,7 +12,8 @@
     "volverAlPortal": "Volver a mi portal",
     "dia": "Día {dia} de {total}",
     "viaje": "Tu viaje",
-    "viajeTexto": "Estás construyendo tu nueva realidad día a día."
+    "viajeTexto": "Estás construyendo tu nueva realidad día a día.",
+    "volverACuenta": "Volver a Mi Cuenta"
   },
   "idioma": {
     "etiqueta": "Idioma",
@@ -94,11 +95,7 @@
     "nombre": "Nombre",
     "email": "Email",
     "plan": "Plan",
-    "fechaActivacion": "Fecha de activación",
-    "estadoPortal": "Estado del portal",
-    "diaActual": "Día actual",
     "completado": "{progreso}% completado",
-    "primerosDias": "primeros {total} días",
     "incluye": "Tu suscripción incluye tu lectura base y tu carta natal, tu lectura predictiva del mes, tu lectura personal de cada día y {consultas} consultas de guía al mes, cada una con dos preguntas para profundizar. Si algún día se cancela, tu lectura base y tu carta natal siguen siendo tuyas.",
     "gestionar": "Gestionar mi suscripción",
     "estados": {
@@ -108,7 +105,8 @@
       "canceled": "Cancelado",
       "incomplete": "Incompleto",
       "none": "Sin acceso",
-      "cortesia": "Cortesía"
+      "cortesia": "Cortesía",
+      "ninguno": "Portal sin activar"
     },
     "portalError": "No hemos podido abrir la gestión de tu suscripción ahora mismo. Vuelve a intentarlo en unos minutos.",
     "portalSinCompra": "No encontramos una suscripción asociada a tu cuenta.",
@@ -124,8 +122,35 @@
     "incluyeCortesia": "Tienes acceso de cortesía: lo mismo que una suscripción —lectura base y carta natal, lectura del mes, lectura de cada día y {consultas} consultas de guía al mes con sus preguntas para profundizar— sin pago ni renovación que gestionar.",
     "nacimiento": "Datos de nacimiento",
     "sinHora": "hora desconocida",
-    "corregirNacimiento": "Corregir mis datos",
-    "nombreGuardado": "Tu nombre quedó guardado. Como tu nacimiento no cambió, tu carta y tus lecturas siguen siendo las mismas."
+    "nombreGuardado": "Tu nombre quedó guardado. Como tu nacimiento no cambió, tu carta y tus lecturas siguen siendo las mismas.",
+    "activadoEl": "Activado el {fecha}",
+    "cambiarNombre": "Cambiar mi nombre",
+    "guardarNombre": "Guardar mi nombre",
+    "nombreError": "No pudimos guardar tu nombre. Vuelve a intentarlo.",
+    "solicitarCorreccion": "Solicitar una corrección",
+    "volverAEntrar": "Cómo volver a entrar",
+    "volverAEntrarTexto": "No tienes contraseña que recordar. Tu sesión se queda abierta en este dispositivo, así que puedes cerrar la página y volver cuando quieras. Si cambias de teléfono o de ordenador, o si cierras sesión, escribe tu correo en la pantalla de entrada y te mandamos un enlace para entrar de nuevo. Mientras la sesión siga abierta no te enviamos ningún correo."
+  },
+  "correccion": {
+    "titulo": "Solicitar una corrección",
+    "descripcion": "Para cambiar tu fecha, tu hora o tu lugar de nacimiento.",
+    "queVaAPasar": "Tu nombre puedes cambiarlo tú desde Mi Cuenta. La fecha, la hora y el lugar no: tu carta se calcula con ellos, y al cambiarlos habría que volver a calcularla y a escribir tu lectura base y tu retrato. Por eso lo revisamos antes. Mientras tanto no pierdes nada: tu carta, tus lecturas y tus consultas siguen donde están.",
+    "datoActual": "Lo que tenemos ahora",
+    "datoActualAyuda": "Es lo que hay guardado. Puedes dejarlo tal cual.",
+    "datoCorrecto": "Lo correcto",
+    "datoCorrectoAyuda": "Escríbelo completo: fecha, hora y ciudad.",
+    "datoCorrectoEjemplo": "15 de junio de 1992 · 08:30 · Bogotá, Colombia",
+    "motivo": "Qué pasó (opcional)",
+    "motivoAyuda": "Si quieres contarnos de dónde salió el dato correcto, nos ayuda.",
+    "confirmacion": "Confirmo que son mis propios datos de nacimiento.",
+    "enviar": "Enviar mi solicitud",
+    "enviando": "Enviando…",
+    "enviadaTitulo": "Solicitud recibida",
+    "enviadaTexto": "La revisamos y te escribimos al correo de tu cuenta. Hasta entonces tu carta y tus lecturas siguen siendo las que ya tienes.",
+    "volver": "Volver a Mi Cuenta",
+    "faltanDatos": "Completa los dos datos y confirma que son tuyos.",
+    "sinSesion": "Tu sesión expiró. Vuelve a entrar.",
+    "error": "No pudimos registrar tu solicitud. Vuelve a intentarlo en unos minutos."
   },
   "portal": {
     "bienvenida": "Te damos la bienvenida a tu portal",

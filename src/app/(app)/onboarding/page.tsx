@@ -28,7 +28,7 @@ export default async function OnboardingPage({
   const { data: portal } = await supabase
     .from('portals')
     .select(
-      'full_name, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz',
+      'full_name, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz, chart',
     )
     .maybeSingle()
 
@@ -44,6 +44,18 @@ export default async function OnboardingPage({
    */
   const params = await searchParams
   const editando = Boolean(portal?.birth_date) && params.editar !== undefined
+
+  /*
+   * Corregir aquí solo mientras no haya carta.
+   *
+   * El documento del 23 de septiembre pide que la fecha, la hora y el lugar no
+   * se recalculen solos: al cambiarlos se invalida la carta y se archivan la
+   * lectura base y el retrato, y eso no puede depender de un clic. Pero cuando
+   * la carta **no se pudo calcular** —una combinación de datos imposible— no
+   * hay nada que invalidar y sí algo que arreglar; mandar a esa persona a
+   * soporte sería dejarla sin producto esperando un correo.
+   */
+  if (editando && portal?.chart) redirect('/cuenta/correccion')
 
   if (portal?.birth_date && !editando) redirect('/portal')
 

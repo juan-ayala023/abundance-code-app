@@ -12,7 +12,8 @@
     "volverAlPortal": "Back to my portal",
     "dia": "Day {dia} of {total}",
     "viaje": "Your journey",
-    "viajeTexto": "You're building your new reality one day at a time."
+    "viajeTexto": "You're building your new reality one day at a time.",
+    "volverACuenta": "Back to My Account"
   },
   "idioma": {
     "etiqueta": "Language",
@@ -94,11 +95,7 @@
     "nombre": "Name",
     "email": "Email",
     "plan": "Plan",
-    "fechaActivacion": "Activation date",
-    "estadoPortal": "Portal status",
-    "diaActual": "Current day",
     "completado": "{progreso}% complete",
-    "primerosDias": "first {total} days",
     "incluye": "Your subscription includes your base reading and your natal chart, your predictive reading of the month, your personal reading each day and {consultas} guidance consultations a month, each with two follow-up questions. If it's ever cancelled, your base reading and your natal chart remain yours.",
     "gestionar": "Manage my subscription",
     "estados": {
@@ -108,7 +105,8 @@
       "canceled": "Cancelled",
       "incomplete": "Incomplete",
       "none": "No access",
-      "cortesia": "Complimentary"
+      "cortesia": "Complimentary",
+      "ninguno": "Portal not activated"
     },
     "portalError": "We couldn't open your subscription settings right now. Please try again in a few minutes.",
     "portalSinCompra": "We couldn't find a subscription linked to your account.",
@@ -124,8 +122,35 @@
     "incluyeCortesia": "You have courtesy access: the same as a subscription —base reading and natal chart, reading of the month, daily reading and {consultas} guidance consultations a month with their follow-up questions— with no payment or renewal to manage.",
     "nacimiento": "Birth details",
     "sinHora": "time unknown",
-    "corregirNacimiento": "Correct my details",
-    "nombreGuardado": "Your name has been saved. Since your birth details did not change, your chart and readings stay the same."
+    "nombreGuardado": "Your name has been saved. Since your birth details did not change, your chart and readings stay the same.",
+    "activadoEl": "Activated on {fecha}",
+    "cambiarNombre": "Change my name",
+    "guardarNombre": "Save my name",
+    "nombreError": "We couldn't save your name. Please try again.",
+    "solicitarCorreccion": "Request a correction",
+    "volverAEntrar": "How to get back in",
+    "volverAEntrarTexto": "There's no password to remember. Your session stays open on this device, so you can close the page and come back whenever you like. If you switch phone or computer, or if you sign out, enter your email on the sign-in screen and we'll send you a link to get back in. While your session is open we don't send you any email."
+  },
+  "correccion": {
+    "titulo": "Request a correction",
+    "descripcion": "To change your birth date, time or place.",
+    "queVaAPasar": "You can change your name yourself from My Account. Your date, time and place you can't: your chart is calculated from them, and changing them means recalculating it and rewriting your base reading and your portrait. That's why we review it first. In the meantime you lose nothing: your chart, your readings and your consultations stay where they are.",
+    "datoActual": "What we have now",
+    "datoActualAyuda": "This is what's saved. You can leave it as it is.",
+    "datoCorrecto": "What's correct",
+    "datoCorrectoAyuda": "Write it in full: date, time and city.",
+    "datoCorrectoEjemplo": "15 June 1992 · 08:30 · Bogotá, Colombia",
+    "motivo": "What happened (optional)",
+    "motivoAyuda": "If you'd like to tell us where the correct detail came from, it helps.",
+    "confirmacion": "I confirm these are my own birth details.",
+    "enviar": "Send my request",
+    "enviando": "Sending…",
+    "enviadaTitulo": "Request received",
+    "enviadaTexto": "We'll review it and write to the email on your account. Until then your chart and your readings stay as they are.",
+    "volver": "Back to My Account",
+    "faltanDatos": "Fill in both details and confirm they're yours.",
+    "sinSesion": "Your session expired. Please sign in again.",
+    "error": "We couldn't register your request. Please try again in a few minutes."
   },
   "portal": {
     "bienvenida": "Welcome to your Portal",

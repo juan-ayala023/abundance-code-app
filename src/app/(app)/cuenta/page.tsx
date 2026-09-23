@@ -1,12 +1,4 @@
-import {
-  Activity,
-  CalendarDays,
-  Mail,
-  PencilLine,
-  Sparkles,
-  Sun,
-  User,
-} from "lucide-react";
+import { KeyRound, Mail, PencilLine, Sparkles, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
@@ -15,6 +7,7 @@ import { idiomaActual } from "@/i18n/idioma";
 
 import { cerrarSesion } from "@/app/actions";
 import { abrirPortalDeFacturacion } from "./actions";
+import { NombreEditable } from "@/components/cuenta/nombre-editable";
 import { Contenedor } from "@/components/layout/contenedor";
 import { EncabezadoPagina } from "@/components/layout/encabezado-pagina";
 import { Insignia, Tarjeta } from "@/components/layout/tarjeta";
@@ -55,9 +48,7 @@ export default async function CuentaPage({
         ? t("portalSinCompra")
         : params.portal === "sin-stripe"
           ? t("portalSinStripe")
-          : params.datos === "nombre"
-            ? t("nombreGuardado")
-            : undefined;
+          : undefined;
 
   const supabase = await createClient();
   const acceso = await resolveAccess();
@@ -106,70 +97,60 @@ export default async function CuentaPage({
     <Contenedor>
       <EncabezadoPagina titulo={t("titulo")} descripcion={t("descripcion")} />
 
+      {/*
+        Una sola tarjeta de estado, no tres fichas.
+
+        El documento del 23 de septiembre pidió unir «Estado del portal» y «Día
+        actual»: eran dos fichas que decían medias verdades por separado —una
+        sin saber en qué día va, otra sin saber si el portal sigue activo— y
+        obligaban a leer las dos para entender una cosa sola. La fecha de
+        activación se va con ellas, que es de lo que cuelga el contador.
+      */}
+      <Tarjeta className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-xl font-light">
+            {[
+              entitlement
+                ? t(`estados.${entitlement.status}` as never) || entitlement.status
+                : t("estados.ninguno"),
+              ciclo ? tNav("dia", { dia: ciclo.dia, total: ciclo.total }) : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </h2>
+          <p className="text-sm text-tinta-tenue">
+            {t("activadoEl", {
+              fecha: fechaDeInstante(portal?.created_at ?? perfil?.created_at, idioma),
+            })}
+          </p>
+        </div>
+
+        {ciclo ? (
+          <div
+            role="progressbar"
+            aria-valuenow={ciclo.progreso}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t("completado", { progreso: ciclo.progreso })}
+            className="h-2 overflow-hidden rounded-full bg-oro-palido"
+          >
+            <div className="h-full rounded-full bg-oro" style={{ width: `${ciclo.progreso}%` }} />
+          </div>
+        ) : null}
+      </Tarjeta>
+
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {/*
           El nombre que la persona escribió al dar sus datos manda sobre el que
-          trajo Google: es el que se corrige desde esta pantalla y el que usan
-          las lecturas. Si no hay portal todavía, el de Google.
+          trajo Google: es el que se cambia desde aquí mismo y el que usan las
+          lecturas. Si no hay portal todavía, el de Google.
         */}
-        <Dato
-          Icono={User}
-          etiqueta={t("nombre")}
-          valor={portal?.full_name ?? perfil?.full_name ?? "—"}
-        />
+        <Tarjeta className="flex min-w-0 items-start gap-4">
+          <Insignia Icono={User} />
+          <NombreEditable nombre={portal?.full_name ?? perfil?.full_name ?? "—"} />
+        </Tarjeta>
         <Dato Icono={Mail} etiqueta={t("email")} valor={perfil?.email ?? "—"} />
         <Dato Icono={Sparkles} etiqueta={t("plan")} valor={plan} />
-        <Dato
-          Icono={CalendarDays}
-          etiqueta={t("fechaActivacion")}
-          valor={fechaDeInstante(
-            portal?.created_at ?? perfil?.created_at,
-            idioma,
-          )}
-        />
-        {/*
-          El original matiza el estado: «Activo · primeros 30 días». Distingue
-          estar dentro del ciclo inicial de tener una suscripción en marcha, que
-          es justo lo que decide si la guía sigue abierta.
-        */}
-        <Dato
-          Icono={Activity}
-          etiqueta={t("estadoPortal")}
-          valor={
-            entitlement
-              ? [
-                  t(`estados.${entitlement.status}` as never) ||
-                    entitlement.status,
-                  ciclo && !ciclo.terminado
-                    ? t("primerosDias", { total: ciclo.total })
-                    : null,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")
-              : "—"
-          }
-        />
-        {/*
-          El progreso del ciclo vivía en una tarjeta propia en `/portal`, con un
-          número enorme y una barra que avanzaba. Aquí va dentro de la ficha que
-          ya mostraba el día: el mismo dato, sin ser lo primero que se ve al
-          entrar al producto. Ver el comentario de `portal/page.tsx`.
-        */}
-        <Dato
-          Icono={Sun}
-          etiqueta={t("diaActual")}
-          valor={
-            ciclo ? tNav("dia", { dia: ciclo.dia, total: ciclo.total }) : "—"
-          }
-          progreso={
-            ciclo
-              ? {
-                  porcentaje: ciclo.progreso,
-                  etiqueta: t("completado", { progreso: ciclo.progreso }),
-                }
-              : undefined
-          }
-        />
       </div>
 
       {/*
@@ -231,14 +212,39 @@ export default async function CuentaPage({
               </p>
             </div>
           </div>
+          {/*
+            Ya no lleva al formulario de alta: llevaba a la pantalla que
+            recalcula la carta, y el documento del 23 de septiembre pide que
+            fecha, hora y lugar pasen por soporte. Lo que se invalidaría no es
+            poca cosa —la carta, la lectura base y el retrato—, así que se pide
+            y alguien lo mira.
+          */}
           <Link
-            href="/onboarding?editar=1"
+            href="/cuenta/correccion"
             className="rounded-xl border border-borde bg-superficie px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fondo-hondo"
           >
-            {t("corregirNacimiento")}
+            {t("solicitarCorreccion")}
           </Link>
         </Tarjeta>
       ) : null}
+
+      {/*
+        Cómo volver a entrar.
+
+        Lo pidió el documento del 23 de septiembre, y responde a una pregunta
+        que la gente se hace de verdad: no hay contraseña que recordar, así que
+        no está claro qué pasa al cambiar de teléfono. Se dice en tres líneas
+        en vez de dejar que cada uno lo descubra.
+      */}
+      <Tarjeta className="flex gap-4">
+        <Insignia Icono={KeyRound} />
+        <div className="flex min-w-0 flex-col gap-2">
+          <h2 className="text-lg font-light">{t("volverAEntrar")}</h2>
+          <p className="max-w-prose text-sm leading-relaxed text-tinta-suave">
+            {t("volverAEntrarTexto")}
+          </p>
+        </div>
+      </Tarjeta>
 
       {avisoPortal ? (
         <p
