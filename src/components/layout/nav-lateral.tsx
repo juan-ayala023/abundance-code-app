@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, LogOut, MessageCircle, Sparkles, Sun, User, CalendarDays } from 'lucide-react'
+import { Home, LogOut, MessageCircle, Sparkles, Sun, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -18,8 +18,13 @@ import { cn } from '@/lib/utils'
 const ENLACES = [
   { href: '/portal', clave: 'portal', Icono: Home },
   { href: '/lectura-base', clave: 'lecturaBase', Icono: Sparkles },
+  /*
+   * Cinco entradas, las del documento del 23 de septiembre de 2026, que las
+   * fija por nombre. La lectura del mes se publicó el día anterior como una
+   * sexta —«Pronóstico»— y vive ahora dentro de «Activación de Hoy», que es
+   * donde el documento la quiere. `/pronostico` redirige allí.
+   */
   { href: '/activacion', clave: 'activacion', Icono: Sun },
-  { href: '/pronostico', clave: 'pronostico', Icono: CalendarDays },
   { href: '/guia', clave: 'guia', Icono: MessageCircle },
   { href: '/cuenta', clave: 'cuenta', Icono: User },
 ] as const

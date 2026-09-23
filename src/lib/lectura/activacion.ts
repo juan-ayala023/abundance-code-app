@@ -6,6 +6,7 @@ import type { Carta } from '@/lib/astrology/types'
 import { createAdminClient } from '@/lib/supabase/server'
 
 import { generarActivacionDiaria } from './generar-activacion'
+import { contextoDelMes, mesGuardado } from './mes'
 import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
 import { nombreDePila } from './voz'
 
@@ -103,6 +104,17 @@ export async function asegurarActivacion(
   const transitos = await transitosDeHoy(carta)
   if (!transitos) return null
 
+  /*
+   * El hilo del mes y lo que ya se dijo estos días.
+   *
+   * Sin esto, la lectura de hoy es un texto suelto que empieza de cero cada
+   * mañana: el documento del 23 de septiembre pidió justo lo contrario —que
+   * el día cuelgue de la historia del mes y que el gancho no se repita—. Si
+   * algo de esto falla, se escribe igual: es contexto, no un requisito.
+   */
+  const mes = await mesGuardado(admin, portalId)
+  const titularesRecientes = await titularesDeLosUltimosDias(portalId, dia)
+
   let contenido: ActivacionDiaria
   try {
     contenido = await generarActivacionDiaria({
@@ -112,6 +124,8 @@ export async function asegurarActivacion(
       dia,
       total,
       fecha,
+      contextoDelMes: mes ? contextoDelMes(mes.contenido, fecha) : null,
+      titularesRecientes,
       idioma,
     })
     contenido = { ...contenido, idioma }
@@ -135,4 +149,25 @@ export async function asegurarActivacion(
   }
 
   return { id: guardada.id, contenido, leidaEn: guardada.read_at }
+}
+
+/**
+ * Los titulares de los últimos días, para que el de hoy no se les parezca.
+ *
+ * Cinco es suficiente: lo que se repite se nota dentro de una semana, y pedir
+ * más engorda el prompt de algo que se paga treinta veces al mes por persona.
+ */
+async function titularesDeLosUltimosDias(portalId: string, dia: number): Promise<string[]> {
+  const { data } = await createAdminClient()
+    .from('daily_activations')
+    .select('content')
+    .eq('portal_id', portalId)
+    .lt('day_number', dia)
+    .order('day_number', { ascending: false })
+    .limit(5)
+
+  return (data ?? [])
+    .map((fila) => activacionDiariaSchema.safeParse(fila.content))
+    .filter((leida) => leida.success)
+    .map((leida) => leida.data.titular)
 }

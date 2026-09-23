@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { escribirPronostico } from '@/app/(app)/pronostico/actions'
+import { escribirMes } from '@/app/(app)/activacion/actions'
 
 type Estado = 'inicial' | 'escribiendo' | 'error' | 'suscripcion' | 'sin-carta'
 
@@ -17,15 +17,15 @@ type Estado = 'inicial' | 'escribiendo' | 'error' | 'suscripcion' | 'sin-carta'
  * Que lo dispare un clic evita escribir un periodo entero a quien solo pasaba
  * por la pantalla, y deja claro qué se va a hacer antes de hacerlo.
  */
-export function PronosticoGeneracion({ tieneCarta }: { tieneCarta: boolean }) {
-  const t = useTranslations('pronostico')
+export function MesGeneracion({ tieneCarta }: { tieneCarta: boolean }) {
+  const t = useTranslations('mes')
   const router = useRouter()
   const [estado, setEstado] = useState<Estado>(tieneCarta ? 'inicial' : 'sin-carta')
 
   const pedir = async () => {
     setEstado('escribiendo')
     try {
-      const { listo, motivo } = await escribirPronostico()
+      const { listo, motivo } = await escribirMes()
       if (listo) {
         router.refresh()
         return

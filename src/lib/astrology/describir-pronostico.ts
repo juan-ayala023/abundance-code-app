@@ -1,5 +1,6 @@
 import { NOMBRE_ASPECTO, NOMBRE_CUERPO } from '@/components/chart/glifos'
 
+import type { DiasSenalados } from './dias-senalados'
 import type { EventoPronostico, Pronostico, PuntoNatal } from './pronostico'
 
 /**
@@ -77,6 +78,42 @@ const NIVEL_TEXTO = {
   media: 'intensidad media',
   observar: 'intensidad baja: para observar, no para anunciar',
 } as const
+
+/**
+ * Los días sueltos —favorables y de cuidado— para el prompt.
+ *
+ * Van con su identificador por la misma razón que las ventanas: el modelo
+ * escribe sobre `f1` y la fecha se la pone después el cálculo. Si viera la
+ * fecha, la repetiría mal tarde o temprano.
+ */
+export function describirDiasSenalados(dias: DiasSenalados): string {
+  if (dias.favorables.length === 0 && dias.cuidado.length === 0) {
+    return 'DÍAS SUELTOS: ninguno claro este periodo. No inventes ninguno: deja las dos listas vacías.'
+  }
+
+  const partes: string[] = []
+
+  if (dias.favorables.length > 0) {
+    partes.push(
+      'DÍAS QUE ABREN (armónicos; explica qué se facilita y cómo reconocerlo, no «buen día para»):',
+      ...dias.favorables.map(
+        (dia) => `[${dia.id}] ${dia.fecha}\n${dia.eventos.map((e) => `  · ${lineaEvento(e)}`).join('\n')}`,
+      ),
+      '',
+    )
+  }
+
+  if (dias.cuidado.length > 0) {
+    partes.push(
+      'DÍAS QUE PIDEN ATENCIÓN (tensos; explica el riesgo emocional, nunca anuncies peligro):',
+      ...dias.cuidado.map(
+        (dia) => `[${dia.id}] ${dia.fecha}\n${dia.eventos.map((e) => `  · ${lineaEvento(e)}`).join('\n')}`,
+      ),
+    )
+  }
+
+  return partes.join('\n')
+}
 
 export function describirPronostico(pronostico: Pronostico): string {
   const partes: string[] = [

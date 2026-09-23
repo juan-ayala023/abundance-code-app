@@ -8,7 +8,9 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { asegurarActivacion } from '@/lib/lectura/activacion'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
-import { createClient } from '@/lib/supabase/server'
+import { traducirMes } from '@/lib/lectura/generar-mes'
+import { asegurarMes, COLUMNAS_MES, mesEnIdioma, mesGuardado } from '@/lib/lectura/mes'
+import { createAdminClient, createClient } from '@/lib/supabase/server'
 import { zonaDelPortal } from '@/lib/time/dia'
 
 /**
@@ -86,4 +88,73 @@ export async function guardarZonaHoraria(zona: string): Promise<void> {
 /** Para que la pantalla sepa en qué idioma pedir la activación guardada. */
 export async function idiomaDeLaInterfaz(): Promise<string> {
   return idiomaActual()
+}
+
+/**
+ * Escribe la lectura del mes, a petición de la pantalla.
+ *
+ * Tarda: calcular 31 días de cielo y escribir dieciséis apartados. Por eso se
+ * pide desde el cliente y no durante el render. El tiempo máximo lo declara la
+ * página (`maxDuration` en page.tsx): un fichero «use server» solo puede
+ * exportar funciones.
+ */
+export async function escribirMes(): Promise<{
+  listo: boolean
+  motivo?: 'suscripcion' | 'sin-carta' | 'error'
+}> {
+  const acceso = await resolveAccess()
+  if (nivelDeAcceso(entitlementDe(acceso)) === 'solo-lectura') {
+    return { listo: false, motivo: 'suscripcion' }
+  }
+
+  const supabase = await createClient()
+  const { data: portal } = await supabase.from('portals').select(COLUMNAS_MES).maybeSingle()
+  if (!portal) return { listo: false, motivo: 'error' }
+  if (!portal.chart) return { listo: false, motivo: 'sin-carta' }
+
+  const mes = await asegurarMes(supabase, portal)
+  if (!mes) return { listo: false, motivo: 'error' }
+
+  revalidatePath('/activacion')
+  revalidatePath('/portal')
+  return { listo: true }
+}
+
+/**
+ * Guarda la versión de la lectura del mes en el idioma actual de la interfaz.
+ *
+ * Igual que con la lectura base: se traduce a petición, no al cambiar de
+ * idioma, y la traducción se guarda al lado del original sin tocarlo.
+ */
+export async function traducirMesActual(): Promise<{ listo: boolean }> {
+  const supabase = await createClient()
+  const { data: portal } = await supabase.from('portals').select('id').maybeSingle()
+  if (!portal) return { listo: false }
+
+  const guardado = await mesGuardado(supabase, portal.id)
+  if (!guardado) return { listo: false }
+
+  const idioma = await idiomaActual()
+  if (mesEnIdioma(guardado.contenido, idioma)) return { listo: true }
+
+  try {
+    const traducida = await traducirMes(guardado.contenido, idioma)
+    const { error } = await createAdminClient()
+      .from('forecasts')
+      .update({
+        content: {
+          ...guardado.contenido,
+          traducciones: { ...(guardado.contenido.traducciones ?? {}), [idioma]: traducida },
+        } as never,
+      })
+      .eq('portal_id', portal.id)
+      .eq('desde', guardado.desde)
+    if (error) throw error
+  } catch (error) {
+    console.error('[mes] no se pudo guardar la traducción', error)
+    return { listo: false }
+  }
+
+  revalidatePath('/activacion')
+  return { listo: true }
 }

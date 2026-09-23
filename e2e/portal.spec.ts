@@ -132,6 +132,43 @@ test('la lectura pone la carta, las casas y el texto en ese orden', async ({ pag
   await expect(septima.getByText(/empieza en \d+° de /i)).toBeVisible()
 })
 
+/**
+ * El menú vuelve a sus cinco entradas y la lectura del mes vive dentro.
+ *
+ * Se cuenta la navegación entera y no solo la ausencia de «Pronóstico»: el
+ * documento del 23 de septiembre fija cinco entradas por nombre, y la forma de
+ * que eso no se rompa sin avisar es contarlas. Una sexta entrada añadida más
+ * adelante fallaría aquí, que es el sitio donde queremos enterarnos.
+ */
+test('el menú tiene cinco entradas y la lectura del mes está en Activación', async ({ page }) => {
+  await completarOnboarding(page)
+
+  const nav = page.getByRole('navigation', { name: 'Navegación principal' })
+  await expect(nav.getByRole('link')).toHaveCount(5)
+  await expect(nav.getByRole('link', { name: 'Pronóstico' })).toHaveCount(0)
+
+  await page.goto('/activacion')
+
+  // Las dos opciones, y la de hoy es la que se abre.
+  const pestanas = page.getByRole('navigation', { name: 'Tus dos lecturas' })
+  await expect(pestanas.getByRole('link', { name: 'Mi lectura de hoy' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+
+  await pestanas.getByRole('link', { name: 'Mi lectura del mes' }).click()
+  await expect(page).toHaveURL(/vista=mes/)
+  await expect(page.getByRole('button', { name: /preparar mi lectura del mes/i })).toBeVisible()
+
+  /*
+   * Y la dirección anterior sigue funcionando. Se dio durante un día: había
+   * enlaces del portal y pestañas abiertas apuntando ahí, y un 404 donde
+   * alguien tenía su lectura es peor que una redirección.
+   */
+  await page.goto('/pronostico')
+  await expect(page).toHaveURL(/\/activacion\?vista=mes/)
+})
+
 test('si la activación falla, lo dice y no finge una lectura', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/activacion')

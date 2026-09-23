@@ -141,12 +141,27 @@ export function esquemaDeTexto(claves: string[]) {
   return z.object(Object.fromEntries(claves.map((clave) => [clave, parrafo])))
 }
 
+/**
+ * La activación de hoy, con la estructura del 23 de septiembre de 2026.
+ *
+ * Antes eran cinco bloques de 150 a 220 palabras —mensaje, observar, evitar,
+ * activar y una pregunta— y el documento la quiere más corta y más directa:
+ * un titular que enganche, qué podría pasar, la señal, qué evitar y qué
+ * activar, entre 80 y 140 palabras en total.
+ *
+ * Las activaciones escritas con la forma anterior no validan contra esto, y es
+ * lo correcto: son de un día concreto, ya pasado. `asegurarActivacion()` las
+ * reescribe si alguien vuelve a abrir ese día.
+ */
 export const activacionDiariaSchema = z.object({
-  mensajePrincipal: parrafo,
-  queObservar: parrafo,
-  queEvitar: parrafo,
-  queActivar: parrafo,
-  preguntaReflexion: parrafo,
+  /** Frase de intriga. Es lo primero que se lee. */
+  titular: parrafo,
+  /** Qué podría pasar hoy y en qué área. Dos o tres frases. */
+  situacion: parrafo,
+  /** Qué conviene observar: una frase, un gesto, una repetición. */
+  senal: parrafo,
+  evita: parrafo,
+  activa: parrafo,
   /** En qué idioma se escribió. Si falta, español (anterior al cambio). */
   idioma: idiomaContenido.optional(),
 })
@@ -244,61 +259,87 @@ export const retratoParcialSchema = z.object({
   ...seccionesSinAscendente,
 })
 
-/* ───────────────────────── Pronóstico ─────────────────────────
-   Lo que el modelo escribe sobre cada ventana. Las fechas NO están aquí a
-   propósito: las pone `generarPronostico()` desde el cálculo, después de
-   generar. Si estuvieran en el esquema, el modelo las rellenaría, y las
+/* ─────────────── La lectura del mes ───────────────
+   Los dieciséis apartados que pidió el documento del 23 de septiembre de 2026.
+
+   Ninguna fecha está en el esquema, y es a propósito: el modelo escribe sobre
+   identificadores (`v1`, `f2`, `c1`) y las fechas se pegan después desde el
+   cálculo, en `generar-mes.ts`. Si estuvieran aquí, las rellenaría él, y las
    rellenaría mal. */
-const ventanaEscritaSchema = z.object({
-  /** `v1`, `v2`… El identificador que se le dio en el calendario. */
+
+/** Una fecha importante, escrita. Sus días los pone el cálculo. */
+const diaImportanteEscritoSchema = z.object({
+  /** `v1`, `v2`… el identificador de la ventana. */
   id: z.string().trim().min(1),
-  /** Un título corto de lo que se activa. */
-  titulo: parrafo,
-  /** La configuración astrológica, en palabras corrientes. */
-  configuracion: parrafo,
-  /** Qué área de la vida se activa. */
-  area: parrafo,
-  /** De 2 a 3, ordenadas de más a menos probable. */
-  manifestaciones: z.array(parrafo).min(2).max(3),
-  /** Qué mirar durante esos días. */
-  queObservar: parrafo,
+  /** Titular de anticipación, sin afirmar un hecho: «Una decisión pide límites más claros». */
+  titular: parrafo,
+  /** Dos o tres frases: qué podría pasar y en qué área. */
+  texto: parrafo,
+  senal: parrafo,
+  favorece: parrafo,
+  cuidadoCon: parrafo,
 })
 
-/** Lo que se le pide al modelo. */
-export const pronosticoGeneradoSchema = z.object({
-  /** Resumen del periodo y de la etapa de fondo. */
-  apertura: parrafo,
-  ventanas: z.array(ventanaEscritaSchema),
-  /** Posibilidades de menor respaldo, sin fecha. */
-  secundarias: z.array(parrafo),
-  /** Cierre: las ventanas por orden de importancia. */
-  cierre: parrafo,
+/** Un día favorable o de cuidado, escrito. */
+const diaSueltoEscritoSchema = z.object({
+  /** `f1`… o `c1`… */
+  id: z.string().trim().min(1),
+  texto: parrafo,
 })
 
-/** Una ventana tal y como se guarda y se muestra: texto + fechas calculadas. */
-export const ventanaSchema = ventanaEscritaSchema.extend({
-  desde: z.string(),
-  hasta: z.string(),
-  fecha: z.string(),
-  nivel: z.enum(['alta', 'media', 'observar']),
+const camposMes = {
+  /** Una frase que abre el mes y se dirige a la persona. */
+  titular: parrafo,
+  /** La apertura, 100–150 palabras. */
+  temaPrincipal: parrafo,
+  queEmpiezaAMoverse: parrafo,
+  primeraParte: parrafo,
+  mitadDelMes: parrafo,
+  finalDelMes: parrafo,
+  abundancia: parrafo,
+  amor: parrafo,
+  trabajo: parrafo,
+  mundoEmocional: parrafo,
+  patronKarmico: parrafo,
+  oportunidad: parrafo,
+  advertencia: parrafo,
+}
+
+/** Lo que se le pide al modelo para la lectura del mes. */
+export const mesGeneradoSchema = z.object({
+  ...camposMes,
+  diasImportantes: z.array(diaImportanteEscritoSchema),
+  diasFavorables: z.array(diaSueltoEscritoSchema),
+  diasCuidado: z.array(diaSueltoEscritoSchema),
+  /** Tres, ni dos ni cuatro. */
+  tresAcciones: z.array(parrafo).min(3).max(3),
 })
 
-export const pronosticoTextoSchema = z.object({
-  apertura: parrafo,
-  ventanas: z.array(ventanaSchema),
-  secundarias: z.array(parrafo),
-  cierre: parrafo,
+/** Lo mismo ya guardado: cada fecha con los días que puso el cálculo. */
+export const mesTextoSchema = z.object({
+  ...camposMes,
+  diasImportantes: z.array(
+    diaImportanteEscritoSchema.extend({
+      desde: z.string(),
+      hasta: z.string(),
+      fecha: z.string(),
+      nivel: z.enum(['alta', 'media', 'observar']),
+    }),
+  ),
+  diasFavorables: z.array(diaSueltoEscritoSchema.extend({ fecha: z.string() })),
+  diasCuidado: z.array(diaSueltoEscritoSchema.extend({ fecha: z.string() })),
+  tresAcciones: z.array(parrafo),
   idioma: idiomaContenido.optional(),
 })
 
-export type PronosticoTexto = z.infer<typeof pronosticoTextoSchema>
+export type MesTexto = z.infer<typeof mesTextoSchema>
 
-/** Lo guardado: el texto más sus traducciones. */
-export const pronosticoGuardadoSchema = pronosticoTextoSchema.extend({
+/** Lo guardado en `forecasts.content`: el texto más sus traducciones. */
+export const mesGuardadoSchema = mesTextoSchema.extend({
   traducciones: z.record(z.string(), z.unknown()).optional(),
 })
 
-export type PronosticoGuardado = z.infer<typeof pronosticoGuardadoSchema>
+export type MesGuardado = z.infer<typeof mesGuardadoSchema>
 
 /** Duración del portal, en días. */
 export const DIAS_DE_PORTAL = 30

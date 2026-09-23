@@ -251,7 +251,8 @@ export default async function PortalPage() {
           Icono={CalendarDays}
           titulo={t('pronosticoTitulo')}
           descripcion={t('pronosticoTexto')}
-          href={tieneDatos ? '/pronostico' : undefined}
+          /* Vive dentro de «Activación de Hoy» desde la revisión del 23 sept. */
+          href={tieneDatos ? '/activacion?vista=mes' : undefined}
           accion={tieneDatos ? t('verPronostico') : undefined}
           pendiente={tieneDatos ? undefined : t('trasDatosCorto')}
         />

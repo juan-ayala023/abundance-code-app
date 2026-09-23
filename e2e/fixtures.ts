@@ -72,11 +72,13 @@ export async function sembrarActivacion(userId: string, dia: number) {
     portal_id: portal.id,
     day_number: dia,
     content: {
-      mensajePrincipal: 'Hoy tu atención vale más que tu esfuerzo.',
-      queObservar: 'Dónde se te va la energía sin darte cuenta.',
-      queEvitar: 'Decir que sí antes de haberlo pensado.',
-      queActivar: 'Una conversación que llevas aplazando.',
-      preguntaReflexion: '¿Qué estoy sosteniendo que ya no me sostiene a mí?',
+      titular: 'Hoy tu atención vale más que tu esfuerzo.',
+      situacion:
+        'Puede aparecer una petición que parezca urgente sin serlo. Lo que se decide hoy no es la respuesta, sino cuánto de ti va dentro de ella.',
+      senal: 'Dónde se te va la energía sin darte cuenta.',
+      evita: 'Decir que sí antes de haberlo pensado.',
+      activa: 'Una conversación que llevas aplazando.',
+      idioma: 'es',
     },
   })
 
